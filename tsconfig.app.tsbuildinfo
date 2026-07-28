@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/ui/button.tsx","./src/fender/defaults.ts","./src/fender/geometry.ts","./src/fender/pattern.ts","./src/fender/types.ts","./src/fender/__tests__/geometry.test.ts","./src/fender/__tests__/pattern.test.ts"],"version":"5.9.3"}
