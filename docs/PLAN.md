@@ -229,20 +229,20 @@ beyond vitest itself.
 
 `WP0` is a hard gate. `WP1`–`WP6` then run **in parallel** — they share only `types.ts` + `defaults.ts`.
 
-| WP       | Scope                                                                                                                  | Depends on    | Notes                                                             |
-| -------- | ---------------------------------------------------------------------------------------------------------------------- | ------------- | ----------------------------------------------------------------- |
-| **WP0**  | Scaffold (Vite/TS strict/vitest/gh-pages), self-hosted fonts, vendored tokens, `types.ts`, `defaults.ts`, `Button.tsx` | —             | **Blocks everything. Freeze the contract before fanning out.**    |
-| **WP1**  | `geometry.ts`, `pattern.ts` + the §7 fixture tests                                                                     | WP0           | Largest + highest risk. Must hit §7 exactly.                      |
-| **WP2**  | `parts.ts`, `crossSection.ts`, `tiling.ts`                                                                             | WP0           | Tiling must cover the nested pair (§9.4)                          |
-| **WP3**  | `isometric.ts`                                                                                                         | WP0           | Self-contained; verify visually against the design                |
-| **WP4**  | `warnings.ts`, `notes.ts`, `specs.ts`                                                                                  | WP0           | Mostly copy — transcribe prose verbatim, keep the em-dashes       |
-| **WP5**  | `pathPolys.ts`, `svg.ts`, `dxf.ts`                                                                                     | WP1, WP2      | Diff exported SVG against the design's own export                 |
-| **WP6**  | `urlCodec.ts`, `presets.ts`, `useFenderConfig.ts`                                                                      | WP0           | §5, §6                                                            |
-| **WP7**  | Desktop UI shell — canvas, control rail, tabs, warnings banner, spec table                                             | WP0           | Can stub `buildModel()` from a fixture                            |
-| **WP8**  | Responsive layer — drawer, bottom sheet, scroll containers                                                             | WP7           | **Load `apple-design` skill first**                               |
-| **WP9**  | Print stylesheet + `.print-only` DOM                                                                                   | WP1, WP2, WP7 | Verify by actually printing to PDF and measuring the 100 mm ruler |
-| **WP10** | Preset strip UI + mini cross-section thumbs                                                                            | WP2, WP6, WP7 |                                                                   |
-| **WP11** | `export/pdf.ts` — hand-written vector PDF writer                                                                       | WP1, WP2, WP5 | §11. Zero deps. Verify by measuring the ruler in the output.      |
+| WP         | Scope                                                                                                                  | Depends on    | Notes                                                             |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------- | ------------- | ----------------------------------------------------------------- |
+| ✅ **WP0** | Scaffold (Vite/TS strict/vitest/gh-pages), self-hosted fonts, vendored tokens, `types.ts`, `defaults.ts`, `Button.tsx` | —             | **Blocks everything. Freeze the contract before fanning out.**    |
+| ✅ **WP1** | `geometry.ts`, `pattern.ts` + the §7 fixture tests                                                                     | WP0           | Largest + highest risk. Must hit §7 exactly.                      |
+| ✅ **WP2** | `parts.ts`, `crossSection.ts`, `tiling.ts`                                                                             | WP0           | Tiling must cover the nested pair (§9.4)                          |
+| **WP3**    | `isometric.ts`                                                                                                         | WP0           | Self-contained; verify visually against the design                |
+| **WP4**    | `warnings.ts`, `notes.ts`, `specs.ts`                                                                                  | WP0           | Mostly copy — transcribe prose verbatim, keep the em-dashes       |
+| **WP5**    | `pathPolys.ts`, `svg.ts`, `dxf.ts`                                                                                     | WP1, WP2      | Diff exported SVG against the design's own export                 |
+| **WP6**    | `urlCodec.ts`, `presets.ts`, `useFenderConfig.ts`                                                                      | WP0           | §5, §6                                                            |
+| **WP7**    | Desktop UI shell — canvas, control rail, tabs, warnings banner, spec table                                             | WP0           | Can stub `buildModel()` from a fixture                            |
+| **WP8**    | Responsive layer — drawer, bottom sheet, scroll containers                                                             | WP7           | **Load `apple-design` skill first**                               |
+| **WP9**    | Print stylesheet + `.print-only` DOM                                                                                   | WP1, WP2, WP7 | Verify by actually printing to PDF and measuring the 100 mm ruler |
+| **WP10**   | Preset strip UI + mini cross-section thumbs                                                                            | WP2, WP6, WP7 |                                                                   |
+| **WP11**   | `export/pdf.ts` — hand-written vector PDF writer                                                                       | WP1, WP2, WP5 | §11. Zero deps. Verify by measuring the ruler in the output.      |
 
 Each agent gets: the golden values for its slice, the relevant source line range from
 `scratchpad/fender.html`, and the frozen `types.ts`.
@@ -332,6 +332,29 @@ the 650b gravel case 183 instead of **213**. §7 is corrected. The committed fix
 `src/fender/__tests__/golden.json` is generated by a verbatim transcription of the original
 `renderVals()`, so it cannot drift from the design by refactor.
 
+**9.11 — `partsSlots` on Sheet B is dead code.** _(Found by WP2.)_ The source declares
+`partsSlots`, returns it, and renders it in two `<sc-for>` blocks (screen and print) — but nothing
+ever pushes into it. It is always `[]`. Ported faithfully: `PartsModel.slots` exists and is always
+empty, asserted by a test so it stays that way honestly rather than by accident. **Downstream work
+packages (WP5 exports, WP7 UI, WP9 print) should not go hunting for the bug — there isn't one, the
+array is simply never filled.** Open question for later: the slot-and-tab join produces folded clips
+on Sheet B that arguably _should_ carry slots, so this may be an unfinished feature rather than
+merely vestigial. Not blocking.
+
+**9.12 — The cross-section labels the skirt with the wrong number.** _(Found by WP2, verified
+against source line 971 vs 965.)_ The cross-section _draws_ the skirt from `g.proj` / `g.drop`,
+which derive from `s.skirt` — the true folded length. It _labels_ it `SKIRT ${f0(g.skirt)}`, where
+`g.skirt` is `skirtFlat`, the bend-compensated **flat-pattern** dimension. On the default config the
+drawing shows a 26 mm skirt annotated "SKIRT 25".
+
+The label contradicts the line it points at. A cross-section is a picture of the finished object, so
+26 is the correct number there; 25.44 is a flat-pattern dimension that belongs on Sheet A. This is
+not cosmetic — someone checking their folded part against the drawing will measure a real
+discrepancy and distrust the pattern.
+
+**Recommend:** label with `skirtTrue` and keep `g.skirt` for Sheet A only. **Ported as-is pending
+your call**, since it changes drawing output. See §10.3.
+
 ## 10. Open questions
 
 _(§9.3, §9.4, §9.5, §9.6 and the test approach are all resolved — see above. Two left, neither
@@ -340,6 +363,10 @@ blocking.)_
 **10.1 — Dark mode?** The DS defines a full dark palette; the design file pins light. The drawings
 need their own inverted palette (paper→dark, cut lines→light), which is real design work. Plan
 assumes light-only for v1 with `--draw-*` tokens structured for a later drop-in.
+
+**10.3 — Fix the cross-section skirt label?** See §9.12. The drawing and its own annotation
+disagree by the bend allowance. Recommend labelling the finished dimension (`skirtTrue`); currently
+ported faithfully to the design, which shows the flat one.
 
 **10.2 — Does the repo keep CC0?** It's CC0 now. Fine for patterns; unusual for code. Worth a
 deliberate choice before the first real commit.
