@@ -234,7 +234,7 @@ beyond vitest itself.
 | ✅ **WP0** | Scaffold (Vite/TS strict/vitest/gh-pages), self-hosted fonts, vendored tokens, `types.ts`, `defaults.ts`, `Button.tsx` | —             | **Blocks everything. Freeze the contract before fanning out.**    |
 | ✅ **WP1** | `geometry.ts`, `pattern.ts` + the §7 fixture tests                                                                     | WP0           | Largest + highest risk. Must hit §7 exactly.                      |
 | ✅ **WP2** | `parts.ts`, `crossSection.ts`, `tiling.ts`                                                                             | WP0           | Tiling must cover the nested pair (§9.4)                          |
-| **WP3**    | `isometric.ts`                                                                                                         | WP0           | Self-contained; verify visually against the design                |
+| ✅ **WP3** | `isometric.ts`                                                                                                         | WP0           | Self-contained; verify visually against the design                |
 | **WP4**    | `warnings.ts`, `notes.ts`, `specs.ts`                                                                                  | WP0           | Mostly copy — transcribe prose verbatim, keep the em-dashes       |
 | **WP5**    | `pathPolys.ts`, `svg.ts`, `dxf.ts`                                                                                     | WP1, WP2      | Diff exported SVG against the design's own export                 |
 | **WP6**    | `urlCodec.ts`, `presets.ts`, `useFenderConfig.ts`                                                                      | WP0           | §5, §6                                                            |
@@ -355,6 +355,13 @@ discrepancy and distrust the pattern.
 **Recommend:** label with `skirtTrue` and keep `g.skirt` for Sheet A only. **Ported as-is pending
 your call**, since it changes drawing output. See §10.3.
 
+**9.13 — The isometric bounding box ignores fasteners.** _(Found by WP3.)_ Facets, rails, caps,
+wheel, struts and mudflap all feed the `ext` accumulator via `note()`; the dart seam / hole / slot
+loop (source lines 890–917) never calls it. Harmless in practice — those points always sit inside
+the rail-0-to-rail-3 span and the angular arc the facet mesh already covers — so nothing is clipped
+today. Ported faithfully. Flagged only because it reads like a bug and someone will eventually
+"fix" it: there is nothing to fix unless the fastener layout changes.
+
 ## 10. Open questions
 
 _(§9.3, §9.4, §9.5, §9.6 and the test approach are all resolved — see above. Two left, neither
@@ -367,6 +374,14 @@ assumes light-only for v1 with `--draw-*` tokens structured for a later drop-in.
 **10.3 — Fix the cross-section skirt label?** See §9.12. The drawing and its own annotation
 disagree by the bend allowance. Recommend labelling the finished dimension (`skirtTrue`); currently
 ported faithfully to the design, which shows the flat one.
+
+**10.4 — Verify `color-mix()` in Safari.** The isometric facet ramp emits
+`color-mix(in srgb, rgb(var(--draw-facet-lit)) N%, rgb(var(--draw-facet-dark)) M%)` as an SVG `fill`.
+Confirmed rendering correctly in Chromium. `color-mix()` is Safari 16.2+ and SVG presentation
+attributes accept CSS colour functions, so it should be fine, but it is **unverified on Safari/iOS**
+and Kah is on macOS. If it fails there, the fallback is to have the component resolve the two tokens
+once via `getComputedStyle` and pass literal `rgb()` down — which keeps `src/fender/` pure by doing
+the DOM read in the UI layer, not the model. Check this during WP7.
 
 **10.2 — Does the repo keep CC0?** It's CC0 now. Fine for patterns; unusual for code. Worth a
 deliberate choice before the first real commit.
