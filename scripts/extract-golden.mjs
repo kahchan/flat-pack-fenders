@@ -168,6 +168,103 @@ function blank(s) {
   return { g, blankOutline, foldLines, scoreLines, holes, slots, seams, lapLines, panelCount, strutFrac, viewBox, bboxW, bboxH };
 }
 
+function parts(s, g) {
+  const partsOutlines = [], partsFolds = [], partsHoles = [], partsSlots = [], partsLabels = [];
+  const SWD = 14;
+  let py = 12;
+  for (let i = 0; i < s.struts; i++) {
+    const y = py + i * (SWD + 9);
+    const r = SWD / 2;
+    partsOutlines.push({ d: `M ${r},${f1(y)} h ${f1(s.strutLen - SWD)} a ${r} ${r} 0 0 1 0 ${SWD} h ${f1(-(s.strutLen - SWD))} a ${r} ${r} 0 0 1 0 ${-SWD} Z` });
+    partsFolds.push({ d: `M 26,${f1(y)} v ${SWD} M ${f1(s.strutLen - 26)},${f1(y)} v ${SWD}` });
+    partsHoles.push({ cx: 12, cy: f1(y + r), r: 2.5 }, { cx: f1(s.strutLen / 2), cy: f1(y + r), r: 2 });
+    if (s.fuse) partsHoles.push({ cx: f1(s.strutLen - 12), cy: f1(y + r), r: 3.2 });
+    else partsHoles.push({ cx: f1(s.strutLen - 12), cy: f1(y + r), r: 2.5 }, { cx: f1(s.strutLen - 22), cy: f1(y + r), r: 2.5 });
+    partsLabels.push({ x: f1(s.strutLen + 8), y: f1(y + r + 2), size: 5, text: `STRUT ${i + 1} · ${f0(s.strutLen)} × ${SWD}${s.fuse ? ' · FUSE END' : ''}` });
+  }
+  py += s.struts * (SWD + 9) + 14;
+  if (s.mudflap > 0) {
+    const w = g.crownTail, h = s.mudflap, rr = Math.min(18, w / 3);
+    partsOutlines.push({ d: `M 0,${f1(py)} h ${f1(w)} v ${f1(h - rr)} q 0,${f1(rr)} ${f1(-rr)},${f1(rr)} h ${f1(-(w - 2 * rr))} q ${f1(-rr)},0 ${f1(-rr)},${f1(-rr)} Z` });
+    partsFolds.push({ d: `M 0,${f1(py + 16)} h ${f1(w)}` });
+    for (const k of [-0.3, 0, 0.3]) partsHoles.push({ cx: f1(w / 2 + w * k), cy: f1(py + 8), r: 2 });
+    partsLabels.push({ x: f1(w + 8), y: f1(py + 10), size: 5, text: `MUDFLAP · ${f0(w)} × ${f0(h)} mm · lap 16 mm under the tail` });
+    py += s.mudflap + 16;
+  }
+  const extraN = s.join === 'rivet' || s.join === 'slot' ? g.n - 1 : 0;
+  const extraLabel = s.join === 'rivet' ? 'BUTT STRAP' : 'CLIP';
+  for (let i = 0; i < extraN; i++) {
+    const col = i % 6, row = Math.floor(i / 6);
+    const x = 2 + col * 42, y = py + row * 22, w = 34, h = 14;
+    partsOutlines.push({ d: `M ${f1(x)},${f1(y)} h ${w} v ${h} h ${-w} Z` });
+    if (s.join === 'rivet') for (const cx of [8, 26]) for (const cy of [4.5, 9.5]) partsHoles.push({ cx: f1(x + cx), cy: f1(y + cy), r: 1.6 });
+    else partsFolds.push({ d: `M ${f1(x + 6)},${f1(y)} v ${h} M ${f1(x + 28)},${f1(y)} v ${h}` });
+    if (i === 0) partsLabels.push({ x: f1(x), y: f1(y - 3), size: 5, text: `${extraLabel} × ${extraN} · 34 × 14 mm` });
+  }
+  const partsW = Math.max(s.strutLen + 96, g.crownTail + 150);
+  const partsH = py + Math.max(1, Math.ceil(extraN / 6)) * 22 + 10;
+  const partsViewBox = `-2 0 ${f1(partsW)} ${f1(partsH)}`;
+  const partsFits = partsW <= PW;
+  return { partsOutlines, partsFolds, partsHoles, partsSlots, partsLabels, partsViewBox, partsW, partsH, extraN, extraLabel, partsFits };
+}
+
+function xsec(s, g) {
+  const tR = s.tyre / 2, tCy = s.clear + tR;
+  const rimW = Math.max(15, s.tyre * 0.55), rimH = Math.max(14, s.tyre * 0.42);
+  const dimY = Math.max(g.drop, s.clear + s.tyre + rimH) + 14;
+  const finished = g.crown0 + 2 * g.proj;
+  const xsecPaths = [
+    { d: `M ${f1(-tR)},${f1(tCy)} a ${f1(tR)} ${f1(tR)} 0 1 1 ${f1(s.tyre)} 0 a ${f1(tR)} ${f1(tR)} 0 1 1 ${f1(-s.tyre)} 0 Z`, fill: '#EDE8DC', stroke: '#A8A49C', sw: 0.9, dash: '0' },
+    { d: `M ${f1(-rimW / 2)},${f1(tCy + tR * 0.55)} h ${f1(rimW)} v ${f1(rimH)} h ${f1(-rimW)} Z`, fill: '#FAF8F3', stroke: '#8898A8', sw: 0.9, dash: '0' },
+    { d: `M 0,0 v ${f1(s.clear)} m -3,0 h 6 m -3,${f1(-s.clear)} m -3,0 h 6`, fill: 'none', stroke: '#D4614E', sw: 0.7, dash: '0' },
+    { d: `M ${f1(-g.crown0 / 2 - g.proj)},${f1(g.drop)} L ${f1(-g.crown0 / 2)},0 L ${f1(g.crown0 / 2)},0 L ${f1(g.crown0 / 2 + g.proj)},${f1(g.drop)}`, fill: 'none', stroke: '#1A2232', sw: 2.4, dash: '0' },
+    { d: `M ${f1(-finished / 2)},${f1(dimY)} h ${f1(finished)} m 0,-4 v 8 m ${f1(-finished)},-8 v 8`, fill: 'none', stroke: '#8898A8', sw: 0.7, dash: '0' }
+  ];
+  const xsecLabels = [
+    { x: 0, y: f1(dimY + 12), size: 7, fill: '#1A2232', anchor: 'middle', text: `FINISHED ${f0(finished)} mm` },
+    { x: 0, y: -7, size: 6, fill: '#8898A8', anchor: 'middle', text: `CROWN ${f0(g.crown0)}` },
+    { x: f1(g.crown0 / 2 + g.proj + 6), y: f1(g.drop + 8), size: 6, fill: '#8898A8', anchor: 'start', text: `SKIRT ${f0(g.skirt)} @ ${s.angle}°` },
+    { x: 16, y: f1(s.clear / 2 + 2), size: 6, fill: '#D4614E', anchor: 'start', text: `GAP ${f0(s.clear)}` },
+    { x: 0, y: f1(tCy + 2), size: 6, fill: '#8898A8', anchor: 'middle', text: `TYRE ⌀${f0(s.tyre)}` },
+    { x: 0, y: f1(tCy + tR * 0.55 + rimH + 8), size: 5.5, fill: '#8898A8', anchor: 'middle', text: 'RIM' }
+  ];
+  const xw = finished + 130;
+  const xsecViewBox = `${f1(-xw / 2)} -22 ${f1(xw)} ${f1(dimY + 40)}`;
+  return { xsecPaths, xsecLabels, xsecViewBox, finished };
+}
+
+// ---- print tiling, incl. the §9.4 divergence: the design computes `rows` from g.Wd
+// (rowsSource); the on-screen viewBox uses bboxH (nest ? Wd*2+10 : Wd), so the port
+// computes `rows` from bboxH instead (rowsFixed). Both are emitted so the fixture makes
+// the divergence explicit.
+function tiling(s, g, bboxW, bboxH) {
+  const stepX = PW - OV, stepY = PH - OV;
+  const cols = Math.max(1, Math.ceil((bboxW + 12 - OV) / stepX));
+  const rowsSource = Math.max(1, Math.ceil((g.Wd + 12 - OV) / stepY));
+  const rowsFixed = Math.max(1, Math.ceil((bboxH + 12 - OV) / stepY));
+  const rows = rowsFixed;
+  const x0 = (s.tongue ? -TONGUE_L : 0) - 6;
+  const tileRects = [], printTiles = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const ox = x0 + c * stepX, oy = r * stepY - 6;
+      tileRects.push({ x: f1(ox), y: f1(oy), w: PW, h: PH });
+      printTiles.push({
+        label: `Sheet A — tile ${r + 1}·${c + 1} of ${rows}·${cols}`,
+        meta: `${WHEELS[s.wheel].label} · ${f0(g.cov)}° · 1:1`,
+        viewBox: `${f1(ox)} ${f1(oy)} ${PW} ${PH}`,
+        frame: `M ${f1(ox)},${f1(oy)} h ${PW} v ${PH} h ${-PW} Z`,
+        ruler: `M ${f1(ox + 8)},${f1(oy + PH - 10)} h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4`,
+        rulerX: f1(ox + 8),
+        rulerY: f1(oy + PH - 14)
+      });
+    }
+  }
+  const sheetCount = rows * cols + 2; // + Sheet B + instructions
+  const nestTransform = s.nest ? `translate(${f1(g.L)}, ${f1(g.Wd * 2 + 10)}) rotate(180)` : null;
+  return { cols, rows, rowsSource, rowsFixed, sheetCount, tileRects, printTiles, nestTransform };
+}
+
 const DEFAULTS = {
   side: 'rear', wheel: '700c', tyre: 35, measuredR: 0, clear: 14, crown: 55, skirt: 26, angle: 55,
   thick: 0.8, lead: 40, trail: 175, taper: 15, taperAt: 70, flaps: 20, struts: 2, strutLen: 160,
@@ -186,7 +283,9 @@ const CASES = {
   'gravel-650b-hem-a4': { ...CARGO20, wheel: '650b', tyre: 50, clear: 18, crown: 72, skirt: 32, flaps: 22, hem: true, stock: 'a4', thick: 1.2 },
   'measured-no-taper-nojoin': { ...CARGO20, measuredR: 250, taper: 0, join: 'none', tongue: false },
   'mtb-26in-slot-thick': { ...CARGO20, wheel: '26in', tyre: 55, crown: 78, thick: 2.0, join: 'slot', flaps: 12 },
-  'nested-pair': { ...DEFAULTS, nest: true }
+  'nested-pair': { ...DEFAULTS, nest: true },
+  'rivet-join': { ...DEFAULTS, join: 'rivet' },
+  'nested-cargo-20in': { ...CARGO20, nest: true }
 };
 
 const GEO_KEYS = ['bsd','tyreRcalc','tyreR','R','cov','th','aNose','L','a','skirt','skirtTrue','t','rBend','setback','BA','bendComp','hem','proj','drop','crown0','crownTail','knee','Wd','yc','n','pitch','removal','notch'];
@@ -196,6 +295,9 @@ for (const [name, cfg] of Object.entries(CASES)) {
   const r = blank(cfg);
   const g = {};
   for (const k of GEO_KEYS) g[k] = r.g[k];
+  const p = parts(cfg, r.g);
+  const x = xsec(cfg, r.g);
+  const t = tiling(cfg, r.g, r.bboxW, r.bboxH);
   out[name] = {
     config: cfg,
     geo: g,
@@ -216,6 +318,35 @@ for (const [name, cfg] of Object.entries(CASES)) {
       lastHole: r.holes[r.holes.length - 1] ?? null,
       firstSlot: r.slots[0] ?? null,
       lastSlot: r.slots[r.slots.length - 1] ?? null
+    },
+    parts: {
+      outlines: p.partsOutlines.map((o) => o.d),
+      folds: p.partsFolds.map((f) => f.d),
+      holes: p.partsHoles,
+      slots: p.partsSlots,
+      labels: p.partsLabels,
+      viewBox: p.partsViewBox,
+      width: p.partsW,
+      height: p.partsH,
+      fitsA4: p.partsFits,
+      extraCount: p.extraN,
+      extraLabel: p.extraLabel
+    },
+    xsec: {
+      paths: x.xsecPaths,
+      labels: x.xsecLabels,
+      viewBox: x.xsecViewBox,
+      finished: x.finished
+    },
+    tiling: {
+      cols: t.cols,
+      rows: t.rows,
+      rowsSource: t.rowsSource,
+      rowsFixed: t.rowsFixed,
+      sheetCount: t.sheetCount,
+      rects: t.tileRects,
+      tiles: t.printTiles,
+      nestTransform: t.nestTransform
     }
   };
 }
