@@ -1,0 +1,327 @@
+/**
+ * The contract. Every work package imports from here.
+ *
+ * Nothing in src/fender/ may import React or touch the DOM — buildModel() returns
+ * plain data so the same model drives the screen, the print sheets, the exports and
+ * the preset thumbnails. Labels are data, not elements.
+ *
+ * Units are millimetres throughout, angles in degrees at the config boundary and
+ * radians inside Geometry. Where a field is a pre-formatted string it is named
+ * *Label; where it is a number it is raw mm.
+ */
+
+// ── Configuration ────────────────────────────────────────────────────────────
+
+export type Side = 'front' | 'rear';
+export type WheelKey = '700c' | '650b' | '26in' | '20in';
+export type JoinKey = 'zip' | 'rivet' | 'slot' | 'none';
+export type StockKey = 'single' | 'a4';
+
+/** The 23 parameters that fully determine a fender. Serialised to the URL in this order. */
+export interface FenderConfig {
+  side: Side;
+  wheel: WheelKey;
+  /** Tyre section width, mm. */
+  tyre: number;
+  /** Measured tyre outer radius, mm. 0 = derive from BSD + section width. */
+  measuredR: number;
+  /** Gap between tyre and fender inner face, mm. */
+  clear: number;
+  /** Flat crown width over the tyre, mm. */
+  crown: number;
+  /** Skirt length before bend allowance, mm. */
+  skirt: number;
+  /** Skirt angle from the crown plane, degrees. */
+  angle: number;
+  /** Material thickness, mm. 0 = ideal zero-thickness pattern. */
+  thick: number;
+  /** Coverage ahead of the axle, degrees. */
+  lead: number;
+  /** Coverage behind the axle, degrees. */
+  trail: number;
+  /** Tail narrowing, percent of crown width. */
+  taper: number;
+  /** Where the taper begins, percent along the arc. */
+  taperAt: number;
+  /** Number of flaps; darts = flaps - 1. */
+  flaps: number;
+  struts: number;
+  strutLen: number;
+  /** 0 = no mudflap. */
+  mudflap: number;
+  join: JoinKey;
+  stock: StockKey;
+  /** Slotted frame-mount tab at the nose. */
+  tongue: boolean;
+  /** Sacrificial (oversize) strut end hole. */
+  fuse: boolean;
+  /** Nest a second fender tail-to-nose. */
+  nest: boolean;
+  /** Fold the skirt edge back on itself. */
+  hem: boolean;
+}
+
+export type ConfigKey = keyof FenderConfig;
+
+export interface WheelSpec {
+  bsd: number;
+  label: string;
+}
+
+/** Slider bounds. Also the clamp used when decoding an untrusted URL hash. */
+export interface NumericSpec {
+  kind: 'number';
+  min: number;
+  max: number;
+  step: number;
+  unit?: string;
+}
+
+export interface EnumSpec<T extends string = string> {
+  kind: 'enum';
+  options: readonly T[];
+}
+
+export interface BooleanSpec {
+  kind: 'boolean';
+}
+
+export type ParamSpec = NumericSpec | EnumSpec | BooleanSpec;
+
+// ── Derived geometry ─────────────────────────────────────────────────────────
+
+/**
+ * Everything downstream of the config. Field names match the design source's geo()
+ * exactly so the two can be diffed; see PLAN §7 for the golden values.
+ */
+export interface Geometry {
+  bsd: number;
+  /** Tyre radius estimated from BSD/2 + section width. */
+  tyreRcalc: number;
+  /** Tyre radius actually used — measured override if set, else tyreRcalc. */
+  tyreR: number;
+  /** Fender radius = tyreR + clearance. */
+  R: number;
+  /** Total coverage, degrees. */
+  cov: number;
+  /** Total coverage, radians. */
+  th: number;
+  /** Nose angle, radians (negative = ahead of the axle). */
+  aNose: number;
+  /** Developed length along the arc, mm. */
+  L: number;
+  /** Skirt angle, radians. */
+  a: number;
+  /** Skirt length in the FLAT pattern — includes bend allowance and hem. */
+  skirt: number;
+  /** Skirt length as folded, i.e. the config value. */
+  skirtTrue: number;
+  t: number;
+  rBend: number;
+  setback: number;
+  /** Bend arc length along the neutral axis. */
+  BA: number;
+  /** Net bend compensation per fold. Negative — folds SHORTEN the flat pattern. */
+  bendComp: number;
+  hem: number;
+  /** Horizontal projection added by one skirt, mm. */
+  proj: number;
+  /** Vertical drop of one skirt, mm. */
+  drop: number;
+  /** Crown width before the taper knee. */
+  crown0: number;
+  /** Crown width at the tail. */
+  crownTail: number;
+  /** Distance along the arc where the taper begins, mm. */
+  knee: number;
+  /** Developed width of the blank, mm. */
+  Wd: number;
+  /** Centreline, = Wd / 2. */
+  yc: number;
+  /** Flap count. */
+  n: number;
+  /** Arc distance between darts, mm. */
+  pitch: number;
+  /** Total material removed by all darts, one side, mm. */
+  removal: number;
+  /** Width of one dart at the free edge, mm. */
+  notch: number;
+}
+
+// ── Drawing primitives ───────────────────────────────────────────────────────
+
+/** An SVG path `d` string in millimetre user units. */
+export type PathD = string;
+
+export interface Path {
+  d: PathD;
+}
+
+export interface Hole {
+  cx: string;
+  cy: string;
+  r: number;
+}
+
+export interface Slot {
+  x: string;
+  y: string;
+  w: number | string;
+  h: number | string;
+}
+
+export interface TileRect {
+  x: string;
+  y: string;
+  w: number;
+  h: number;
+}
+
+export type TextAnchor = 'start' | 'middle' | 'end';
+
+/** A label is data. Components turn it into <text>; the PDF writer turns it into Tj. */
+export interface Label {
+  x: number | string;
+  y: number | string;
+  size: number;
+  text: string;
+  fill?: string;
+  anchor?: TextAnchor;
+}
+
+export interface FacetPath extends Path {
+  fill: string;
+}
+
+export interface XsecPath extends Path {
+  fill: string;
+  stroke: string;
+  sw: number;
+  dash: string;
+}
+
+/** One printable A4 page covering part of the blank. */
+export interface PrintTile {
+  label: string;
+  meta: string;
+  viewBox: string;
+  frame: PathD;
+  ruler: PathD;
+  rulerX: string;
+  rulerY: string;
+}
+
+// ── Model sections ───────────────────────────────────────────────────────────
+
+export interface BlankModel {
+  outline: PathD;
+  foldLines: Path[];
+  scoreLines: Path[];
+  holes: Hole[];
+  slots: Slot[];
+  seams: Path[];
+  lapLines: Path[];
+  labels: Label[];
+  /** Panels the blank is split into when stock is 'a4'. 1 = single sheet. */
+  panelCount: number;
+  /** Arc positions of the struts, as fractions of L. Consumed by the isometric view. */
+  strutFrac: number[];
+  viewBox: string;
+  /** Bounding box of the drawn area including tongue and, when nesting, the pair. */
+  bboxW: number;
+  bboxH: number;
+}
+
+export interface PartsModel {
+  outlines: Path[];
+  folds: Path[];
+  holes: Hole[];
+  slots: Slot[];
+  labels: Label[];
+  viewBox: string;
+  width: number;
+  height: number;
+  /** False when Sheet B is wider than the A4 live area. */
+  fitsA4: boolean;
+  /** Count of butt straps / clips, 0 for joins that need none. */
+  extraCount: number;
+  extraLabel: string;
+}
+
+export interface IsoModel {
+  facets: FacetPath[];
+  edges: Path[];
+  outline: Path[];
+  wheel: Path[];
+  seams: Path[];
+  holes: Hole[];
+  slots: Path[];
+  struts: Path[];
+  mudflap: Path[];
+  viewBox: string;
+  aspect: string;
+}
+
+export interface XsecModel {
+  paths: XsecPath[];
+  labels: Label[];
+  viewBox: string;
+  /** Finished outside width once the skirts are folded down, mm. */
+  finished: number;
+}
+
+export interface TilingModel {
+  cols: number;
+  rows: number;
+  /** rows × cols + Sheet B + instructions. */
+  sheetCount: number;
+  rects: TileRect[];
+  tiles: PrintTile[];
+  /** Transform placing the nested second blank, or null when nesting is off. */
+  nestTransform: string | null;
+}
+
+export interface Warning {
+  /** Stable id so dismissal can key on identity rather than prose. */
+  id: string;
+  text: string;
+}
+
+export interface EngNote {
+  title: string;
+  body: string;
+  formula: string;
+}
+
+export interface AssemblyStep {
+  n: string;
+  title: string;
+  body: string;
+}
+
+export interface SpecRow {
+  label: string;
+  value: string;
+  note: string;
+}
+
+/** The single output of buildModel(). Plain data — no React, no DOM. */
+export interface DrawingModel {
+  config: FenderConfig;
+  geo: Geometry;
+  blank: BlankModel;
+  parts: PartsModel;
+  iso: IsoModel;
+  xsec: XsecModel;
+  tiling: TilingModel;
+  warnings: Warning[];
+  notes: EngNote[];
+  steps: AssemblyStep[];
+  specs: SpecRow[];
+  /** e.g. "Rear · 700c · 622 · 215° (40/175) · 85 mm wide · 20 flaps · 2 struts". */
+  assembledLabel: string;
+  /** One-line spec printed on the instruction sheet. */
+  printSpecLine: string;
+  /** Filename stem for exports, e.g. "fender-rear-700c-1351x106mm". */
+  baseName: string;
+}

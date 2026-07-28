@@ -1,0 +1,80 @@
+@import './tokens.css';
+@import './draw.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: var(--color-brand-mid);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--color-accent);
+}
+
+input[type='range'] {
+  accent-color: var(--color-brand);
+}
+
+/* Numbers are read as measurements — never let them reflow width while dragging. */
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Print ───────────────────────────────────
+   Patterns print at 1:1 or they are worthless.
+   Margins are zero here and the safe margin is
+   baked into the tile geometry instead, so the
+   browser never gets a chance to scale to fit.
+   ─────────────────────────────────────────── */
+@page {
+  size: A4 landscape;
+  margin: 0;
+}
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  html,
+  body {
+    background: #fff;
+    overflow: visible;
+  }
+  .screen-only {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+}

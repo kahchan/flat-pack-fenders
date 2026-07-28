@@ -1,0 +1,150 @@
+/* ─────────────────────────────────────────────
+   kah — design tokens
+   Vendored from the claude.ai/design project
+   kah-design-system-d6eb27d4. Do not edit values
+   here to taste — change them in the DS and
+   re-vendor, or the two drift apart.
+
+   v1 ships LIGHT ONLY. The DS also defines a full
+   dark palette; it is deliberately not vendored
+   yet because the technical drawings need their
+   own inverted palette (see draw.css) before dark
+   mode reads correctly. Drop it in below the light
+   block when that work happens.
+   ───────────────────────────────────────────── */
+
+/* ── Faces (self-hosted; see public/fonts/NOTICE.md) ── */
+@font-face {
+  font-family: 'Hanken Grotesk';
+  src: url('/fonts/HankenGrotesk-latin.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Hanken Grotesk';
+  src: url('/fonts/HankenGrotesk-latin-ext.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-latin.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-latin-ext.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
+:root {
+  /* ── Surfaces ── */
+  --color-bg: #f5f0e8;
+  --color-bg-alt: #ede8dc;
+  --color-surface: #faf8f3;
+  --color-surface-raised: #ffffff;
+
+  /* ── Text ── */
+  --color-fg: #1a2232;
+  --color-fg-muted: #4a5a6e;
+  --color-fg-faint: #8898a8;
+
+  /* ── Brand — cobalt / ultramarine ── */
+  --color-brand: #1040a8;
+  --color-brand-mid: #1855cc;
+  --color-brand-pale: #cdd9ff;
+
+  /* ── Accent — one warm intrusion, never stacked ── */
+  --color-accent: #d4614e;
+  --color-accent-soft: #e8a48c;
+  --color-accent-pale: #fae4de;
+
+  /* ── Chrome ── */
+  --color-border: #d6d2c8;
+  --color-border-strong: #a8a49c;
+  --color-overlay: rgba(26, 34, 50, 0.45);
+  --color-grid-hairline: rgba(26, 34, 50, 0.08);
+
+  color-scheme: light;
+
+  /* ── Families ── */
+  --font-sans: 'Hanken Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* ── Weights ── */
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* ── Type scale (subset actually used by this app) ── */
+  --text-heading-xl-size: 36px;
+  --text-heading-lg-size: 28px;
+  --text-heading-md-size: 22px;
+  --text-heading-sm-size: 18px;
+  --text-body-lg-size: 18px;
+  --text-body-md-size: 16px;
+  --text-body-sm-size: 14px;
+  --text-caption-size: 12px;
+  --text-label-size: 11px;
+  --text-label-weight: 600;
+  --text-label-track: 0.07em;
+
+  /* ── Spacing — 4px base ── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+  --space-10: 64px;
+  --space-11: 80px;
+  --space-12: 96px;
+
+  /* ── Radius ── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* ── Shadows — tinted cool blue, never grey ── */
+  --shadow-1: 0 1px 4px rgba(22, 38, 74, 0.025), 0 1px 2px rgba(22, 38, 74, 0.018);
+  --shadow-2: 0 4px 16px rgba(22, 38, 74, 0.09), 0 2px 6px rgba(22, 38, 74, 0.05);
+  --shadow-nav: 8px 0 40px rgba(22, 38, 74, 0.22), 3px 0 12px rgba(22, 38, 74, 0.12);
+
+  /* ── Motion ── */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+  --ease-in: cubic-bezier(0.55, 0, 0.78, 0);
+  --dur-instant: 80ms;
+  --dur-fast: 200ms;
+  --dur-base: 500ms;
+  --dur-reveal: 550ms;
+  --dur-slide: 600ms;
+  --dur-slow: 700ms;
+  --dur-lazy: 900ms;
+}
