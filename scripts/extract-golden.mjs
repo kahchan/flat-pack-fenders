@@ -233,6 +233,118 @@ function xsec(s, g) {
   return { xsecPaths, xsecLabels, xsecViewBox, finished };
 }
 
+// ---- isometric (verbatim transcription of renderVals() lines ~848-954)
+function isometric(s, g, strutFrac, spin) {
+  const yaw = spin * D2;
+  const P = (x, y, z) => {
+    const xr = x * Math.cos(yaw) - y * Math.sin(yaw);
+    const yr = x * Math.sin(yaw) + y * Math.cos(yaw);
+    return [(xr - yr) * 0.866, (xr + yr) * 0.5 - z];
+  };
+  const aEnd = g.aNose + g.th;
+  const xAt = (aa) => (aa - g.aNose) * g.R;
+  const pf = (aa) => { const c = crownAt(g, xAt(aa)) / 2; return [[-c - g.proj, -g.drop], [-c, 0], [c, 0], [c + g.proj, -g.drop]]; };
+  const p3 = (v, aa) => { const r = g.R + v[1]; return [v[0], r * Math.sin(aa), r * Math.cos(aa)]; };
+  const pt = (v, aa) => { const q = p3(v, aa); return P(q[0], q[1], q[2]); };
+  const NS = 64;
+  const aAt = (i) => g.aNose + (g.th * i) / NS;
+  const mix = (t) => { const A = [26, 34, 50], B = [244, 240, 232]; return `rgb(${A.map((c, i) => Math.round(c + (B[i] - c) * t)).join(',')})`; };
+  const ext = { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity };
+  const note = (p) => { if (p[0] < ext.x0) ext.x0 = p[0]; if (p[0] > ext.x1) ext.x1 = p[0]; if (p[1] < ext.y0) ext.y0 = p[1]; if (p[1] > ext.y1) ext.y1 = p[1]; };
+  const isoFacets = [];
+  for (let i = 0; i < NS; i++) {
+    const a0 = aAt(i), a1 = aAt(i + 1), P0 = pf(a0), P1 = pf(a1);
+    for (let j = 0; j < 3; j++) {
+      const q = [pt(P0[j], a0), pt(P0[j + 1], a0), pt(P1[j + 1], a1), pt(P1[j], a1)];
+      q.forEach(note);
+      const u = Math.abs((i / NS) * 2 - 1);
+      const shade = j === 1 ? 0.88 - 0.52 * u : 0.52 - 0.3 * u;
+      isoFacets.push({ d: `M ${q.map((p) => `${f1(p[0])},${f1(p[1])}`).join(' L ')} Z`, fill: mix(Math.max(0.1, shade)) });
+    }
+  }
+  const rail = (j) => { const p = []; for (let i = 0; i <= NS; i++) { const aa = aAt(i); const q = pt(pf(aa)[j], aa); p.push(`${f1(q[0])},${f1(q[1])}`); } return `M ${p.join(' L ')}`; };
+  const railRev = (j) => { const p = []; for (let i = NS; i >= 0; i--) { const aa = aAt(i); const q = pt(pf(aa)[j], aa); p.push(`${f1(q[0])},${f1(q[1])}`); } return p.join(' L '); };
+  const cap = (aa) => `M ${pf(aa).map((v) => { const q = pt(v, aa); return `${f1(q[0])},${f1(q[1])}`; }).join(' L ')}`;
+  const isoEdges = [{ d: rail(1) }, { d: rail(2) }, { d: cap(g.aNose) }, { d: cap(aEnd) }];
+  const isoOutline = [{ d: `${rail(0)} L ${railRev(3)} Z` }];
+  const isoWheel = [];
+  for (const offx of [-s.tyre / 2, s.tyre / 2]) {
+    const p = [];
+    for (let i = 0; i <= 84; i++) { const aa = (i / 84) * 2 * Math.PI; const q = P(offx, g.tyreR * Math.sin(aa), g.tyreR * Math.cos(aa)); note(q); p.push(q); }
+    isoWheel.push({ d: `M ${p.join(' L ')} Z`.replace(/([\d.-]+),([\d.-]+)/g, (m0, a, b) => `${f1(+a)},${f1(+b)}`) });
+  }
+
+  const isoSeams = [], isoHoles = [], isoSlots = [];
+  const lerp = (A, B, t) => [A[0] + (B[0] - A[0]) * t, A[1] + (B[1] - A[1]) * t];
+  for (let i = 1; i < g.n; i++) {
+    const aa = g.aNose + (g.th * i) / g.n, pr = pf(aa);
+    for (const side of [0, 3]) {
+      const free = pr[side], fold = pr[side === 0 ? 1 : 2];
+      const A = pt(free, aa), B = pt(fold, aa);
+      isoSeams.push({ d: `M ${f1(A[0])},${f1(A[1])} L ${f1(B[0])},${f1(B[1])}` });
+      const ts = s.join === 'zip' ? [0.3, 0.78] : s.join === 'rivet' ? [0.4, 0.78] : [];
+      for (const t of ts) for (const dir of [-1, 1]) {
+        const q = pt(lerp(free, fold, t), aa + (dir * (g.notch / 2 + 6)) / g.R);
+        isoHoles.push({ cx: f1(q[0]), cy: f1(q[1]), r: s.join === 'rivet' ? 1.6 : 2 });
+      }
+      if (s.join === 'slot') for (const dir of [-1, 1]) {
+        const ao = aa + (dir * (g.notch / 2 + 6)) / g.R;
+        const q1 = pt(lerp(free, fold, 0.28), ao), q2 = pt(lerp(free, fold, 0.62), ao);
+        isoSlots.push({ d: `M ${f1(q1[0])},${f1(q1[1])} L ${f1(q2[0])},${f1(q2[1])}` });
+      }
+    }
+  }
+  strutFrac.forEach((fr) => {
+    const aa = g.aNose + g.th * fr, pr = pf(aa);
+    for (const side of [0, 3]) {
+      const free = pr[side], fold = pr[side === 0 ? 1 : 2];
+      for (const dir of [-1, 1]) {
+        const q = pt(lerp(free, fold, 0.2), aa + (dir * 5) / g.R);
+        isoHoles.push({ cx: f1(q[0]), cy: f1(q[1]), r: 2.5 });
+      }
+    }
+  });
+
+  const isoStruts = [];
+  strutFrac.forEach((fr) => {
+    const aa = g.aNose + g.th * fr, pr = pf(aa);
+    const tan = [0, Math.cos(aa), -Math.sin(aa)];
+    for (const side of [0, 3]) {
+      const from = p3(pr[side], aa);
+      const to = [Math.sign(pr[side][0]) * (s.tyre / 2 + 6), from[1] * 0.2, from[2] * 0.2];
+      const dv = [to[0] - from[0], to[1] - from[1], to[2] - from[2]];
+      const len = Math.hypot(dv[0], dv[1], dv[2]) || 1;
+      const k = Math.min(s.strutLen, len) / len;
+      const end = [from[0] + dv[0] * k, from[1] + dv[1] * k, from[2] + dv[2] * k];
+      const q = [
+        [from[0] - tan[0] * 7, from[1] - tan[1] * 7, from[2] - tan[2] * 7],
+        [from[0] + tan[0] * 7, from[1] + tan[1] * 7, from[2] + tan[2] * 7],
+        [end[0] + tan[0] * 7, end[1] + tan[1] * 7, end[2] + tan[2] * 7],
+        [end[0] - tan[0] * 7, end[1] - tan[1] * 7, end[2] - tan[2] * 7]
+      ].map((v) => P(v[0], v[1], v[2]));
+      q.forEach(note);
+      isoStruts.push({ d: `M ${q.map((p) => `${f1(p[0])},${f1(p[1])}`).join(' L ')} Z` });
+    }
+  });
+
+  const isoMudflap = [];
+  if (s.mudflap > 0) {
+    const pr = pf(aEnd), tan = [0, Math.cos(aEnd), -Math.sin(aEnd)];
+    const A = p3(pr[1], aEnd), B = p3(pr[2], aEnd);
+    const extend = (v) => [v[0] + tan[0] * s.mudflap, v[1] + tan[1] * s.mudflap, v[2] + tan[2] * s.mudflap];
+    const q = [A, B, extend(B), extend(A)].map((v) => P(v[0], v[1], v[2]));
+    q.forEach(note);
+    isoMudflap.push({ d: `M ${q.map((p) => `${f1(p[0])},${f1(p[1])}`).join(' L ')} Z` });
+  }
+  const pad = 14;
+  const bw = Math.max(1, ext.x1 - ext.x0) + pad * 2;
+  const bh = Math.max(1, ext.y1 - ext.y0) + pad * 2;
+  const isoViewBox = `${f1(ext.x0 - pad)} ${f1(ext.y0 - pad)} ${f1(bw)} ${f1(bh)}`;
+  const isoAspect = `${f1(bw)} / ${f1(bh)}`;
+
+  return { isoFacets, isoEdges, isoOutline, isoWheel, isoSeams, isoHoles, isoSlots, isoStruts, isoMudflap, isoViewBox, isoAspect };
+}
+
 // ---- print tiling, incl. the §9.4 divergence: the design computes `rows` from g.Wd
 // (rowsSource); the on-screen viewBox uses bboxH (nest ? Wd*2+10 : Wd), so the port
 // computes `rows` from bboxH instead (rowsFixed). Both are emitted so the fixture makes
@@ -290,6 +402,41 @@ const CASES = {
 
 const GEO_KEYS = ['bsd','tyreRcalc','tyreR','R','cov','th','aNose','L','a','skirt','skirtTrue','t','rBend','setback','BA','bendComp','hem','proj','drop','crown0','crownTail','knee','Wd','yc','n','pitch','removal','notch'];
 
+// Isometric spins pinned by the fixture: 18 is the source default (spin: 18 at line
+// 480), -45 is an off-default pose so the yaw projection maths is checked, not just the
+// identity-ish default angle.
+const ISO_SPINS = [18, -45];
+
+function summarizeIso(iso) {
+  const first = (arr) => arr[0] ?? null;
+  const last = (arr) => arr[arr.length - 1] ?? null;
+  return {
+    facetCount: iso.isoFacets.length,
+    firstFacet: first(iso.isoFacets),
+    lastFacet: last(iso.isoFacets),
+    edges: iso.isoEdges.map((e) => e.d),
+    outline: iso.isoOutline[0].d,
+    wheelCount: iso.isoWheel.length,
+    wheel: iso.isoWheel.map((w) => w.d),
+    seamCount: iso.isoSeams.length,
+    firstSeam: first(iso.isoSeams),
+    lastSeam: last(iso.isoSeams),
+    holeCount: iso.isoHoles.length,
+    firstHole: first(iso.isoHoles),
+    lastHole: last(iso.isoHoles),
+    slotCount: iso.isoSlots.length,
+    firstSlot: first(iso.isoSlots),
+    lastSlot: last(iso.isoSlots),
+    strutCount: iso.isoStruts.length,
+    firstStrut: first(iso.isoStruts),
+    lastStrut: last(iso.isoStruts),
+    mudflapCount: iso.isoMudflap.length,
+    mudflap: first(iso.isoMudflap),
+    viewBox: iso.isoViewBox,
+    aspect: iso.isoAspect
+  };
+}
+
 const out = {};
 for (const [name, cfg] of Object.entries(CASES)) {
   const r = blank(cfg);
@@ -298,6 +445,10 @@ for (const [name, cfg] of Object.entries(CASES)) {
   const p = parts(cfg, r.g);
   const x = xsec(cfg, r.g);
   const t = tiling(cfg, r.g, r.bboxW, r.bboxH);
+  const iso = {};
+  for (const spin of ISO_SPINS) {
+    iso[spin] = summarizeIso(isometric(cfg, r.g, r.strutFrac, spin));
+  }
   out[name] = {
     config: cfg,
     geo: g,
@@ -347,7 +498,8 @@ for (const [name, cfg] of Object.entries(CASES)) {
       rects: t.tileRects,
       tiles: t.printTiles,
       nestTransform: t.nestTransform
-    }
+    },
+    iso
   };
 }
 
