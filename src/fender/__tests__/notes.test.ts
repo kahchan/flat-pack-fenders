@@ -26,6 +26,10 @@ describe.each(CASES)('buildSteps(%s)', (_name, c) => {
 // Both indices are 0-based positions in the 16-note engNotes array.
 const CORRECTED_INDICES = new Set([9, 11]);
 
+// Index 14 = "Export" (PLAN §9.3) — only its `formula` line changes ("R12 ASCII" →
+// "AC1015 (R2000)"); its body is untouched, so it stays out of CORRECTED_INDICES above.
+const CORRECTED_FORMULA_INDICES = new Set([14]);
+
 describe.each(CASES)('buildNotes(%s)', (_name, c) => {
   const notes = buildNotes(c.config);
 
@@ -33,8 +37,11 @@ describe.each(CASES)('buildNotes(%s)', (_name, c) => {
     expect(notes.map((n) => n.title)).toEqual(c.engNotes.map((n) => n.title));
   });
 
-  it('formula strings match the design source exactly', () => {
-    expect(notes.map((n) => n.formula)).toEqual(c.engNotes.map((n) => n.formula));
+  it('formula strings match the design source exactly, except the DXF header wording (PLAN §9.3)', () => {
+    notes.forEach((n, i) => {
+      if (CORRECTED_FORMULA_INDICES.has(i)) return;
+      expect(n.formula, `note ${i} (${n.title})`).toBe(c.engNotes[i]!.formula);
+    });
   });
 
   it('every body EXCEPT the two corrected notes matches the design source verbatim', () => {
@@ -67,6 +74,16 @@ describe('corrected prose', () => {
     // New wording: the dart term reaches the ideal; the bend term does not reach zero.
     expect(bend.body).toMatch(/dart term reaches the ideal/);
     expect(bend.body).toMatch(/bend term falls to a few hundredths/);
+  });
+
+  it('"Export" formula drops the false "R12 ASCII" claim — PLAN §9.3', () => {
+    const exportNote = buildNotes(base)[14]!;
+    expect(exportNote.title).toBe('Export');
+    // Body is untouched — only the DXF version claim in the formula line was wrong.
+    expect(exportNote.body).toBe(baseFixture.engNotes[14]!.body);
+    expect(exportNote.formula).not.toBe(baseFixture.engNotes[14]!.formula);
+    expect(exportNote.formula).not.toMatch(/R12 ASCII/);
+    expect(exportNote.formula).toMatch(/AC1015 \(R2000\)/);
   });
 });
 
