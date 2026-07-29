@@ -1,4 +1,4 @@
-import { PW, f0, f1 } from './defaults';
+import { PARTS_PH, PW, f0, f1 } from './defaults';
 import { geo } from './geometry';
 import { buildParts } from './parts';
 import type { FenderConfig, Geometry, PartsModel, Warning } from './types';
@@ -63,10 +63,25 @@ export function buildWarnings(
     });
   }
 
+  // The design only ever tested width, so its text only ever mentioned width. Now that
+  // height is checked too (PLAN §9.18) the message has to say which dimension actually
+  // overflows, and give advice that matches — shortening struts does nothing about a
+  // sheet that is too tall.
   if (!parts.fitsA4) {
+    const tooWide = parts.width > PW;
+    const tooTall = parts.height > PARTS_PH;
+    const over =
+      tooWide && tooTall
+        ? `${f0(parts.width)} × ${f0(parts.height)} mm`
+        : tooWide
+          ? `${f0(parts.width)} mm wide`
+          : `${f0(parts.height)} mm tall`;
+    const fix = tooWide
+      ? `Shorten the struts to about ${f0(PW - 96)} mm, or cut them from stock by measurement instead.`
+      : `Shorten the mudflap to about ${f0(parts.height - PARTS_PH)} mm less, drop a strut, or cut these parts from stock by measurement instead.`;
     warnings.push({
       id: 'sheet-b-too-wide',
-      text: `Sheet B is ${f0(parts.width)} mm wide and will not print 1:1 on A4. Shorten the struts to about ${f0(PW - 96)} mm, or cut them from stock by measurement instead.`
+      text: `Sheet B is ${over} and will not print 1:1 on A4 (${PW} × ${PARTS_PH} mm live). ${fix}`
     });
   }
 

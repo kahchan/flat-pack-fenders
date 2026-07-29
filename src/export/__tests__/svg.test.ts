@@ -70,3 +70,41 @@ describe('SVG invariants', () => {
     expect(foldLayer).not.toContain('<rect');
   });
 });
+
+describe('PLAN §9.4 — nesting reaches the SVG export', () => {
+  it('non-nested output has no second <g transform> block per layer', () => {
+    const model = buildModel({ ...CASES[0]![1].config, nest: false });
+    const svg = buildSvg(model);
+    // Only the parts-offset <g transform="translate(0,…)"> groups should appear —
+    // never a rotate(180) group, which only the nested copy emits.
+    expect(svg).not.toContain('rotate(180)');
+  });
+
+  it('nesting appends a rotate(180) group to CUT, FOLD and HOLES, each containing the outline/fold/hole geometry once more', () => {
+    const model = buildModel({ ...CASES[0]![1].config, nest: true });
+    const svg = buildSvg(model);
+    expect(model.tiling.nestTransform).toBeTruthy();
+    const nestGroup = `<g transform="${model.tiling.nestTransform}">`;
+    // One nested group per layer (CUT, FOLD, HOLES).
+    expect(svg.split(nestGroup).length - 1).toBe(3);
+
+    const cutLayer = svg.slice(svg.indexOf('id="CUT"'), svg.indexOf('id="FOLD"'));
+    // The primary outline plus one nested outline = 2 occurrences of the outline `d`.
+    const outlineOccurrences = cutLayer.split(`d="${model.blank.outline}"`).length - 1;
+    expect(outlineOccurrences).toBe(2);
+
+    const holesLayer = svg.slice(svg.indexOf('id="HOLES"'));
+    const holeCircleCount = (holesLayer.match(/<circle/g) ?? []).length;
+    expect(holeCircleCount).toBe(model.blank.holes.length * 2 + model.parts.holes.length);
+  });
+
+  it('turning nesting on leaves everything before the nested groups byte-identical to the non-nested file', () => {
+    const off = buildSvg(buildModel({ ...CASES[0]![1].config, nest: false }));
+    const on = buildSvg(buildModel({ ...CASES[0]![1].config, nest: true }));
+    // The non-nested file must appear as a prefix-compatible subsequence: every line
+    // of `off` should still be present, in order, once the nested `<g rotate(180)>`
+    // blocks are stripped out of `on`.
+    const stripped = on.replace(/<g transform="translate\([\d.]+, [\d.]+\) rotate\(180\)">[\s\S]*?<\/g>\n/g, '');
+    expect(stripped).toBe(off);
+  });
+});

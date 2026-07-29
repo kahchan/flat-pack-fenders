@@ -66,7 +66,9 @@ function parseRgb(fill: string): [number, number, number] {
 }
 
 function expectSameRamp(ourFill: string, fixtureFill: string) {
-  expect(ourFill).toMatch(/^color-mix\(in srgb, rgb\(var\(--draw-facet-lit\)\) [\d.]+%, rgb\(var\(--draw-facet-dark\)\) [\d.]+%\)$/);
+  expect(ourFill).toMatch(
+    /^color-mix\(in srgb, rgb\(var\(--draw-facet-lit\)\) [\d.]+%, rgb\(var\(--draw-facet-dark\)\) [\d.]+%\)$/
+  );
   const t = litWeight(ourFill);
   const [fr, fg, fb] = parseRgb(fixtureFill);
   const recomputed = DARK.map((c, i) => Math.round(c + (LIT[i] - c) * t));

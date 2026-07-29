@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import golden from './golden.json';
 import { buildParts } from '../parts';
+import { PARTS_PH, PW } from '../defaults';
 import type { FenderConfig } from '../types';
 
 type HoleFixture = { cx: number | string; cy: number | string; r: number };
@@ -59,11 +60,23 @@ describe.each(CASES)('buildParts(%s)', (_name, c) => {
     expect(p.labels.every((l) => l.fill === undefined)).toBe(true);
   });
 
-  it('viewBox, width, height and fitsA4 match', () => {
+  it('viewBox, width and height match', () => {
     expect(p.viewBox).toBe(g.viewBox);
     expect(p.width).toBeCloseTo(g.width, 10);
     expect(p.height).toBeCloseTo(g.height, 10);
-    expect(p.fitsA4).toBe(g.fitsA4);
+  });
+
+  it('fitsA4 checks BOTH dimensions, unlike the design (PLAN §9.18)', () => {
+    // The fixture records the design's width-only test. Sheet B prints into 267 × 172 mm,
+    // and the design scaled anything taller down to fit while still reporting a 1:1 fit —
+    // 78% on the default config, on the sheet you cut struts to length from.
+    expect(p.fitsA4).toBe(p.width <= PW && p.height <= PARTS_PH);
+    if (g.fitsA4 && p.height > PARTS_PH) {
+      // This case is one the design would have silently mis-scaled.
+      expect(p.fitsA4).toBe(false);
+    }
+    // Never more permissive than the design was.
+    if (!g.fitsA4) expect(p.fitsA4).toBe(false);
   });
 
   it('extraCount and extraLabel match', () => {
