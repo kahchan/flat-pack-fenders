@@ -1,6 +1,7 @@
 @import './tokens.css';
 @import './draw.css';
 @import './app.css';
+@import './responsive.css';
 
 *,
 *::before,

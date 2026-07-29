@@ -6,6 +6,11 @@ import { buildParts } from '../parts';
 import { PW } from '../defaults';
 import type { FenderConfig } from '../types';
 
+/** Every golden fixture's longest strut is well under PW, so none of them trip the
+ * new (PLAN §12) `sheet-b-too-wide` condition — a single part too long for a page in
+ * either orientation. This constant is used to build a config that deliberately does. */
+const TOO_LONG_STRUT = PW + 10;
+
 /**
  * warnings.ts had zero coverage before this file. golden.json's `warnings` array is a
  * verbatim transcription of the source's seven `if` checks (renderVals() lines
@@ -40,18 +45,13 @@ describe.each(CASES)('buildWarnings(%s)', (_name, c) => {
     expect(ours).toEqual(theirs);
   });
 
-  it('the Sheet B warning names the dimension that actually overflows (PLAN §9.18)', () => {
+  it('sheet-b-too-wide only fires when a part cannot fit a page in either orientation (PLAN §12)', () => {
     const w = warnings.find((x) => x.id === 'sheet-b-too-wide');
     const parts = buildParts(c.config);
-    if (parts.fitsA4) {
-      expect(w).toBeUndefined();
-      return;
-    }
-    expect(w).toBeDefined();
-    if (parts.width > PW) expect(w!.text).toContain('Shorten the struts');
-    else expect(w!.text).toMatch(/\d+ mm tall/);
-    // Advice must match the failure: struts do not help a sheet that is merely too tall.
-    if (parts.width <= PW) expect(w!.text).not.toContain('Shorten the struts');
+    expect(parts.oversizedParts.length > 0).toBe(w !== undefined);
+    // None of the fixture configs actually need this — needing a second packed page
+    // (which several of them do) is no longer warning-worthy on its own.
+    if (parts.pages.length > 1) expect(parts.oversizedParts).toEqual([]);
   });
 
   it('ids are a subsequence of the fixed condition order, each at most once', () => {
@@ -91,15 +91,24 @@ describe('warnings invariants', () => {
     expect(ids.filter((id) => id !== 'sheet-b-too-wide')).toEqual(['radius-estimated']);
   });
 
-  it('the default ALSO warns that Sheet B will not print 1:1 — see PLAN §9.18', () => {
-    // Not a regression and not something to tune away: with 2 struts and a 100 mm
-    // mudflap, Sheet B is 220 mm tall against 172 mm of live page. It cannot fit, and no
-    // sensible default makes it fit (the ceiling is a ~52 mm mudflap). The design hid
-    // this by scaling the sheet to 78% while reporting a 1:1 fit.
-    //
-    // Delete this test when Sheet B paginates like Sheet A; until then it documents a
-    // known, surfaced limitation rather than letting it rot into folklore.
-    const ids = buildWarnings(DEFAULTS).map((w) => w.id);
+  // PLAN §12 — Sheet B now packs the default's two struts + mudflap onto one page, so
+  // the §9.18 companion test that used to live here (asserting the default ALSO raised
+  // `sheet-b-too-wide`) no longer applies and is deleted, per PLAN §12's own acceptance
+  // criteria: "the default config packs onto one page and raises only radius-estimated".
+  it('sheet-b-too-wide fires for a strut longer than the print page in any orientation', () => {
+    const tooLong: FenderConfig = { ...DEFAULTS, strutLen: TOO_LONG_STRUT };
+    const parts = buildParts(tooLong);
+    expect(parts.oversizedParts.length).toBeGreaterThan(0);
+    const ids = buildWarnings(tooLong).map((w) => w.id);
     expect(ids).toContain('sheet-b-too-wide');
+  });
+
+  it('needing a second packed page alone does not warn', () => {
+    // rivet-join's fixture config (19 butt straps) is the fixture most likely to need a
+    // second page; confirm that alone doesn't raise sheet-b-too-wide.
+    const rivetCase = CASES.find(([name]) => name === 'rivet-join')![1];
+    const parts = buildParts(rivetCase.config);
+    const ids = buildWarnings(rivetCase.config).map((w) => w.id);
+    if (parts.pages.length > 1) expect(ids).not.toContain('sheet-b-too-wide');
   });
 });

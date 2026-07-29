@@ -12,7 +12,9 @@ export function AssembledPreview({ iso, assembledLabel, spin, onSpinChange }: As
   const spinLabel = `${spin > 0 ? '+' : ''}${spin}°`;
 
   return (
-    <>
+    // WP8: wrapped in `assembled-block` so `responsive.css` can pin this whole unit as a
+    // sticky header at tablet/phone widths (PLAN §4) without touching the desk layout.
+    <div className="assembled-block">
       <div className="section-heading">
         <h2>Assembled</h2>
         <span className="meta">{assembledLabel}</span>
@@ -25,7 +27,7 @@ export function AssembledPreview({ iso, assembledLabel, spin, onSpinChange }: As
             width: '100%',
             height: 'auto',
             aspectRatio: iso.aspect,
-            maxHeight: '68vh',
+            maxHeight: 'var(--iso-max-h, 68vh)',
             display: 'block',
             margin: '0 auto'
           }}
@@ -104,6 +106,6 @@ export function AssembledPreview({ iso, assembledLabel, spin, onSpinChange }: As
           <span className="rotate-value mono">{spinLabel}</span>
         </div>
       </div>
-    </>
+    </div>
   );
 }

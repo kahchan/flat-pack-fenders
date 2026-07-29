@@ -20,7 +20,9 @@ export function PrintOutput({ model }: PrintOutputProps) {
       {tiling.tiles.map((tile, i) => (
         <PrintTilePage key={i} tile={tile} config={config} blank={blank} nestTransform={tiling.nestTransform} />
       ))}
-      <PrintSheetBPage parts={parts} />
+      {parts.pages.map((page, i) => (
+        <PrintSheetBPage key={i} page={page} pageIndex={i} pageCount={parts.pages.length} />
+      ))}
       <PrintInstructionsPage printSpecLine={printSpecLine} steps={steps} />
     </div>
   );

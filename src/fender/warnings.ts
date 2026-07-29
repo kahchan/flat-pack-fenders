@@ -1,4 +1,4 @@
-import { PARTS_PH, PW, f0, f1 } from './defaults';
+import { PW, f0, f1 } from './defaults';
 import { geo } from './geometry';
 import { buildParts } from './parts';
 import type { FenderConfig, Geometry, PartsModel, Warning } from './types';
@@ -6,8 +6,8 @@ import type { FenderConfig, Geometry, PartsModel, Warning } from './types';
 /**
  * Conditional warnings, transcribed verbatim from the design source (lines ~986–994).
  *
- * Each fires independently on its own condition, in source order. `parts.fitsA4` and
- * `parts.width` come straight from PartsModel rather than recomputing the Sheet-B width
+ * Each fires independently on its own condition, in source order. `parts.oversizedParts`
+ * comes straight from PartsModel (PLAN §12) rather than recomputing the Sheet-B packing
  * check a second time.
  *
  * Ids are new — the source keyed dismissal on the joined warning text (PLAN §9.8), which
@@ -63,25 +63,15 @@ export function buildWarnings(
     });
   }
 
-  // The design only ever tested width, so its text only ever mentioned width. Now that
-  // height is checked too (PLAN §9.18) the message has to say which dimension actually
-  // overflows, and give advice that matches — shortening struts does nothing about a
-  // sheet that is too tall.
-  if (!parts.fitsA4) {
-    const tooWide = parts.width > PW;
-    const tooTall = parts.height > PARTS_PH;
-    const over =
-      tooWide && tooTall
-        ? `${f0(parts.width)} × ${f0(parts.height)} mm`
-        : tooWide
-          ? `${f0(parts.width)} mm wide`
-          : `${f0(parts.height)} mm tall`;
-    const fix = tooWide
-      ? `Shorten the struts to about ${f0(PW - 96)} mm, or cut them from stock by measurement instead.`
-      : `Shorten the mudflap to about ${f0(parts.height - PARTS_PH)} mm less, drop a strut, or cut these parts from stock by measurement instead.`;
+  // PLAN §12 — Sheet B repacks onto as many PW × PARTS_PH pages as it needs, so needing
+  // a second page is no longer a warning (it prints fine, just as more paper). The only
+  // real constraint left is a single part too big for a page in EITHER orientation — in
+  // practice, a strut longer than PW mm, since PARTS_PH < PW.
+  if (parts.oversizedParts.length > 0) {
+    const longest = Math.max(...parts.oversizedParts);
     warnings.push({
       id: 'sheet-b-too-wide',
-      text: `Sheet B is ${over} and will not print 1:1 on A4 (${PW} × ${PARTS_PH} mm live). ${fix}`
+      text: `A part is ${f0(longest)} mm long — longer than the ${PW} mm print page in any orientation. Shorten it to about ${f0(PW - 8)} mm, or cut it from stock by measurement instead.`
     });
   }
 

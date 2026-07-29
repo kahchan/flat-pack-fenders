@@ -14,10 +14,14 @@ interface ControlRailProps {
   setField: <K extends ConfigKey>(key: K, value: FenderConfig[K]) => void;
   applyPreset: (id: string) => void;
   reset: () => void;
+  /** WP8: the phone bottom sheet shows its own compact `PresetChipStrip` in the peek
+   * header, so it embeds this same rail content with the desktop preset cards suppressed
+   * rather than showing presets twice. Desk and the tablet drawer both want them. */
+  showPresets?: boolean;
 }
 
 /** The fixed 392px right-hand rail. Design source lines 259-372. */
-export function ControlRail({ model, setField, applyPreset, reset }: ControlRailProps) {
+export function ControlRail({ model, setField, applyPreset, reset, showPresets = true }: ControlRailProps) {
   const { config, geo: g, xsec, specs } = model;
 
   return (
@@ -33,7 +37,7 @@ export function ControlRail({ model, setField, applyPreset, reset }: ControlRail
 
       <div className="rail-divider" />
 
-      <PresetStrip config={config} onApply={applyPreset} />
+      {showPresets && <PresetStrip config={config} onApply={applyPreset} />}
 
       <SideSelector config={config} setField={setField} />
       <WheelSelector config={config} setField={setField} />
