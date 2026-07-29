@@ -223,6 +223,60 @@ Two cautions:
 
 ---
 
+## WP18 — Every preset ships warning-free
+
+A shipped preset that greets you in red teaches people to ignore the warnings, which is exactly what
+PLAN §9.5 chose the new default to avoid. Right now five of six are clean and `cargo-20in` fires
+five.
+
+**The invariant:** every preset produces **no warnings other than `radius-estimated`**.
+
+That exception is deliberate and permanent. `radius-estimated` fires whenever `measuredR === 0`,
+which is every preset, because we cannot honestly guess someone's actual tyre radius. It is a prompt
+to go and measure, and it is the largest single error in the pattern. Silencing it by inventing a
+measured radius would be worse than leaving it.
+
+### The conflict to resolve first
+
+`cargo-20in` currently fires `coverage-exceeds-frame` (260°), `tail-narrower-than-tyre` (47 mm tail
+vs a 50 mm tyre), `single-blank-too-long` (1221 mm in one piece) and `strut-too-long` (220 mm struts
+against a ~196 mm mount distance). Every one is correct. They fire because the preset **is** the
+design file's original defaults, values that PLAN §9.5 rejected as a default precisely because they
+trip five warnings.
+
+So the preset cannot be both "the original defaults" and "warning-free". Pick the user:
+
+- **Retarget it to a working 20″ cargo config.** Keep the wheel and the intent, fix the numbers:
+  coverage down to ≤ 220°, taper down so the tail clears the tyre, `stock: 'a4'`, struts shortened to
+  the real mount distance. A preset is for building a fender, not for archiving history.
+- The original values are already preserved where they belong: the `cargo-20in-single` case in
+  `src/fender/__tests__/golden.json`, and git. **Move the deep-equality test** in
+  `presets.test.ts` off the preset and onto that fixture case directly, so the historical record is
+  still pinned but no longer constrains a user-facing preset.
+
+### Also check
+
+- The four other presets are clean today, but WP13 changed the coverage constant and added the
+  bevel. Re-verify rather than assume.
+- Front at 55/120 is 175°, rear at 120/100 is 220°. Rear sits exactly on the threshold, so any
+  preset that nudges lead or trail upward will trip it. Worth a comment where those numbers live.
+
+### Verify
+
+A property test over `PRESETS`, not a per-preset assertion:
+
+```ts
+for (const p of PRESETS) {
+  const ids = buildWarnings(p.config).map((w) => w.id);
+  expect(ids.filter((id) => id !== 'radius-estimated')).toEqual([]);
+}
+```
+
+This is the kind of test that keeps working as presets are added, and it will fail loudly the next
+time a warning threshold moves.
+
+---
+
 ## Sequencing
 
 1. **WP13** — geometry first, since coverage numbers and the bevel change golden values everything
@@ -231,5 +285,8 @@ Two cautions:
 3. **WP15** — print, depends on nothing above but touches the packer WP12 introduced.
 4. **WP16** — visual system, safe to run alongside anything.
 5. **WP17** — copy last, so it only has to be done once over settled text.
+
+**WP18** can run at any point after WP13, and should run after any package that changes a warning
+threshold or a geometry default — it is the cheapest way to catch a preset that has quietly gone bad.
 
 WP13 and WP15 both change golden fixtures; do not run them in parallel.
