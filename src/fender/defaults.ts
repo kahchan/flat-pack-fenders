@@ -21,6 +21,15 @@ export const PW = 267;
 export const PH = 180;
 export const OV = 12;
 
+/**
+ * Live height available to Sheet B, which gives up 8 mm of PH to its title line.
+ *
+ * The design checked Sheet B against PW only and never against this, so a parts sheet
+ * taller than 172 mm was silently scaled down to fit while the app reported "fits A4 at
+ * full size". See PLAN §9.18.
+ */
+export const PARTS_PH = 172;
+
 /** Strut strip width, and the fold inset from each end. */
 export const STRUT_W = 14;
 export const STRUT_FOLD_INSET = 26;

@@ -426,27 +426,49 @@ function pathPolysStraightOnly(d) {
   return polys;
 }
 
-function buildSvgRef(v, g, s, name) {
+// PLAN §9.4: nesting was never wired into the exports (only the on-screen ghost). This
+// is new, sanctioned behaviour (`src/export/svg.ts`/`dxf.ts`), not a source
+// transcription — see §9.15's precedent for the DXF header. When `s.nest` is set, a
+// second blank (outline, fold/score lines, holes, slots — no seams/laps, no parts) is
+// appended after the primary content on each layer, `nestTransform` applied.
+function buildSvgRef(v, g, s, name, nestTransform) {
   const x0 = s.tongue ? -40 : -6;
   const w = g.L + (s.tongue ? 40 : 0) + 12;
   const gap = 30;
   const pw = v.partsViewBox.split(' ').map(Number);
   const H = g.Wd + gap + pw[3] + 12;
   const p = (d, sw) => `<path d="${d}" fill="none" stroke="#000" stroke-width="${sw}"/>`;
+  const nest = s.nest ? nestTransform : null;
   const L = [];
   L.push(`<g id="CUT" inkscape:label="CUT" inkscape:groupmode="layer" stroke="#000">`);
   L.push(p(v.blankOutline, 0.2));
   v.partsOutlines.forEach((o) => L.push(`<g transform="translate(0,${(g.Wd + gap).toFixed(1)})">${p(o.d, 0.2)}</g>`));
   v.slots.forEach((sl) => L.push(`<rect x="${sl.x}" y="${sl.y}" width="${sl.w}" height="${sl.h}" rx="1.5" fill="none" stroke="#000" stroke-width="0.2"/>`));
+  if (nest) {
+    L.push(`<g transform="${nest}">`);
+    L.push(p(v.blankOutline, 0.2));
+    v.slots.forEach((sl) => L.push(`<rect x="${sl.x}" y="${sl.y}" width="${sl.w}" height="${sl.h}" rx="1.5" fill="none" stroke="#000" stroke-width="0.2"/>`));
+    L.push('</g>');
+  }
   L.push('</g>');
   L.push(`<g id="FOLD" inkscape:label="FOLD" inkscape:groupmode="layer" stroke="#0000ff">`);
   v.foldLines.concat(v.scoreLines).forEach((f) => L.push(`<path d="${f.d}" fill="none" stroke="#00f" stroke-width="0.2"/>`));
   v.seams.forEach((f) => L.push(`<path d="${f.d}" fill="none" stroke="#00f" stroke-width="0.2" stroke-dasharray="4 2"/>`));
   v.partsFolds.forEach((f) => L.push(`<g transform="translate(0,${(g.Wd + gap).toFixed(1)})"><path d="${f.d}" fill="none" stroke="#00f" stroke-width="0.2"/></g>`));
+  if (nest) {
+    L.push(`<g transform="${nest}">`);
+    v.foldLines.concat(v.scoreLines).forEach((f) => L.push(`<path d="${f.d}" fill="none" stroke="#00f" stroke-width="0.2"/>`));
+    L.push('</g>');
+  }
   L.push('</g>');
   L.push(`<g id="HOLES" inkscape:label="HOLES" inkscape:groupmode="layer" stroke="#ff0000">`);
   v.holes.forEach((c) => L.push(`<circle cx="${c.cx}" cy="${c.cy}" r="${c.r}" fill="none" stroke="#f00" stroke-width="0.2"/>`));
   v.partsHoles.forEach((c) => L.push(`<g transform="translate(0,${(g.Wd + gap).toFixed(1)})"><circle cx="${c.cx}" cy="${c.cy}" r="${c.r}" fill="none" stroke="#f00" stroke-width="0.2"/></g>`));
+  if (nest) {
+    L.push(`<g transform="${nest}">`);
+    v.holes.forEach((c) => L.push(`<circle cx="${c.cx}" cy="${c.cy}" r="${c.r}" fill="none" stroke="#f00" stroke-width="0.2"/>`));
+    L.push('</g>');
+  }
   L.push('</g>');
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="${w.toFixed(1)}mm" height="${H.toFixed(1)}mm" viewBox="${x0} -6 ${w.toFixed(1)} ${H.toFixed(1)}">
@@ -455,9 +477,21 @@ ${L.join('\n')}
 </svg>`;
 }
 
+// Numeric mirror of src/export/nestTransform.ts's `nestPoint` — rotate(180) about the
+// origin (negate both axes), then translate(L, Wd*2+10). Same math, plain JS.
+function nestPointRef([x, y], L, Wd) {
+  return [L - x, Wd * 2 + 10 - y];
+}
+
 // PLAN §9.3 — the HEADER/TABLES sections are new (source emitted only ENTITIES);
 // entity geometry below this point is byte-identical to the source's buildDxf().
-function buildDxfRef(v, g, pathPolysFn) {
+//
+// PLAN §9.4 — when `nest` is set, a second blank (outline, fold/score lines, holes —
+// no seams/laps, no parts) is appended after every existing entity, each point mapped
+// through `nestPointRef` before it reaches the same `poly`/`circle` writers. This is
+// new, sanctioned behaviour, not a source transcription — see the note on
+// `buildSvgRef`.
+function buildDxfRef(v, g, pathPolysFn, nest) {
   const dy = g.Wd + 30;
   const out = [
     '0', 'SECTION', '2', 'HEADER',
@@ -486,6 +520,18 @@ function buildDxfRef(v, g, pathPolysFn) {
   v.partsOutlines.forEach((o) => pathPolysFn(o.d).forEach((pts) => poly(pts, 'CUT', closed(o.d), dy)));
   v.partsFolds.forEach((f) => pathPolysFn(f.d).forEach((pts) => poly(pts, 'FOLD', false, dy)));
   v.partsHoles.forEach((c) => circle(c, 'HOLES', dy));
+  if (nest) {
+    const nestPt = (pt) => nestPointRef(pt, g.L, g.Wd);
+    pathPolysFn(v.blankOutline).forEach((pts) => poly(pts.map(nestPt), 'CUT', true, 0));
+    v.slots.forEach((s) =>
+      poly([[+s.x, +s.y], [+s.x + +s.w, +s.y], [+s.x + +s.w, +s.y + +s.h], [+s.x, +s.y + +s.h]].map(nestPt), 'CUT', true, 0)
+    );
+    v.foldLines.concat(v.scoreLines).forEach((f) => pathPolysFn(f.d).forEach((pts) => poly(pts.map(nestPt), 'FOLD', false, 0)));
+    v.holes.forEach((c) => {
+      const [nx, ny] = nestPt([+c.cx, +c.cy]);
+      circle({ cx: String(nx), cy: String(ny), r: c.r }, 'HOLES', 0);
+    });
+  }
   out.push('0', 'ENDSEC', '0', 'EOF');
   return out.join('\n');
 }
@@ -728,8 +774,8 @@ for (const [name, cfg] of Object.entries(CASES)) {
   exportOut[name] = {
     config: cfg,
     baseName: name_,
-    svgFull: buildSvgRef(vFull, r.g, cfg, name_),
-    dxfBlankOnly: buildDxfRef(vBlankOnly, r.g, pathPolysStraightOnly)
+    svgFull: buildSvgRef(vFull, r.g, cfg, name_, t.nestTransform),
+    dxfBlankOnly: buildDxfRef(vBlankOnly, r.g, pathPolysStraightOnly, cfg.nest)
   };
 }
 

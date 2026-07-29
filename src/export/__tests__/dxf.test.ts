@@ -113,13 +113,17 @@ describe('DXF entity counts and layers — blank-only model', () => {
     const circles = entities.filter((e) => e.type === 'CIRCLE');
     const polylines = entities.filter((e) => e.type === 'LWPOLYLINE');
 
-    expect(circles.length).toBe(model.blank.holes.length);
+    // PLAN §9.4: nesting appends a second outline/slots/folds/scores/holes — every hole
+    // is duplicated, but seams are not part of the nested copy (see nestedPolylines).
+    const holeMultiplier = c.config.nest ? 2 : 1;
+    expect(circles.length).toBe(model.blank.holes.length * holeMultiplier);
     // 1 blank outline + 1 per slot (rect) + 1 per fold/score/seam line — each of those
     // paths is a single M subpath in pattern.ts, so pathPolys emits exactly one
     // polyline per entry (see PLAN §9.2 comment in pattern.ts).
-    const expectedPolylines =
+    const primaryPolylines =
       1 + model.blank.slots.length + model.blank.foldLines.length + model.blank.scoreLines.length + model.blank.seams.length;
-    expect(polylines.length).toBe(expectedPolylines);
+    const nestedPolylines = c.config.nest ? 1 + model.blank.slots.length + model.blank.foldLines.length + model.blank.scoreLines.length : 0;
+    expect(polylines.length).toBe(primaryPolylines + nestedPolylines);
 
     expect(entities.every((e) => e.layer === 'CUT' || e.layer === 'FOLD' || e.layer === 'HOLES')).toBe(true);
     expect(circles.every((e) => e.layer === 'HOLES')).toBe(true);
@@ -200,5 +204,60 @@ describe('baseName is filesystem-safe', () => {
     const model = buildModel(c.config);
     expect(model.baseName).toBe(c.baseName);
     expect(model.baseName).toMatch(/^[a-z0-9-]+$/);
+  });
+});
+
+describe('PLAN §9.4 — nesting reaches the DXF export', () => {
+  it('non-nested output is unaffected by the nesting code path (config.nest = false)', () => {
+    const withoutNest = buildDxf(blankOnly(buildModel({ ...CASES[0]![1].config, nest: false })));
+    const before = buildDxf(blankOnly(buildModel(CASES[0]![1].config))); // CASES[0] is already nest: false
+    expect(withoutNest).toBe(before);
+  });
+
+  it('turning nesting on doubles the outline and hole entities, not just adds a ghost', () => {
+    const off = blankOnly(buildModel({ ...CASES[0]![1].config, nest: false }));
+    const on = blankOnly(buildModel({ ...CASES[0]![1].config, nest: true }));
+    const offEntities = parseEntities(buildDxf(off));
+    const onEntities = parseEntities(buildDxf(on));
+
+    expect(parseEntities(buildDxf(off)).filter((e) => e.type === 'CIRCLE').length).toBe(off.blank.holes.length);
+    expect(onEntities.filter((e) => e.type === 'CIRCLE').length).toBe(on.blank.holes.length * 2);
+
+    const offOutlines = offEntities.filter((e) => e.type === 'LWPOLYLINE' && e.layer === 'CUT' && e.points.length > 4);
+    const onOutlines = onEntities.filter((e) => e.type === 'LWPOLYLINE' && e.layer === 'CUT' && e.points.length > 4);
+    expect(offOutlines.length).toBe(1);
+    expect(onOutlines.length).toBe(2);
+  });
+
+  it('the nested outline is the primary outline mapped through translate(L, Wd*2+10) rotate(180)', () => {
+    const model = blankOnly(buildModel({ ...CASES[0]![1].config, nest: true }));
+    const { geo: g } = model;
+    const entities = parseEntities(buildDxf(model));
+    const outlines = entities.filter((e) => e.type === 'LWPOLYLINE' && e.layer === 'CUT' && e.points.length > 4);
+    expect(outlines).toHaveLength(2);
+    const [primary, nested] = outlines;
+
+    // DXF stores Y already flipped (-(y+off)); undo that to compare against the SVG-
+    // space model coordinates the way nestPoint expects them.
+    const primaryModelPts = primary!.points.map(([x, y]) => [x, -y] as [number, number]);
+    const expectedNested = primaryModelPts.map(([x, y]) => [g.L - x, g.Wd * 2 + 10 - y]);
+    const nestedModelPts = nested!.points.map(([x, y]) => [x, -y] as [number, number]);
+    expectedNested.forEach(([ex, ey], i) => {
+      expect(nestedModelPts[i]![0]).toBeCloseTo(ex, 2);
+      expect(nestedModelPts[i]![1]).toBeCloseTo(ey, 2);
+    });
+  });
+
+  it('the nested copy carries no seams — only outline, slots, folds/scores and holes', () => {
+    // gravel-650b-hem-a4 has real seams (a4 stock); force nest on to isolate the count.
+    const model = blankOnly(buildModel({ ...CASES.find(([n]) => n === 'gravel-650b-hem-a4')![1].config, nest: true }));
+    const entities = parseEntities(buildDxf(model));
+    const foldPolys = entities.filter((e) => e.type === 'LWPOLYLINE' && e.layer === 'FOLD');
+    // Primary FOLD entities = foldLines + scoreLines + seams; nested adds only
+    // foldLines + scoreLines (no seams), so the total is less than double.
+    const primaryFold = model.blank.foldLines.length + model.blank.scoreLines.length + model.blank.seams.length;
+    const nestedFold = model.blank.foldLines.length + model.blank.scoreLines.length;
+    expect(foldPolys.length).toBe(primaryFold + nestedFold);
+    expect(model.blank.seams.length).toBeGreaterThan(0); // sanity: this case really has seams
   });
 });

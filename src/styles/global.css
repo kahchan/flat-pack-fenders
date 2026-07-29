@@ -79,3 +79,74 @@ input[type='range'] {
     display: block !important;
   }
 }
+
+/* One A4-landscape page per tile / Sheet B / instructions — design source lines
+   375-434. `page-break-after` puts each on its own sheet; the instructions page is
+   last and needs none, or printing would end on a blank page. */
+.print-page {
+  width: 297mm;
+  height: 210mm;
+  padding: 15mm;
+  box-sizing: border-box;
+  page-break-after: always;
+  break-after: page;
+  position: relative;
+  background: #fff;
+}
+
+.print-page--instructions {
+  padding: 15mm 18mm;
+  page-break-after: auto;
+  break-after: auto;
+  font-family: var(--font-sans);
+  color: var(--draw-label);
+}
+
+.print-page__label,
+.print-page__meta {
+  position: absolute;
+  top: 6mm;
+  font-family: var(--font-mono);
+  font-size: 8pt;
+  color: var(--draw-label);
+}
+
+.print-page__label {
+  left: 15mm;
+}
+
+.print-page__meta {
+  right: 15mm;
+}
+
+.print-page__sheetb-title {
+  font-family: var(--font-mono);
+  font-size: 8pt;
+  color: var(--draw-label);
+}
+
+.print-instructions-title {
+  font-size: 20pt;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.print-instructions-spec {
+  font-family: var(--font-mono);
+  font-size: 8pt;
+  margin-top: 4pt;
+}
+
+.print-instructions-list {
+  margin: 14pt 0 0;
+  padding-left: 16pt;
+  columns: 2;
+  column-gap: 20pt;
+  font-size: 9.5pt;
+  line-height: 1.55;
+}
+
+.print-instructions-list li {
+  margin-bottom: 9pt;
+  break-inside: avoid;
+}

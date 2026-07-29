@@ -1,4 +1,4 @@
-import { PW, STRUT_FOLD_INSET, STRUT_W, f0, f1 } from './defaults';
+import { PARTS_PH, PW, STRUT_FOLD_INSET, STRUT_W, f0, f1 } from './defaults';
 import { geo } from './geometry';
 import type { FenderConfig, Geometry, Hole, Label, PartsModel, Path, Slot } from './types';
 
@@ -36,7 +36,10 @@ export function buildParts(s: FenderConfig, g: Geometry = geo(s)): PartsModel {
     });
     // The source pushes a bare literal `cx: 12` here (untyped JS); f0(12) === '12'
     // reproduces that exact text while satisfying Hole.cx's frozen string type.
-    holes.push({ cx: f0(12), cy: f1(y + r), r: 2.5 }, { cx: f1(s.strutLen / 2), cy: f1(y + r), r: 2 });
+    holes.push(
+      { cx: f0(12), cy: f1(y + r), r: 2.5 },
+      { cx: f1(s.strutLen / 2), cy: f1(y + r), r: 2 }
+    );
     if (s.fuse) {
       holes.push({ cx: f1(s.strutLen - 12), cy: f1(y + r), r: 3.2 });
     } else {
@@ -110,7 +113,24 @@ export function buildParts(s: FenderConfig, g: Geometry = geo(s)): PartsModel {
   const width = Math.max(s.strutLen + 96, g.crownTail + 150);
   const height = py + Math.max(1, Math.ceil(extraCount / 6)) * 22 + 10;
   const viewBox = `-2 0 ${f1(width)} ${f1(height)}`;
-  const fitsA4 = width <= PW;
 
-  return { outlines, folds, holes, slots, labels, viewBox, width, height, fitsA4, extraCount, extraLabel };
+  // Both dimensions, deliberately diverging from the design, which tested width alone.
+  // Sheet B prints into 267 × 172 mm; a taller sheet used to be scaled down silently
+  // while the app still said "fits A4 at full size". On the default config that was 78%,
+  // and struts are a part you cut to length. See PLAN §9.18.
+  const fitsA4 = width <= PW && height <= PARTS_PH;
+
+  return {
+    outlines,
+    folds,
+    holes,
+    slots,
+    labels,
+    viewBox,
+    width,
+    height,
+    fitsA4,
+    extraCount,
+    extraLabel
+  };
 }
