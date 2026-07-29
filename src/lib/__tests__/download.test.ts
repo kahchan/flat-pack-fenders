@@ -9,5 +9,8 @@ describe('exportFilename', () => {
     expect(exportFilename('fender-rear-700c-1351x106mm', 'dxf')).toBe(
       'fender-rear-700c-1351x106mm.dxf'
     );
+    expect(exportFilename('fender-rear-700c-1351x106mm', 'pdf')).toBe(
+      'fender-rear-700c-1351x106mm.pdf'
+    );
   });
 });

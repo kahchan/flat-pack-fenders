@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 import { Button } from '../ui/Button';
-import { downloadText, exportFilename } from '../../lib/download';
+import { downloadBinary, downloadText, exportFilename } from '../../lib/download';
 import { buildDxf } from '../../export/dxf';
+import { buildPdf } from '../../export/pdf';
 import { buildSvg } from '../../export/svg';
 import type { DrawingModel } from '../../fender/types';
 
@@ -10,8 +11,10 @@ interface ActionButtonsProps {
   onReset: () => void;
 }
 
-/** Print / Reset / Export SVG / Export DXF. Design source lines 347-356. Both exports
- * are 1 unit = 1 mm; layout matches — cut lines separated from folds by Inkscape layer. */
+/** Print / Reset / Export SVG / Export DXF / Export PDF. Design source lines 347-356.
+ * SVG/DXF are 1 unit = 1 mm; layout matches — cut lines separated from folds by
+ * Inkscape layer. PDF is the print tree instead (PLAN §11.2) — same 1:1 scale, by
+ * construction rather than by layer convention; see `pdf.ts`. */
 export function ActionButtons({ model, onReset }: ActionButtonsProps) {
   const exportSvg = useCallback(() => {
     downloadText(exportFilename(model.baseName, 'svg'), buildSvg(model), 'image/svg+xml');
@@ -19,6 +22,10 @@ export function ActionButtons({ model, onReset }: ActionButtonsProps) {
 
   const exportDxf = useCallback(() => {
     downloadText(exportFilename(model.baseName, 'dxf'), buildDxf(model), 'application/dxf');
+  }, [model]);
+
+  const exportPdf = useCallback(() => {
+    downloadBinary(exportFilename(model.baseName, 'pdf'), buildPdf(model), 'application/pdf');
   }, [model]);
 
   return (
@@ -38,10 +45,17 @@ export function ActionButtons({ model, onReset }: ActionButtonsProps) {
         <Button variant="secondary" size="lg" onClick={exportDxf}>
           Export DXF
         </Button>
+        <Button variant="secondary" size="lg" onClick={exportPdf}>
+          Export PDF
+        </Button>
       </div>
       <p className="rail-footnote">
-        Both export at 1 unit = 1 mm, cut lines separated from fold lines by layer, ready for a
-        laser or plotter.
+        SVG and DXF export at 1 unit = 1 mm, cut lines separated from fold lines by layer, ready
+        for a laser or plotter.
+      </p>
+      <p className="rail-footnote">
+        PDF is the print sheets — the same 1:1 pattern, with a 100 mm ruler on every page — as a
+        file, for when there is no print dialog to hand.
       </p>
       <p className="rail-footnote">
         Print at 100%, margins &ldquo;none&rdquo; — never &ldquo;fit to page&rdquo;. Every sheet
