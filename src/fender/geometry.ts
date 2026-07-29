@@ -109,3 +109,38 @@ export function rails(g: Geometry, x: number) {
     freeBottom: g.yc + half + g.skirt
   };
 }
+
+/**
+ * Real 3D distance (mm) from a strut's fender-side mount — at arc fraction `frac`,
+ * skirt `side` (0 or 3, matching isometric.ts's `pf()` point order) — to its
+ * frame-side end near the hub. Independent of the isometric view's yaw: it works in
+ * the same real-space cylindrical coordinates isometric.ts lifts a cross-section point
+ * onto (`p3`) *before* any view rotation is applied, so it is the actual span a strut
+ * has to cover, not a projected one.
+ *
+ * Extracted so isometric.ts (drawing the true strut length, PLAN §13.4) and
+ * warnings.ts (warning when `strutLen` overshoots it, same package) share one
+ * definition instead of quietly drifting apart. `from`/`to` are returned alongside
+ * `len` so isometric.ts's drawing code — which also needs the mount point itself for
+ * the strut's quad corners — can reuse them without recomputing.
+ */
+export function strutMount(
+  s: FenderConfig,
+  g: Geometry,
+  frac: number,
+  side: 0 | 3
+): { from: [number, number, number]; to: [number, number, number]; len: number } {
+  const aa = g.aNose + g.th * frac;
+  const c = crownAt(g, (aa - g.aNose) * g.R) / 2;
+  const v: [number, number] = side === 0 ? [-c - g.proj, -g.drop] : [c + g.proj, -g.drop];
+  const r = g.R + v[1];
+  const from: [number, number, number] = [v[0], r * Math.sin(aa), r * Math.cos(aa)];
+  const to: [number, number, number] = [
+    Math.sign(v[0]) * (s.tyre / 2 + 6),
+    from[1] * 0.2,
+    from[2] * 0.2
+  ];
+  const dv: [number, number, number] = [to[0] - from[0], to[1] - from[1], to[2] - from[2]];
+  const len = Math.hypot(dv[0], dv[1], dv[2]) || 1;
+  return { from, to, len };
+}

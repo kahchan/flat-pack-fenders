@@ -170,6 +170,15 @@ the hook clears the hash entirely rather than writing `#f1`. The worked example 
 
 ## 7. Golden values — the verification contract
 
+> ⚠️ **Superseded for the default config by WP13.** The numbers below were captured against
+> the pre-feedback default (rear 40/175, 215°, no bevel). WP13 changed the coverage numbers
+> to rear 120/100 (220°) and added the tongue bevel, so the default's derived values and its
+> outline vertex count (124 → 125) have moved. The fixtures in
+> `src/fender/__tests__/golden.json` are regenerated and authoritative; this section is kept
+> as the historical record of what the design source produced, which is still what the
+> non-default cases are pinned to. Regenerate with
+> `node scripts/extract-golden.mjs src/fender/__tests__/golden.json src/export/__tests__/golden.json`.
+
 Extracted by running the design's own `geo()` in Node. **A port that reproduces these is correct;
 one that doesn't is wrong, regardless of whether it builds.**
 
@@ -255,7 +264,7 @@ beyond vitest itself.
 | ✅ **WP5**  | `pathPolys.ts`, `svg.ts`, `dxf.ts`                                                                                     | WP1, WP2      | Diff exported SVG against the design's own export                 |
 | ✅ **WP6**  | `urlCodec.ts`, `presets.ts`, `useFenderConfig.ts`                                                                      | WP0           | §5, §6                                                            |
 | ✅ **WP7**  | Desktop UI shell — canvas, control rail, tabs, warnings banner, spec table                                             | WP0           | Can stub `buildModel()` from a fixture                            |
-| ✅ **WP8**     | Responsive layer — drawer, bottom sheet, scroll containers                                                             | WP7           | **Load `apple-design` skill first**                               |
+| ✅ **WP8**  | Responsive layer — drawer, bottom sheet, scroll containers                                                             | WP7           | **Load `apple-design` skill first**                               |
 | ✅ **WP9**  | Print stylesheet + `.print-only` DOM                                                                                   | WP1, WP2, WP7 | Verify by actually printing to PDF and measuring the 100 mm ruler |
 | ✅ **WP10** | Preset strip UI + mini cross-section thumbs                                                                            | WP2, WP6, WP7 |                                                                   |
 | **WP11**    | `export/pdf.ts` — hand-written vector PDF writer                                                                       | WP1, WP2, WP5 | §11. Zero deps. Verify by measuring the ruler in the output.      |
@@ -409,17 +418,16 @@ Clicking Front/Rear jumps `lead`/`trail` to fixed values: the design hardcoded f
 rear → 60/200. **Both sum to 260°**, over the 220° threshold, so either button walls a fresh fender
 in red — exactly the trap §5's preset correction already fixed once.
 
-Rear is fixed: `src/lib/sideDefaults.ts` points it at `DEFAULTS.lead`/`DEFAULTS.trail` rather than
-literals, so the selector and the default cannot drift apart again. **Front is not**, and is left at
-120/140 deliberately: a front fender genuinely wants substantial lead, so unlike rear there is no
-obviously-correct value to point it at. See §10.5.
+**RESOLVED by WP13.** Both sides now read a single `COVERAGE` constant in `defaults.ts`, which
+`DEFAULTS`, `PRESETS` and `sideDefaults.ts` all consume — front 55/120 (175°), rear 120/100 (220°),
+supplied by the rider rather than inferred. Rear sits exactly on the 220° threshold, deliberately on
+the line rather than over it. §10.5 is closed with it.
 
 **9.17 — A warning can quote a negative percentage.** _(Found by WP7.)_ The "tail narrower than
 tyre" warning ends `keep the taper under ${f0((1 - (s.tyre+6)/g.crown0)*100)}%`. Once tyre width
 exceeds crown width — reachable on the Tyre width slider — that expression goes negative and the
-warning reads "keep the taper under -56%", which is not advice. Inherited verbatim and left in the
-frozen `warnings.ts`. Cheap fix when someone wants it: clamp at 0 and change the wording to say the
-crown must be widened, since at that point no taper value can help.
+warning reads "keep the taper under -56%", which is not advice. **RESOLVED by WP13.** Clamped at 0, and the advice switches to widening the crown once no taper
+value can help.
 
 **9.18 — Sheet B printed at 78% of true size.** _(Found in WP9 review, by measuring.)_ The worst bug
 in the port, and it was inherited from the design.
@@ -473,10 +481,6 @@ attributes accept CSS colour functions, so it should be fine, but it is **unveri
 and Kah is on macOS. If it fails there, the fallback is to have the component resolve the two tokens
 once via `getComputedStyle` and pass literal `rgb()` down — which keeps `src/fender/` pure by doing
 the DOM read in the UI layer, not the model. Check this during WP7.
-
-**10.5 — The front Side preset also trips the coverage warning.** 120 + 140 = 260°, same as the old
-rear pair (§9.16). A front fender does want substantial lead, so there is no obviously-correct
-number to point it at the way rear could point at `DEFAULTS`. Needs someone who has ridden one.
 
 **10.6 — Sheet B pagination. PROMOTED to WP12** — see §8 and §12.
 

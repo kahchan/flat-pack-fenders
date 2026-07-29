@@ -1,4 +1,4 @@
-import { DEFAULTS } from '../fender/defaults';
+import { COVERAGE, DEFAULTS } from '../fender/defaults';
 import type { FenderConfig } from '../fender/types';
 
 /** PLAN §5's six presets, each a `Partial<FenderConfig>` merged over `DEFAULTS`. */
@@ -31,21 +31,21 @@ export const PRESETS: Preset[] = [
   preset(
     'rear-700c',
     'Rear commuter 700c',
-    'Rear · 700c · 35 mm tyre · 40°/175° · 20 flaps · 2 struts',
+    `Rear · 700c · 35 mm tyre · ${COVERAGE.rear.lead}°/${COVERAGE.rear.trail}° · 20 flaps · 2 struts`,
     {}
   ),
 
   preset(
     'front-700c',
     'Front commuter 700c',
-    'Front · 700c · 35 mm tyre · 120°/140° · 20 flaps · 2 struts',
+    `Front · 700c · 35 mm tyre · ${COVERAGE.front.lead}°/${COVERAGE.front.trail}° · 20 flaps · 2 struts`,
     {
       side: 'front',
       wheel: '700c',
       tyre: 35,
       crown: 55,
-      lead: 120,
-      trail: 140,
+      lead: COVERAGE.front.lead,
+      trail: COVERAGE.front.trail,
       flaps: 20,
       struts: 2,
       mudflap: 60

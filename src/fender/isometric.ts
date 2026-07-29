@@ -1,5 +1,5 @@
 import { D2, f1 } from './defaults';
-import { crownAt, geo } from './geometry';
+import { crownAt, geo, strutMount } from './geometry';
 import { buildBlank } from './pattern';
 import type { BlankModel, FacetPath, FenderConfig, Geometry, Hole, IsoModel, Path } from './types';
 
@@ -206,17 +206,18 @@ export function buildIsometric(
   });
 
   // ── Struts ───────────────────────────────────────────────────────────────────
+  // Drawn at the TRUE `strutLen`, not clamped to the mount distance (PLAN §13.4) — an
+  // over-long strut now visibly overshoots the hub instead of the slider silently
+  // stopping the picture from growing past ~290 mm. warnings.ts's `strut-too-long`
+  // check uses the same `strutMount()` to tell you when that's happening.
   const struts: Path[] = [];
   blank.strutFrac.forEach((fr) => {
     const aa = g.aNose + g.th * fr;
-    const pr = pf(aa);
     const tan: Vec3 = [0, Math.cos(aa), -Math.sin(aa)];
-    for (const side of [0, 3]) {
-      const from = p3(pr[side]!, aa);
-      const to: Vec3 = [Math.sign(pr[side]![0]) * (s.tyre / 2 + 6), from[1] * 0.2, from[2] * 0.2];
+    for (const side of [0, 3] as const) {
+      const { from, to, len } = strutMount(s, g, fr, side);
       const dv: Vec3 = [to[0] - from[0], to[1] - from[1], to[2] - from[2]];
-      const len = Math.hypot(dv[0], dv[1], dv[2]) || 1;
-      const k = Math.min(s.strutLen, len) / len;
+      const k = s.strutLen / len;
       const end: Vec3 = [from[0] + dv[0] * k, from[1] + dv[1] * k, from[2] + dv[2] * k];
       const q = (
         [

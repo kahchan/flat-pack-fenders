@@ -17,6 +17,11 @@ const f1 = (n) => (Math.round(n * 10) / 10).toFixed(1);
 const f0 = (n) => String(Math.round(n));
 const TONGUE_L = 34, TONGUE_W = 24, OVERLAP = 20;
 const PW = 267, PH = 180, OV = 12;
+// PLAN §13.3 — BEVEL_L is new, not in the design source (which has no `bevel` field and
+// no chamfer at all). Added here, and to `blank()` below, so the golden fixture pins the
+// port's actual behaviour, exactly as §9.4 (nesting) and §9.18 (Sheet B viewBox) added
+// new, sanctioned geometry to this "verbatim transcription" script.
+const BEVEL_L = 20;
 
 function geo(s) {
   const bsd = WHEELS[s.wheel].bsd;
@@ -66,18 +71,35 @@ function blank(s) {
   events.push({ x: g.L });
   events.sort((p, q) => p.x - q.x);
 
+  // PLAN §13.3 — new, not in the design source: a chamfer at the tongue-to-skirt
+  // corner, running from the tongue's edge out to full skirt depth over the first
+  // `s.bevel` mm, clamped short of whatever event comes next. Only meaningful with the
+  // tongue on.
+  const nextEvent = events[1];
+  const nextX = nextEvent ? nextEvent.x - (nextEvent.dart ? g.notch / 2 : 0) : g.L;
+  const bevelL = s.tongue ? Math.max(0, Math.min(s.bevel, nextX)) : 0;
+
   const edge = (isTop) => {
     const free = isTop ? yFreeT : yFreeB, fold = isTop ? yFoldT : yFoldB;
     const pts = [];
     for (const e of events) {
       if (e.dart) pts.push([e.x - g.notch / 2, free(e.x)], [e.x, fold(e.x)], [e.x + g.notch / 2, free(e.x)]);
-      else pts.push([e.x, free(e.x)]);
+      else if (e.x === 0 && bevelL > 0) {
+        const tongueY = isTop ? g.yc - TONGUE_W / 2 : g.yc + TONGUE_W / 2;
+        pts.push([0, tongueY], [bevelL, free(bevelL)]);
+      } else pts.push([e.x, free(e.x)]);
     }
     return pts;
   };
   const seg = (pts) => pts.map((p) => `${f1(p[0])},${f1(p[1])}`).join(' L ');
   let outline = `M ${seg(edge(true))} L ${seg(edge(false).reverse())}`;
-  if (s.tongue) outline += ` L 0,${f1(g.yc + TONGUE_W / 2)} L ${-TONGUE_L},${f1(g.yc + TONGUE_W / 2)} L ${-TONGUE_L},${f1(g.yc - TONGUE_W / 2)} L 0,${f1(g.yc - TONGUE_W / 2)}`;
+  // DIVERGENCE (PLAN §13.3): with a bevel the reversed bottom edge already ends on the
+  // tongue's lower corner, so repeating it would leave a zero-length segment in a CUT
+  // path (laser dwell mark, repeated DXF vertex). Skipped when bevelL > 0.
+  if (s.tongue) {
+    if (bevelL <= 0) outline += ` L 0,${f1(g.yc + TONGUE_W / 2)}`;
+    outline += ` L ${-TONGUE_L},${f1(g.yc + TONGUE_W / 2)} L ${-TONGUE_L},${f1(g.yc - TONGUE_W / 2)} L 0,${f1(g.yc - TONGUE_W / 2)}`;
+  }
   const blankOutline = `${outline} Z`;
 
   const foldPath = (fold) => {
@@ -314,7 +336,10 @@ function isometric(s, g, strutFrac, spin) {
       const to = [Math.sign(pr[side][0]) * (s.tyre / 2 + 6), from[1] * 0.2, from[2] * 0.2];
       const dv = [to[0] - from[0], to[1] - from[1], to[2] - from[2]];
       const len = Math.hypot(dv[0], dv[1], dv[2]) || 1;
-      const k = Math.min(s.strutLen, len) / len;
+      // PLAN §13.4 — drop the clamp: draw the true `strutLen`, not the distance to the
+      // hub, so an over-long strut visibly overshoots instead of the picture silently
+      // stopping at ~290 mm. New, not in the design source.
+      const k = s.strutLen / len;
       const end = [from[0] + dv[0] * k, from[1] + dv[1] * k, from[2] + dv[2] * k];
       const q = [
         [from[0] - tan[0] * 7, from[1] - tan[1] * 7, from[2] - tan[2] * 7],
@@ -612,21 +637,26 @@ function specs(s, g, finished, panelCount, cols, rows) {
   ];
 }
 
+// PLAN §13.1 — lead/trail are the unified coverage numbers (rear 120/100, front
+// 55/120), replacing the source's own literals here too so this fixture generator
+// can't drift from src/fender/defaults.ts's COVERAGE either.
 const DEFAULTS = {
   side: 'rear', wheel: '700c', tyre: 35, measuredR: 0, clear: 14, crown: 55, skirt: 26, angle: 55,
-  thick: 0.8, lead: 40, trail: 175, taper: 15, taperAt: 70, flaps: 20, struts: 2, strutLen: 160,
-  mudflap: 100, join: 'zip', stock: 'a4', tongue: true, fuse: false, nest: false, hem: false
+  thick: 0.8, lead: 120, trail: 100, taper: 15, taperAt: 70, flaps: 20, struts: 2, strutLen: 160,
+  mudflap: 100, join: 'zip', stock: 'a4', tongue: true, fuse: false, nest: false, hem: false,
+  bevel: BEVEL_L
 };
 const CARGO20 = {
   side: 'rear', wheel: '20in', tyre: 50, measuredR: 0, clear: 16, crown: 62, skirt: 30, angle: 55,
   thick: 0.8, lead: 60, trail: 200, taper: 25, taperAt: 70, flaps: 16, struts: 3, strutLen: 220,
-  mudflap: 90, join: 'zip', stock: 'single', tongue: true, fuse: false, nest: false, hem: false
+  mudflap: 90, join: 'zip', stock: 'single', tongue: true, fuse: false, nest: false, hem: false,
+  bevel: BEVEL_L
 };
 
 const CASES = {
   'default-700c-rear': DEFAULTS,
   'cargo-20in-single': CARGO20,
-  'front-700c': { ...CARGO20, side: 'front', wheel: '700c', tyre: 35, clear: 14, crown: 55, skirt: 26, lead: 120, trail: 140, flaps: 20, struts: 2, strutLen: 160, mudflap: 60 },
+  'front-700c': { ...CARGO20, side: 'front', wheel: '700c', tyre: 35, clear: 14, crown: 55, skirt: 26, lead: 55, trail: 120, flaps: 20, struts: 2, strutLen: 160, mudflap: 60 },
   'gravel-650b-hem-a4': { ...CARGO20, wheel: '650b', tyre: 50, clear: 18, crown: 72, skirt: 32, flaps: 22, hem: true, stock: 'a4', thick: 1.2 },
   'measured-no-taper-nojoin': { ...CARGO20, measuredR: 250, taper: 0, join: 'none', tongue: false },
   'mtb-26in-slot-thick': { ...CARGO20, wheel: '26in', tyre: 55, crown: 78, thick: 2.0, join: 'slot', flaps: 12 },

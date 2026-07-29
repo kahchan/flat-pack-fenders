@@ -34,6 +34,18 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
   events.push({ x: g.L });
   events.sort((p, q) => p.x - q.x);
 
+  // Chamfer at the tongue-to-skirt corner (PLAN §13.3): without it, the skirt free edge
+  // starts at full depth right at x = 0 — a square corner against the tongue's narrow
+  // 24 mm width that fouls the frame and is sharp against a shin. Runs from the tongue's
+  // edge out to full skirt depth over the first `s.bevel` mm, clamped short of whatever
+  // event comes next (a dart's own offset, the taper knee, or a blank so short the tail
+  // is closer than the bevel) so the chamfer never overruns it. Only meaningful with the
+  // tongue on — without one there is no "tongue's edge" to run the chamfer from, and the
+  // nose is already a plain flat edge, not a sharp corner.
+  const nextEvent = events[1];
+  const nextX = nextEvent ? nextEvent.x - (nextEvent.dart ? g.notch / 2 : 0) : g.L;
+  const bevelL = s.tongue ? Math.max(0, Math.min(s.bevel, nextX)) : 0;
+
   const edge = (isTop: boolean): [number, number][] => {
     const free = isTop ? yFreeT : yFreeB;
     const fold = isTop ? yFoldT : yFoldB;
@@ -41,6 +53,9 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
     for (const e of events) {
       if (e.dart) {
         pts.push([e.x - g.notch / 2, free(e.x)], [e.x, fold(e.x)], [e.x + g.notch / 2, free(e.x)]);
+      } else if (e.x === 0 && bevelL > 0) {
+        const tongueY = isTop ? g.yc - TONGUE_W / 2 : g.yc + TONGUE_W / 2;
+        pts.push([0, tongueY], [bevelL, free(bevelL)]);
       } else {
         pts.push([e.x, free(e.x)]);
       }
@@ -52,8 +67,12 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
 
   let outline = `M ${seg(edge(true))} L ${seg(edge(false).reverse())}`;
   if (s.tongue) {
+    // With a bevel, the reversed bottom edge already ends exactly on the tongue's lower
+    // corner, so emitting it again would leave a zero-length segment in a CUT path — a
+    // laser can dwell there and burn a mark, and it puts a repeated vertex in the DXF
+    // polyline. Skip the redundant first move in that case.
+    if (bevelL <= 0) outline += ` L 0,${f1(g.yc + TONGUE_W / 2)}`;
     outline +=
-      ` L 0,${f1(g.yc + TONGUE_W / 2)}` +
       ` L ${-TONGUE_L},${f1(g.yc + TONGUE_W / 2)}` +
       ` L ${-TONGUE_L},${f1(g.yc - TONGUE_W / 2)}` +
       ` L 0,${f1(g.yc - TONGUE_W / 2)}`;
