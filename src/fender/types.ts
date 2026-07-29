@@ -17,7 +17,7 @@ export type WheelKey = '700c' | '650b' | '26in' | '20in';
 export type JoinKey = 'zip' | 'rivet' | 'slot' | 'none';
 export type StockKey = 'single' | 'a4';
 
-/** The 23 parameters that fully determine a fender. Serialised to the URL in this order. */
+/** The 24 parameters that fully determine a fender. Serialised to the URL in this order. */
 export interface FenderConfig {
   side: Side;
   wheel: WheelKey;
@@ -59,6 +59,8 @@ export interface FenderConfig {
   nest: boolean;
   /** Fold the skirt edge back on itself. */
   hem: boolean;
+  /** Chamfer length at the tongue-to-skirt corner, mm. 0 = square corner (off). */
+  bevel: number;
 }
 
 export type ConfigKey = keyof FenderConfig;

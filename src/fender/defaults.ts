@@ -1,4 +1,4 @@
-import type { ConfigKey, FenderConfig, ParamSpec, WheelKey, WheelSpec } from './types';
+import type { ConfigKey, FenderConfig, ParamSpec, Side, WheelKey, WheelSpec } from './types';
 
 export const WHEELS: Record<WheelKey, WheelSpec> = {
   '700c': { bsd: 622, label: '700c · 622' },
@@ -12,6 +12,26 @@ export const D2 = Math.PI / 180;
 /** Slotted mount tongue at the nose. */
 export const TONGUE_L = 34;
 export const TONGUE_W = 24;
+
+/**
+ * Chamfer length at the tongue-to-skirt corner, mm — see `FenderConfig.bevel`
+ * (PLAN §13.3). Only applies when the tongue is on: without a tongue there is no
+ * "tongue's edge" to bevel from, and the nose is already a plain flat edge, not a
+ * sharp corner.
+ */
+export const BEVEL_L = 20;
+
+/**
+ * Lead/trail coverage per side (PLAN §13.1 / §9.16) — the single source `DEFAULTS`,
+ * `PRESETS` and the rail's Side selector (`src/lib/sideDefaults.ts`) all read, so the
+ * three cannot drift apart again the way they did once. Rear sums to exactly 220°, the
+ * "coverage exceeds frame" threshold — deliberately on the line, not over it, so a
+ * fresh rear fender does not trip that warning on its own.
+ */
+export const COVERAGE: Record<Side, { lead: number; trail: number }> = {
+  front: { lead: 55, trail: 120 },
+  rear: { lead: 120, trail: 100 }
+};
 
 /** How far a panel is cut past its seam line to lap under the next one. */
 export const OVERLAP = 20;
@@ -47,6 +67,9 @@ export const STRUT_FOLD_INSET = 26;
  * the one thing only the user can fix.
  *
  * The original values ship intact as the "Cargo / folder 20in" preset.
+ *
+ * `lead`/`trail` come from `COVERAGE.rear` (PLAN §13.1) rather than their own literals,
+ * so this, the preset cards and the Side selector cannot drift apart again.
  */
 export const DEFAULTS: FenderConfig = {
   side: 'rear',
@@ -58,8 +81,8 @@ export const DEFAULTS: FenderConfig = {
   skirt: 26,
   angle: 55,
   thick: 0.8,
-  lead: 40,
-  trail: 175,
+  lead: COVERAGE.rear.lead,
+  trail: COVERAGE.rear.trail,
   taper: 15,
   taperAt: 70,
   flaps: 20,
@@ -71,7 +94,8 @@ export const DEFAULTS: FenderConfig = {
   tongue: true,
   fuse: false,
   nest: false,
-  hem: false
+  hem: false,
+  bevel: BEVEL_L
 };
 
 /**
@@ -101,7 +125,8 @@ export const PARAM_SPECS: Record<ConfigKey, ParamSpec> = {
   tongue: { kind: 'boolean' },
   fuse: { kind: 'boolean' },
   nest: { kind: 'boolean' },
-  hem: { kind: 'boolean' }
+  hem: { kind: 'boolean' },
+  bevel: { kind: 'number', min: 0, max: 40, step: 1, unit: 'mm' }
 };
 
 /** Field order for URL serialisation. Append-only — changing it breaks shared links. */
@@ -128,7 +153,8 @@ export const CONFIG_ORDER: readonly ConfigKey[] = [
   'tongue',
   'fuse',
   'nest',
-  'hem'
+  'hem',
+  'bevel'
 ];
 
 /** One decimal place, always. Matches the design source's f1(). */

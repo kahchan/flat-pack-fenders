@@ -1,17 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULTS } from '../../fender/defaults';
+import { COVERAGE, DEFAULTS } from '../../fender/defaults';
 import { SIDE_COVERAGE } from '../sideDefaults';
 
 describe('SIDE_COVERAGE', () => {
-  it('matches the design source for front', () => {
-    expect(SIDE_COVERAGE.front).toEqual({ lead: 120, trail: 140 });
+  it('is the same COVERAGE constant DEFAULTS and PRESETS read (PLAN §13.1)', () => {
+    expect(SIDE_COVERAGE).toBe(COVERAGE);
+    expect(SIDE_COVERAGE.front).toEqual({ lead: 55, trail: 120 });
+    expect(SIDE_COVERAGE.rear).toEqual({ lead: 120, trail: 100 });
   });
 
   it('tracks DEFAULTS for rear, so it cannot go stale the way the source did', () => {
     expect(SIDE_COVERAGE.rear).toEqual({ lead: DEFAULTS.lead, trail: DEFAULTS.trail });
   });
 
-  it('rear coverage stays at or under the 220° warning threshold', () => {
+  it('neither side exceeds the 220° warning threshold', () => {
+    expect(SIDE_COVERAGE.front.lead + SIDE_COVERAGE.front.trail).toBeLessThanOrEqual(220);
     expect(SIDE_COVERAGE.rear.lead + SIDE_COVERAGE.rear.trail).toBeLessThanOrEqual(220);
   });
 });

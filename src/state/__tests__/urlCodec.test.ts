@@ -69,10 +69,30 @@ describe('encodeConfig / decodeConfig — round trip', () => {
   });
 
   it('a change to the LAST field cannot be trimmed and round-trips in full', () => {
-    const config: FenderConfig = { ...DEFAULTS, hem: true };
+    // `bevel` (PLAN §13.3) is now the last CONFIG_ORDER field, appended after `hem`.
+    const config: FenderConfig = { ...DEFAULTS, bevel: 0 };
     const encoded = encodeConfig(config);
     expect(encoded.split('.').length).toBe(CONFIG_ORDER.length + 1);
     expect(decodeConfig(encoded)).toEqual(config);
+  });
+
+  it('a change to the second-to-last field alone still trims the new last field (bevel)', () => {
+    const config: FenderConfig = { ...DEFAULTS, hem: true };
+    const encoded = encodeConfig(config);
+    expect(encoded.split('.').length).toBe(CONFIG_ORDER.length); // trailing `bevel` dropped
+    expect(decodeConfig(encoded)).toEqual(config);
+  });
+
+  // PLAN §13.3 constraint — bevel is appended, not inserted, so a hash saved before it
+  // existed still decodes: the missing trailing token backfills to DEFAULTS.bevel.
+  it('an old URL saved before `bevel` existed still decodes, backfilling it to the default', () => {
+    // One token shorter than CONFIG_ORDER.length + 1 — as if bevel were never encoded.
+    const oldStyleHash = '#f1.rear.700c.35.0.14.55.26.55.8.120.100.15.70.20.2.160.100.zip.a4.1.0.0.1';
+    const decoded = decodeConfig(oldStyleHash);
+    expect(decoded.bevel).toBe(DEFAULTS.bevel);
+    expect(decoded.hem).toBe(true);
+    expect(decoded.side).toBe('rear');
+    expect(decoded).toEqual({ ...DEFAULTS, hem: true });
   });
 
   it('carries `thick` as tenths so no field contains a "."', () => {

@@ -23,7 +23,13 @@ type Case = { config: FenderConfig; warnings: WarningFixture[] };
 
 const CASES = Object.entries(golden as unknown as Record<string, Case>);
 
-/** Fixed by source condition order — every case's warnings are a subsequence of this. */
+/**
+ * Fixed by source condition order — every case's warnings are a subsequence of this.
+ * `tyre-too-wide` and `strut-too-long` (PLAN §13.2, §13.4) are new, not in the design
+ * source at all, so they're appended last rather than interleaved — and buildWarnings()
+ * pushes them last too, so this order is never violated regardless of which other
+ * warnings also fire.
+ */
 const ID_ORDER = [
   'coverage-exceeds-frame',
   'radius-estimated',
@@ -31,16 +37,23 @@ const ID_ORDER = [
   'darts-too-wide',
   'skirt-too-short',
   'single-blank-too-long',
-  'sheet-b-too-wide'
+  'sheet-b-too-wide',
+  'tyre-too-wide',
+  'strut-too-long'
 ];
+
+/** Ids with no fixture counterpart at all — new checks, not source transcriptions. */
+const NEW_IDS = new Set(['sheet-b-too-wide', 'tyre-too-wide', 'strut-too-long']);
 
 describe.each(CASES)('buildWarnings(%s)', (_name, c) => {
   const warnings = buildWarnings(c.config);
 
   it('warning text matches the design source, in condition order', () => {
     // sheet-b-too-wide deliberately diverges — it now reports whichever dimension
-    // overflows, and the fixture records the design's width-only wording. PLAN §9.18.
-    const ours = warnings.filter((w) => w.id !== 'sheet-b-too-wide').map((w) => w.text);
+    // overflows, and the fixture records the design's width-only wording (PLAN §9.18).
+    // tyre-too-wide and strut-too-long have no fixture counterpart at all (PLAN §13.2,
+    // §13.4) — the design source never checked either condition.
+    const ours = warnings.filter((w) => !NEW_IDS.has(w.id)).map((w) => w.text);
     const theirs = c.warnings.map((w) => w.text).filter((t) => !t.startsWith('Sheet B is'));
     expect(ours).toEqual(theirs);
   });
@@ -110,5 +123,73 @@ describe('warnings invariants', () => {
     const parts = buildParts(rivetCase.config);
     const ids = buildWarnings(rivetCase.config).map((w) => w.id);
     if (parts.pages.length > 1) expect(ids).not.toContain('sheet-b-too-wide');
+  });
+
+  // PLAN §13.2 — new: the tyre plus clearance on both sides must fit inside the crown
+  // plus both skirt projections. crown-only-too-narrow.tyre widens the tyre until it
+  // does not.
+  describe('tyre-too-wide', () => {
+    it('fires once the tyre plus clearance exceeds crown plus both skirt projections', () => {
+      const tooWide: FenderConfig = { ...DEFAULTS, tyre: 90 };
+      const ids = buildWarnings(tooWide).map((w) => w.id);
+      expect(ids).toContain('tyre-too-wide');
+    });
+
+    it('does not fire for any fixture config (all comfortably narrower than their crown)', () => {
+      for (const [, c] of CASES) {
+        expect(buildWarnings(c.config).map((w) => w.id)).not.toContain('tyre-too-wide');
+      }
+    });
+
+    it('names the required width, the available width, and a crown that would fit', () => {
+      const tooWide: FenderConfig = { ...DEFAULTS, tyre: 90 };
+      const w = buildWarnings(tooWide).find((x) => x.id === 'tyre-too-wide')!;
+      expect(w.text).toMatch(/90 mm tyre/);
+      expect(w.text).toMatch(/Widen the crown to at least \d+ mm/);
+    });
+  });
+
+  // PLAN §13.4 — new: isometric.ts used to clamp the drawn strut to the mount
+  // distance, hiding an over-long strut. The warning is the visible replacement.
+  describe('strut-too-long', () => {
+    it('fires once strutLen exceeds the mount distance by more than ~10%', () => {
+      const tooLong: FenderConfig = { ...DEFAULTS, strutLen: 420 };
+      const ids = buildWarnings(tooLong).map((w) => w.id);
+      expect(ids).toContain('strut-too-long');
+    });
+
+    // Three CARGO20-derived fixtures (strutLen 220 mm) genuinely trip this: their mount
+    // distance is only ~194-196 mm, so the shipped "Cargo / folder 20″" preset's own
+    // struts need trimming by roughly 5-25 mm before fitting — a real finding surfaced
+    // by dropping the isometric clamp (PLAN §13.4), not a test-authoring mistake.
+    const STRUT_TOO_LONG_CASES = new Set([
+      'cargo-20in-single',
+      'measured-no-taper-nojoin',
+      'nested-cargo-20in'
+    ]);
+
+    it('fires only for the fixtures whose strutLen genuinely overshoots their mount', () => {
+      for (const [name, c] of CASES) {
+        const fires = buildWarnings(c.config)
+          .map((w) => w.id)
+          .includes('strut-too-long');
+        expect(fires, name).toBe(STRUT_TOO_LONG_CASES.has(name));
+      }
+    });
+
+    it('does not fire for a strut that merely reaches the mount', () => {
+      const justRight: FenderConfig = { ...DEFAULTS, strutLen: 160 };
+      expect(buildWarnings(justRight).map((w) => w.id)).not.toContain('strut-too-long');
+    });
+  });
+
+  // PLAN §9.17 — the source's expression goes negative once the tyre alone exceeds
+  // crown width; clamped at 0 and the advice switched to widening the crown.
+  it('tail-narrower-than-tyre never quotes a negative percentage', () => {
+    const wide: FenderConfig = { ...DEFAULTS, tyre: 90, taper: 0 };
+    const w = buildWarnings(wide).find((x) => x.id === 'tail-narrower-than-tyre');
+    expect(w).toBeDefined();
+    expect(w!.text).not.toMatch(/-\d+%/);
+    expect(w!.text).toMatch(/no taper helps here — widen the crown instead/);
   });
 });

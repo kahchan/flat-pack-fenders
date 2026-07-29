@@ -1,10 +1,14 @@
 import { PW, f0, f1 } from './defaults';
-import { geo } from './geometry';
+import { geo, strutMount } from './geometry';
 import { buildParts } from './parts';
-import type { FenderConfig, Geometry, PartsModel, Warning } from './types';
+import { buildBlank } from './pattern';
+import type { BlankModel, FenderConfig, Geometry, PartsModel, Warning } from './types';
 
 /**
- * Conditional warnings, transcribed verbatim from the design source (lines ~986–994).
+ * Conditional warnings, transcribed verbatim from the design source (lines ~986–994),
+ * plus two new ones added for PLAN §13.2 and §13.4 — neither is in the design source,
+ * so both are appended after the transcribed checks rather than interleaved, and their
+ * ids sit last in warnings.test.ts's `ID_ORDER` for the same reason.
  *
  * Each fires independently on its own condition, in source order. `parts.oversizedParts`
  * comes straight from PartsModel (PLAN §12) rather than recomputing the Sheet-B packing
@@ -17,7 +21,8 @@ import type { FenderConfig, Geometry, PartsModel, Warning } from './types';
 export function buildWarnings(
   s: FenderConfig,
   g: Geometry = geo(s),
-  parts: PartsModel = buildParts(s, g)
+  parts: PartsModel = buildParts(s, g),
+  blank: BlankModel = buildBlank(s, g)
 ): Warning[] {
   const warnings: Warning[] = [];
 
@@ -36,9 +41,18 @@ export function buildWarnings(
   }
 
   if (g.crownTail < s.tyre + 6) {
+    // PLAN §9.17 — the source's expression goes negative once the tyre alone exceeds
+    // crown width (reachable on the Tyre width slider), printing nonsense like "keep
+    // the taper under -56%". Clamped at 0 and the advice switched to widening the
+    // crown, since at that point no taper value can help.
+    const taperPct = (1 - (s.tyre + 6) / g.crown0) * 100;
+    const advice =
+      taperPct > 0
+        ? `keep the taper under ${f0(taperPct)}% or widen the crown`
+        : 'no taper helps here — widen the crown instead';
     warnings.push({
       id: 'tail-narrower-than-tyre',
-      text: `Tapered tail is ${f0(g.crownTail)} mm, narrower than the ${s.tyre} mm tyre. It will throw spray sideways at the very end — keep the taper under ${f0((1 - (s.tyre + 6) / g.crown0) * 100)}% or widen the crown.`
+      text: `Tapered tail is ${f0(g.crownTail)} mm, narrower than the ${s.tyre} mm tyre. It will throw spray sideways at the very end — ${advice}.`
     });
   }
 
@@ -73,6 +87,35 @@ export function buildWarnings(
       id: 'sheet-b-too-wide',
       text: `A part is ${f0(longest)} mm long — longer than the ${PW} mm print page in any orientation. Shorten it to about ${f0(PW - 8)} mm, or cut it from stock by measurement instead.`
     });
+  }
+
+  // PLAN §13.2 — new, not in the design source. The `crownTail < tyre + 6` check above
+  // only catches the tapered TAIL; nothing previously caught a tyre too wide for the
+  // fender's full-width section. The real constraint is the tyre plus clearance on both
+  // sides fitting inside the crown plus both skirt projections.
+  const required = s.tyre + 2 * s.clear;
+  const available = g.crown0 + 2 * g.proj;
+  if (required > available) {
+    const crownNeeded = required - 2 * g.proj;
+    warnings.push({
+      id: 'tyre-too-wide',
+      text: `The ${f0(s.tyre)} mm tyre plus ${f0(s.clear)} mm clearance each side needs ${f0(required)} mm across, but the crown and skirts only give ${f0(available)} mm. Widen the crown to at least ${f0(crownNeeded)} mm.`
+    });
+  }
+
+  // PLAN §13.4 — new, not in the design source. isometric.ts used to clamp the drawn
+  // strut to the real mount distance, so a strut longer than that just stopped growing
+  // on screen past ~290 mm without telling you. Now it draws true length and overshoots
+  // visibly; this is the warning that tells you it needs cutting.
+  if (blank.strutFrac.length > 0) {
+    const mountLens = blank.strutFrac.map((fr) => strutMount(s, g, fr, 0).len);
+    const minMount = Math.min(...mountLens);
+    if (s.strutLen > minMount * 1.1) {
+      warnings.push({
+        id: 'strut-too-long',
+        text: `Strut length is ${f0(s.strutLen)} mm but the nearest mount point is only about ${f0(minMount)} mm away. Cut roughly ${f0(s.strutLen - minMount)} mm off before fitting, or it will foul the hub.`
+      });
+    }
   }
 
   return warnings;

@@ -84,15 +84,31 @@ describe('pathPolys — straight subpaths (M/L/H/V/Z), no DOM', () => {
   });
 
   it('reproduces the real blank outline head/tail exactly — PLAN §7 golden text', () => {
-    // "M 0.0,0.0 L 65.1,0.0 L 67.5,25.4 L 69.9,0.0 L 132.7,0.0 …" — default config.
+    // "M 0.0,40.9 L 20.0,0.0 L 66.7,0.0 L 69.1,25.4 L 71.6,0.0 …" — default config.
+    //
+    // PLAN §7's original head ("M 0.0,0.0 L 65.1,0.0 …", 124 vertices) predates the
+    // §13.3 bevel. Two changes move the count to 125:
+    //   +2  the nose now starts at the tongue's edge (0, 40.9) and steps out to full
+    //       skirt depth at (20, 0), one net extra point on each of the two edges
+    //   -1  the bevel makes the reversed bottom edge land exactly on the tongue's lower
+    //       corner, so the tongue append no longer repeats it — that duplicate was a
+    //       zero-length segment in a CUT path, which can dwell a laser and puts a
+    //       repeated vertex in the DXF polyline
     const model = buildModel(DEFAULTS);
     const [outline] = pathPolys(model.blank.outline);
     expect(outline).toBeDefined();
-    expect(outline!.length).toBe(124); // PLAN §7: "outline vertices = 124"
-    expect(outline![0]).toEqual([0, 0]);
-    expect(outline![1]).toEqual([65.1, 0]);
-    expect(outline![2]).toEqual([67.5, 25.4]);
-    expect(outline![3]).toEqual([69.9, 0]);
+    expect(outline!.length).toBe(125);
+
+    // No consecutive duplicate vertices anywhere in the cut path.
+    for (let i = 1; i < outline!.length; i++) {
+      const [px, py] = outline![i - 1]!;
+      const [cx, cy] = outline![i]!;
+      expect(px === cx && py === cy, `duplicate vertex at index ${i}`).toBe(false);
+    }
+    expect(outline![0]).toEqual([0, 40.9]);
+    expect(outline![1]).toEqual([20, 0]);
+    expect(outline![2]).toEqual([66.7, 0]);
+    expect(outline![3]).toEqual([69.1, 25.4]);
     const last = outline![outline!.length - 1]!;
     expect(last).toEqual([0, 40.9]);
   });
