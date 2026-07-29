@@ -126,8 +126,8 @@ export function buildSteps(
 }
 
 /**
- * The 15 engineering notes. Transcribed verbatim from source lines ~1139–1156, with two
- * corrections:
+ * The 16 engineering notes. Transcribed verbatim from source lines ~1139–1156, with
+ * three corrections:
  *
  * - "Bend allowance, properly" — PLAN §9.9. The source's final sentence claims every
  *   term collapses to zero at zero thickness. False: `rBend = max(t, 0.2)` keeps a
@@ -137,6 +137,9 @@ export function buildSteps(
  * - "Nesting" — PLAN §9.4. The source claims the nested pair shares "the shared edge",
  *   but the transform (`translate(L, Wd·2+10) rotate(180)`) leaves a 10 mm gap — the two
  *   blanks never touch. Reworded to match the geometry now that tiling covers the pair.
+ * - "Export" — PLAN §9.3. The source's formula line claims "R12 ASCII"; LWPOLYLINE is
+ *   R14+ and the file had no HEADER/TABLES section. `export/dxf.ts` now emits a minimal
+ *   HEADER/TABLES pair, so the formula line is reworded to "AC1015 (R2000)" to match.
  */
 export function buildNotes(
   s: FenderConfig,
@@ -241,11 +244,11 @@ export function buildNotes(
     {
       title: 'Export',
       body: 'SVG and DXF both come out at 1 unit = 1 mm with no transform, so they land at true size in Inkscape, LightBurn, Illustrator or any CAM tool. Cut geometry, fold and score lines, and hole centres go on separate layers — a laser wants to score the folds at low power and cut the outline at full, and it cannot guess which is which from the geometry alone.',
-      // NB not corrected here — PLAN §9.3 assigns the "R12 ASCII" → "DXF AC1015
-      // (R2000)" wording fix to WP5 (the DXF export note lives in this file, but the
-      // header fix itself is export/dxf.ts's job). This task's brief lists only §9.9
-      // and §9.4 as required corrections; flagged for whoever picks up WP5.
-      formula: 'SVG: 1 user unit = 1 mm · DXF: R12 ASCII, LWPOLYLINE + CIRCLE, layers CUT / FOLD / HOLES'
+      // PLAN §9.3 — the source claimed "R12 ASCII", but LWPOLYLINE is R14+ and the
+      // file had no HEADER/TABLES section. export/dxf.ts now emits a minimal HEADER
+      // ($ACADVER = AC1015) and a TABLES/LAYER section; entity geometry is unchanged.
+      // Corrected here to match. See notes.test.ts's "corrected prose" block.
+      formula: 'SVG: 1 user unit = 1 mm · DXF: AC1015 (R2000), LWPOLYLINE + CIRCLE, layers CUT / FOLD / HOLES'
     },
     {
       title: 'Still open',

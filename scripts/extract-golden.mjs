@@ -377,6 +377,119 @@ function tiling(s, g, bboxW, bboxH) {
   return { cols, rows, rowsSource, rowsFixed, sheetCount, tileRects, printTiles, nestTransform };
 }
 
+// ---- export: buildSvg, buildDxf, and a straight-line-only pathPolys (verbatim
+// transcription of fender.html:502-535, 538-600, 602-622).
+//
+// This script has no DOM, so pathPolysStraightOnly reproduces only the M/L/H/V/Z branch
+// of the real pathPolys() and THROWS if a subpath contains a curve command. Per PLAN
+// §9.2 the blank is pure M/L, so feeding it blank-only geometry (empty partsOutlines/
+// partsFolds — struts and the mudflap are the only curves) is always safe; it is never
+// called with real parts data. buildSvg needs no sampling at all — SVG keeps `d`
+// verbatim — so it is fed the FULL blank+parts data for every case.
+function baseName(s, g) {
+  return `fender-${s.side}-${s.wheel}-${Math.round(g.L)}x${Math.round(g.Wd)}mm`;
+}
+
+function pathPolysStraightOnly(d) {
+  const subs = d.split(/(?=[Mm])/).map((x) => x.trim()).filter(Boolean);
+  const polys = [];
+  for (const sub of subs) {
+    if (/[acqst]/i.test(sub)) {
+      throw new Error(`pathPolysStraightOnly: subpath has a curve command — "${sub}"`);
+    }
+    const pts = [];
+    let cx = 0, cy = 0, cmd = 'M';
+    const re = /([MLHVZmlhvz])|(-?\d*\.?\d+(?:e-?\d+)?)/g;
+    const nums = [];
+    let m;
+    const push = () => {
+      if (!nums.length) return;
+      if (cmd === 'M' || cmd === 'L' || cmd === 'm' || cmd === 'l') {
+        for (let i = 0; i + 1 < nums.length; i += 2) {
+          if (cmd === 'M' || cmd === 'L') { cx = nums[i]; cy = nums[i + 1]; } else { cx += nums[i]; cy += nums[i + 1]; }
+          pts.push([cx, cy]);
+        }
+      } else if (cmd === 'H' || cmd === 'h') {
+        for (const n of nums) { cx = cmd === 'H' ? n : cx + n; pts.push([cx, cy]); }
+      } else if (cmd === 'V' || cmd === 'v') {
+        for (const n of nums) { cy = cmd === 'V' ? n : cy + n; pts.push([cx, cy]); }
+      }
+      nums.length = 0;
+    };
+    while ((m = re.exec(sub))) {
+      if (m[1]) { push(); cmd = m[1]; }
+      else nums.push(parseFloat(m[2]));
+    }
+    push();
+    if (pts.length > 1) polys.push(pts);
+  }
+  return polys;
+}
+
+function buildSvgRef(v, g, s, name) {
+  const x0 = s.tongue ? -40 : -6;
+  const w = g.L + (s.tongue ? 40 : 0) + 12;
+  const gap = 30;
+  const pw = v.partsViewBox.split(' ').map(Number);
+  const H = g.Wd + gap + pw[3] + 12;
+  const p = (d, sw) => `<path d="${d}" fill="none" stroke="#000" stroke-width="${sw}"/>`;
+  const L = [];
+  L.push(`<g id="CUT" inkscape:label="CUT" inkscape:groupmode="layer" stroke="#000">`);
+  L.push(p(v.blankOutline, 0.2));
+  v.partsOutlines.forEach((o) => L.push(`<g transform="translate(0,${(g.Wd + gap).toFixed(1)})">${p(o.d, 0.2)}</g>`));
+  v.slots.forEach((sl) => L.push(`<rect x="${sl.x}" y="${sl.y}" width="${sl.w}" height="${sl.h}" rx="1.5" fill="none" stroke="#000" stroke-width="0.2"/>`));
+  L.push('</g>');
+  L.push(`<g id="FOLD" inkscape:label="FOLD" inkscape:groupmode="layer" stroke="#0000ff">`);
+  v.foldLines.concat(v.scoreLines).forEach((f) => L.push(`<path d="${f.d}" fill="none" stroke="#00f" stroke-width="0.2"/>`));
+  v.seams.forEach((f) => L.push(`<path d="${f.d}" fill="none" stroke="#00f" stroke-width="0.2" stroke-dasharray="4 2"/>`));
+  v.partsFolds.forEach((f) => L.push(`<g transform="translate(0,${(g.Wd + gap).toFixed(1)})"><path d="${f.d}" fill="none" stroke="#00f" stroke-width="0.2"/></g>`));
+  L.push('</g>');
+  L.push(`<g id="HOLES" inkscape:label="HOLES" inkscape:groupmode="layer" stroke="#ff0000">`);
+  v.holes.forEach((c) => L.push(`<circle cx="${c.cx}" cy="${c.cy}" r="${c.r}" fill="none" stroke="#f00" stroke-width="0.2"/>`));
+  v.partsHoles.forEach((c) => L.push(`<g transform="translate(0,${(g.Wd + gap).toFixed(1)})"><circle cx="${c.cx}" cy="${c.cy}" r="${c.r}" fill="none" stroke="#f00" stroke-width="0.2"/></g>`));
+  L.push('</g>');
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="${w.toFixed(1)}mm" height="${H.toFixed(1)}mm" viewBox="${x0} -6 ${w.toFixed(1)} ${H.toFixed(1)}">
+<title>${name}</title>
+${L.join('\n')}
+</svg>`;
+}
+
+// PLAN §9.3 — the HEADER/TABLES sections are new (source emitted only ENTITIES);
+// entity geometry below this point is byte-identical to the source's buildDxf().
+function buildDxfRef(v, g, pathPolysFn) {
+  const dy = g.Wd + 30;
+  const out = [
+    '0', 'SECTION', '2', 'HEADER',
+    '9', '$ACADVER', '1', 'AC1015',
+    '0', 'ENDSEC',
+    '0', 'SECTION', '2', 'TABLES',
+    '0', 'TABLE', '2', 'LAYER', '70', '3',
+    '0', 'LAYER', '2', 'CUT', '70', '0', '62', '7', '6', 'CONTINUOUS',
+    '0', 'LAYER', '2', 'FOLD', '70', '0', '62', '5', '6', 'CONTINUOUS',
+    '0', 'LAYER', '2', 'HOLES', '70', '0', '62', '1', '6', 'CONTINUOUS',
+    '0', 'ENDTAB',
+    '0', 'ENDSEC',
+    '0', 'SECTION', '2', 'ENTITIES'
+  ];
+  const poly = (pts, layer, closed, off) => {
+    out.push('0', 'LWPOLYLINE', '8', layer, '100', 'AcDbEntity', '100', 'AcDbPolyline', '90', String(pts.length), '70', closed ? '1' : '0');
+    pts.forEach((pp) => out.push('10', pp[0].toFixed(3), '20', (-(pp[1] + (off || 0))).toFixed(3)));
+  };
+  const circle = (c, layer, off) => out.push('0', 'CIRCLE', '8', layer, '10', (+c.cx).toFixed(3), '20', (-(+c.cy + (off || 0))).toFixed(3), '30', '0.0', '40', (+c.r).toFixed(3));
+  pathPolysFn(v.blankOutline).forEach((pts) => poly(pts, 'CUT', true, 0));
+  const closed = (d) => /z\s*$/i.test(d.trim());
+  v.slots.forEach((s) => poly([[+s.x, +s.y], [+s.x + +s.w, +s.y], [+s.x + +s.w, +s.y + +s.h], [+s.x, +s.y + +s.h]], 'CUT', true, 0));
+  v.foldLines.concat(v.scoreLines).forEach((f) => pathPolysFn(f.d).forEach((pts) => poly(pts, 'FOLD', false, 0)));
+  v.seams.forEach((f) => pathPolysFn(f.d).forEach((pts) => poly(pts, 'FOLD', false, 0)));
+  v.holes.forEach((c) => circle(c, 'HOLES', 0));
+  v.partsOutlines.forEach((o) => pathPolysFn(o.d).forEach((pts) => poly(pts, 'CUT', closed(o.d), dy)));
+  v.partsFolds.forEach((f) => pathPolysFn(f.d).forEach((pts) => poly(pts, 'FOLD', false, dy)));
+  v.partsHoles.forEach((c) => circle(c, 'HOLES', dy));
+  out.push('0', 'ENDSEC', '0', 'EOF');
+  return out.join('\n');
+}
+
 // ---- warnings, joinNote, steps, engNotes, specs (verbatim transcription of renderVals()
 // lines ~979-984, 986-994, 1092, 1110, 1112-1156)
 function joinNote(join) {
@@ -514,6 +627,7 @@ function summarizeIso(iso) {
 }
 
 const out = {};
+const exportOut = {};
 for (const [name, cfg] of Object.entries(CASES)) {
   const r = blank(cfg);
   const g = {};
@@ -591,6 +705,32 @@ for (const [name, cfg] of Object.entries(CASES)) {
     assembledLabel,
     printSpecLine
   };
+
+  // Export golden: svgFull is buildSvgRef fed the whole model (blank + parts) — SVG
+  // keeps `d` verbatim, so no DOM is needed for the curved parts outlines either.
+  // dxfBlankOnly is buildDxfRef fed blank data with EMPTY parts arrays, using the
+  // straight-line-only pathPolys — safe because the blank never contains a curve
+  // command (PLAN §9.2), and it is the piece a silent DXF regression would hurt most.
+  const name_ = baseName(cfg, r.g);
+  const vFull = {
+    blankOutline: r.blankOutline,
+    foldLines: r.foldLines,
+    scoreLines: r.scoreLines,
+    holes: r.holes,
+    slots: r.slots,
+    seams: r.seams,
+    partsOutlines: p.partsOutlines,
+    partsFolds: p.partsFolds,
+    partsHoles: p.partsHoles,
+    partsViewBox: p.partsViewBox
+  };
+  const vBlankOnly = { ...vFull, partsOutlines: [], partsFolds: [], partsHoles: [] };
+  exportOut[name] = {
+    config: cfg,
+    baseName: name_,
+    svgFull: buildSvgRef(vFull, r.g, cfg, name_),
+    dxfBlankOnly: buildDxfRef(vBlankOnly, r.g, pathPolysStraightOnly)
+  };
 }
 
 const path = process.argv[2];
@@ -598,4 +738,10 @@ writeFileSync(path, JSON.stringify(out, null, 2) + '\n');
 console.log(`wrote ${Object.keys(out).length} cases → ${path}`);
 for (const [k, v] of Object.entries(out)) {
   console.log(`  ${k.padEnd(26)} L=${v.geo.L.toFixed(4)} Wd=${v.geo.Wd.toFixed(4)} holes=${v.blank.holeCount} slots=${v.blank.slotCount} panels=${v.blank.panelCount}`);
+}
+
+const exportPath = process.argv[3];
+if (exportPath) {
+  writeFileSync(exportPath, JSON.stringify(exportOut, null, 2) + '\n');
+  console.log(`wrote ${Object.keys(exportOut).length} cases → ${exportPath}`);
 }
