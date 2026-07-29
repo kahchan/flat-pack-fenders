@@ -236,7 +236,7 @@ beyond vitest itself.
 | ✅ **WP2** | `parts.ts`, `crossSection.ts`, `tiling.ts`                                                                             | WP0           | Tiling must cover the nested pair (§9.4)                          |
 | ✅ **WP3** | `isometric.ts`                                                                                                         | WP0           | Self-contained; verify visually against the design                |
 | ✅ **WP4** | `warnings.ts`, `notes.ts`, `specs.ts`                                                                                  | WP0           | Mostly copy — transcribe prose verbatim, keep the em-dashes       |
-| **WP5**    | `pathPolys.ts`, `svg.ts`, `dxf.ts`                                                                                     | WP1, WP2      | Diff exported SVG against the design's own export                 |
+| ✅ **WP5** | `pathPolys.ts`, `svg.ts`, `dxf.ts`                                                                                     | WP1, WP2      | Diff exported SVG against the design's own export                 |
 | **WP6**    | `urlCodec.ts`, `presets.ts`, `useFenderConfig.ts`                                                                      | WP0           | §5, §6                                                            |
 | **WP7**    | Desktop UI shell — canvas, control rail, tabs, warnings banner, spec table                                             | WP0           | Can stub `buildModel()` from a fixture                            |
 | **WP8**    | Responsive layer — drawer, bottom sheet, scroll containers                                                             | WP7           | **Load `apple-design` skill first**                               |
@@ -372,6 +372,18 @@ today. Ported faithfully. Flagged only because it reads like a bug and someone w
 packages that implemented them: the design has **7** warnings (not 8) and **16** engineering notes
 (not 15). Both verified directly against the source. Noted because §1 is the summary people will
 skim, and a wrong count there quietly becomes a wrong test expectation downstream.
+
+**9.15 — The DXF fixture records intended output, not original output.** _(WP5.)_ Everywhere else the
+golden fixture captures exactly what the design source produced, and the tests assert our deliberate
+divergences against it (`rowsSource`/`rowsFixed` in §9.4, the original prose in §9.9). The DXF
+fixture is different: because §9.3's `HEADER`/`TABLES` addition is sanctioned, the extractor emits it
+too, so `dxfBlankOnly` is what we _intend_, not what the design _did_.
+
+That is fine — but know what it does and does not prove. The **entity** emission in
+`scripts/extract-golden.mjs` is still a verbatim transcription (same `toFixed(3)`, same `-(y+off)`
+Y-flip, same layer strings, same order), so entity geometry really is pinned against the source. The
+header is new in both and pinned only against itself. If the header ever needs to change, the test
+will not tell you whether you broke compatibility — check against a real CAD tool instead.
 
 ## 10. Open questions
 
