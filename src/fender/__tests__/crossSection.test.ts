@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import golden from './golden.json';
 import { buildCrossSection } from '../crossSection';
+import { geo } from '../geometry';
 import type { FenderConfig } from '../types';
 
 type XsecPathFixture = { d: string; fill: string; stroke: string; sw: number; dash: string };
@@ -42,6 +43,7 @@ const LABEL_HEX_TO_TOKEN: Record<string, string> = {
 describe.each(CASES)('buildCrossSection(%s)', (_name, c) => {
   const xs = buildCrossSection(c.config);
   const fixture = c.xsec;
+  const g = geo(c.config);
 
   it('path geometry (d, sw, dash) matches exactly', () => {
     expect(xs.paths.map((p) => ({ d: p.d, sw: p.sw, dash: p.dash }))).toEqual(
@@ -56,11 +58,49 @@ describe.each(CASES)('buildCrossSection(%s)', (_name, c) => {
     expect(xs.paths.map((p) => p.stroke)).toEqual(fixture.paths.map((p) => HEX_TO_TOKEN[p.stroke]));
   });
 
+  // The SKIRT label deliberately diverges — see the dedicated test below and PLAN §9.12.
+  const isSkirtLabel = (text: string) => text.startsWith('SKIRT ');
+
   it('labels match exactly, colours mapped to tokens', () => {
-    expect(xs.labels.map((l) => ({ x: l.x, y: l.y, size: l.size, anchor: l.anchor, text: l.text }))).toEqual(
-      fixture.labels.map((l) => ({ x: l.x, y: l.y, size: l.size, anchor: l.anchor, text: l.text }))
+    const strip = (l: {
+      x: unknown;
+      y: unknown;
+      size: unknown;
+      anchor?: unknown;
+      text: string;
+    }) => ({
+      x: l.x,
+      y: l.y,
+      size: l.size,
+      anchor: l.anchor,
+      text: l.text
+    });
+    expect(xs.labels.filter((l) => !isSkirtLabel(l.text)).map(strip)).toEqual(
+      fixture.labels.filter((l) => !isSkirtLabel(l.text)).map(strip)
     );
-    expect(xs.labels.map((l) => l.fill)).toEqual(fixture.labels.map((l) => LABEL_HEX_TO_TOKEN[l.fill]));
+    expect(xs.labels.map((l) => l.fill)).toEqual(
+      fixture.labels.map((l) => LABEL_HEX_TO_TOKEN[l.fill])
+    );
+  });
+
+  it('labels the skirt with the FINISHED length, not the flat one (PLAN §9.12)', () => {
+    // The design labelled this `g.skirt` — the bend-compensated flat dimension — while
+    // drawing the profile from the true folded length, so the label contradicted the line
+    // it annotated. Worst case in the fixtures is the hemmed 650b: drawn 32 mm, labelled
+    // 38 mm. A cross-section describes the finished object, so it gets the finished number.
+    const ours = xs.labels.find((l) => isSkirtLabel(l.text))!;
+    const theirs = fixture.labels.find((l) => isSkirtLabel(l.text))!;
+
+    expect(ours.text).toBe(`SKIRT ${Math.round(g.skirtTrue)} @ ${c.config.angle}°`);
+    // Position and styling are untouched — only the number changed.
+    expect({ x: ours.x, y: ours.y, size: ours.size, anchor: ours.anchor }).toEqual({
+      x: theirs.x,
+      y: theirs.y,
+      size: theirs.size,
+      anchor: theirs.anchor
+    });
+    // And it now agrees with the geometry it points at, which is the whole point.
+    expect(Math.round(g.skirtTrue)).toBe(Math.round(Math.hypot(g.proj, g.drop)));
   });
 
   it('viewBox and finished width match', () => {
