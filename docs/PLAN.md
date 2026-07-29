@@ -18,7 +18,7 @@ The design file is **not a mockup — it is a working app**, ~1160 lines. It shi
 | Views    | Isometric preview (64-segment facet shading, rotatable ±80°), cross-section w/ dimensions, print tiles                                               |
 | Export   | SVG (1 unit = 1 mm, Inkscape layers CUT/FOLD/HOLES) and DXF (LWPOLYLINE + CIRCLE)                                                                    |
 | Print    | A4 landscape tiling, 15 mm safe margin, 12 mm tile overlap, 100 mm scale ruler per sheet                                                             |
-| Copy     | 7 conditional warnings, 15 engineering notes, 8–10 assembly steps, 11-row spec table                                                                 |
+| Copy     | 7 conditional warnings, 16 engineering notes, 8–10 assembly steps, 11-row spec table                                                                 |
 
 23 parameters across 6 groups. **The port is a translation job, not a design job** — the risk is
 numerical fidelity, not invention.
@@ -235,7 +235,7 @@ beyond vitest itself.
 | ✅ **WP1** | `geometry.ts`, `pattern.ts` + the §7 fixture tests                                                                     | WP0           | Largest + highest risk. Must hit §7 exactly.                      |
 | ✅ **WP2** | `parts.ts`, `crossSection.ts`, `tiling.ts`                                                                             | WP0           | Tiling must cover the nested pair (§9.4)                          |
 | ✅ **WP3** | `isometric.ts`                                                                                                         | WP0           | Self-contained; verify visually against the design                |
-| **WP4**    | `warnings.ts`, `notes.ts`, `specs.ts`                                                                                  | WP0           | Mostly copy — transcribe prose verbatim, keep the em-dashes       |
+| ✅ **WP4** | `warnings.ts`, `notes.ts`, `specs.ts`                                                                                  | WP0           | Mostly copy — transcribe prose verbatim, keep the em-dashes       |
 | **WP5**    | `pathPolys.ts`, `svg.ts`, `dxf.ts`                                                                                     | WP1, WP2      | Diff exported SVG against the design's own export                 |
 | **WP6**    | `urlCodec.ts`, `presets.ts`, `useFenderConfig.ts`                                                                      | WP0           | §5, §6                                                            |
 | **WP7**    | Desktop UI shell — canvas, control rail, tabs, warnings banner, spec table                                             | WP0           | Can stub `buildModel()` from a fixture                            |
@@ -267,8 +267,14 @@ Keep it, isolate it in `export/pathPolys.ts`, and note it can't run server-side 
 `TABLES` or `BLOCKS`. LibreCAD, Inkscape and LightBurn will open it; stricter R12 readers won't.
 **Do:** emit a minimal `HEADER` with `$ACADVER` = `AC1015`, and a `TABLES` section with a `LAYER`
 table declaring CUT / FOLD / HOLES (colours 7 / 5 / 1). **Entity geometry stays byte-identical** —
-same `LWPOLYLINE` and `CIRCLE` output, same coordinate rounding, same Y-flip. Also correct the
-"R12 ASCII" wording in the export engineering note to "DXF AC1015 (R2000)".
+same `LWPOLYLINE` and `CIRCLE` output, same coordinate rounding, same Y-flip.
+
+⚠️ **The "R12 ASCII" wording is prose, and it lives in `src/fender/notes.ts`, not
+`export/dxf.ts`.** _(Caught by WP4.)_ This plan previously implied the fix belonged with the
+exporter. It does not — the sentence is the `formula` line of the "Export" engineering note, which
+WP4 owns. WP4 deliberately left it verbatim with an inline comment at `notes.ts:244`. **Whoever does
+WP5 must edit `notes.ts` to change it to "DXF AC1015 (R2000)"** and update the fixture's expected
+string accordingly. Easy to miss entirely, which is why it is called out twice.
 
 **9.4 — Nesting was screen-only. → RESOLVED: make all three surfaces agree.** The on-screen viewBox
 used `bboxH = Wd·2 + 10` while the print tile grid computed `rows` from `Wd` alone, so the nested
@@ -361,6 +367,11 @@ loop (source lines 890–917) never calls it. Harmless in practice — those poi
 the rail-0-to-rail-3 span and the angular arc the facet mesh already covers — so nothing is clipped
 today. Ported faithfully. Flagged only because it reads like a bug and someone will eventually
 "fix" it: there is nothing to fix unless the fastener layout changes.
+
+**9.14 — Plan arithmetic slips, corrected.** Two counts in §1 were wrong and were caught by the
+packages that implemented them: the design has **7** warnings (not 8) and **16** engineering notes
+(not 15). Both verified directly against the source. Noted because §1 is the summary people will
+skim, and a wrong count there quietly becomes a wrong test expectation downstream.
 
 ## 10. Open questions
 
