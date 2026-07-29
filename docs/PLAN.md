@@ -478,12 +478,7 @@ the DOM read in the UI layer, not the model. Check this during WP7.
 rear pair (§9.16). A front fender does want substantial lead, so there is no obviously-correct
 number to point it at the way rear could point at `DEFAULTS`. Needs someone who has ridden one.
 
-**10.6 — Paginate Sheet B. RECOMMENDED NEXT.** Sheet B does not fit A4 for most realistic configs
-(§9.18), so it currently clips and warns. Sheet A already solves exactly this problem by tiling, and
-`TilingModel` is most of the machinery. Doing the same for Sheet B would remove a standing warning
-from the default config and make the parts sheet usable at 1:1 for any strut length or mudflap. Not
-huge, but it touches `tiling.ts` and the print tree, so it wants its own package rather than being
-folded into WP8 or WP11.
+**10.6 — Sheet B pagination. PROMOTED to WP12** — see §8 and §12.
 
 **10.2 — Does the repo keep CC0?** It's CC0 now. Fine for patterns; unusual for code. Worth a
 deliberate choice before the first real commit.
@@ -534,6 +529,46 @@ DXF. Roughly 200 lines.
 must read 100.0 mm. Then print one and measure it with a real ruler.
 
 ---
+
+## 12. WP12 — Sheet B repack and pagination
+
+§9.18 left Sheet B honest but limited: it prints at true 1:1 and clips, and the default config
+raises a standing warning because 220 mm of parts will not fit 172 mm of page. Fix the layout, not
+the warning.
+
+**The problem is packing, not size.** The default's parts are two 160 × 14 mm struts and a
+47 × 100 mm mudflap — about 9 700 mm² of a 45 900 mm² page. They do not fit only because the design
+stacks everything in a single column, and adds a 22 mm hardware row even when `extraCount` is 0.
+
+**Rotation is allowed and expected**, but note it does not help applied to the whole sheet: 256 × 220
+rotated is 220 × 256, which overflows 172 worse. It helps **per part** — a 160 mm strut laid
+vertically frees a lot of column width.
+
+### Build
+
+- A small 2D packer in `src/fender/` (pure, like everything else there): rectangles in, positions
+  and 0°/90° rotations out, packed into `PW × PARTS_PH` pages. First-fit-decreasing is plenty; this
+  is a handful of rectangles, not a cutting-stock problem.
+- Parts keep their identity — a rotated strut is still `STRUT 1 · 160 × 14`, and its label rotates
+  with it and stays readable (never upside down; 90° counter-clockwise reads bottom-to-top).
+- Drop the unconditional 22 mm hardware row when `extraCount === 0`.
+- `PartsModel` gains pages; `fitsA4` becomes "fits in one page" rather than a warning trigger, and
+  the `sheet-b-too-wide` warning should only fire for a part that cannot fit a page **in either
+  orientation** — i.e. a strut longer than 267 mm. That is a real constraint worth warning about;
+  "your parts needed two sheets" is not.
+- Print tree emits one Sheet B page per packed page, each at true 1:1, numbered like the Sheet A
+  tiles. SVG/DXF exports keep laying parts out in one continuous area — a laser bed is not A4, and
+  the existing `g.Wd + 30` offset stays as-is so toolpaths do not move.
+
+### Verify
+
+- The default config packs onto **one** page and raises only `radius-estimated`. That is the
+  acceptance test; delete the §9.18 companion test in `warnings.test.ts` when it passes.
+- Every emitted page measures scale 1.0 (the method is in §9.18: un-hide `.print-only`, compare
+  `getScreenCTM().a` against a 100 mm probe — it caught the 78% bug that a DOM check missed).
+- No part overlaps another, none crosses a page edge, and every part from `buildParts` appears
+  exactly once across the pages.
+- Non-nested SVG/DXF output stays byte-identical.
 
 ## Suggested execution order
 
