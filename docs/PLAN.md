@@ -256,7 +256,7 @@ beyond vitest itself.
 | ✅ **WP6**  | `urlCodec.ts`, `presets.ts`, `useFenderConfig.ts`                                                                      | WP0           | §5, §6                                                            |
 | ✅ **WP7**  | Desktop UI shell — canvas, control rail, tabs, warnings banner, spec table                                             | WP0           | Can stub `buildModel()` from a fixture                            |
 | **WP8**     | Responsive layer — drawer, bottom sheet, scroll containers                                                             | WP7           | **Load `apple-design` skill first**                               |
-| **WP9**     | Print stylesheet + `.print-only` DOM                                                                                   | WP1, WP2, WP7 | Verify by actually printing to PDF and measuring the 100 mm ruler |
+| ✅ **WP9**  | Print stylesheet + `.print-only` DOM                                                                                   | WP1, WP2, WP7 | Verify by actually printing to PDF and measuring the 100 mm ruler |
 | ✅ **WP10** | Preset strip UI + mini cross-section thumbs                                                                            | WP2, WP6, WP7 |                                                                   |
 | **WP11**    | `export/pdf.ts` — hand-written vector PDF writer                                                                       | WP1, WP2, WP5 | §11. Zero deps. Verify by measuring the ruler in the output.      |
 
@@ -292,7 +292,7 @@ WP4 owns. WP4 deliberately left it verbatim with an inline comment at `notes.ts:
 WP5 must edit `notes.ts` to change it to "DXF AC1015 (R2000)"** and update the fixture's expected
 string accordingly. Easy to miss entirely, which is why it is called out twice.
 
-**9.4 — Nesting was screen-only. → RESOLVED: make all three surfaces agree.** The on-screen viewBox
+**9.4 — Nesting was screen-only. → RESOLVED across all three surfaces (tiling WP2, print + exports WP9).** The on-screen viewBox
 used `bboxH = Wd·2 + 10` while the print tile grid computed `rows` from `Wd` alone, so the nested
 ghost never reached the printed sheets or the exports. **Do:**
 
@@ -421,6 +421,36 @@ warning reads "keep the taper under -56%", which is not advice. Inherited verbat
 frozen `warnings.ts`. Cheap fix when someone wants it: clamp at 0 and change the wording to say the
 crown must be widened, since at that point no taper value can help.
 
+**9.18 — Sheet B printed at 78% of true size.** _(Found in WP9 review, by measuring.)_ The worst bug
+in the port, and it was inherited from the design.
+
+Sheet B's print SVG used the **content's** extent as its viewBox with
+`preserveAspectRatio="xMinYMin meet"`. `meet` scales to fit, so any parts sheet taller than the
+page was silently shrunk. The default config's parts sheet is 220 mm tall against 172 mm of live
+page → **scale 0.78183**. Struts cut from it come out 22% short, on the one sheet whose entire
+purpose is cutting parts to length.
+
+It was invisible because the design's fit check compared **width only** (`width <= PW`, 256 ≤ 267)
+and never height, so the app printed "fits A4 at full size" across the top of a sheet it was
+shrinking by a fifth.
+
+**Fixed three ways**, because fixing the check alone would not have stopped the scaling:
+
+1. The print viewBox extent is now the **page** (`-2 0 267 172`), not the content, so 1 unit = 1 mm
+   unconditionally. Overflow clips — visible — instead of scaling.
+2. `fitsA4 = width <= PW && height <= PARTS_PH` (`PARTS_PH = 172`, added to `defaults.ts`).
+3. The warning names whichever dimension overflows and gives matching advice. Telling someone to
+   shorten their struts does nothing about a sheet that is too tall.
+
+Verified by measurement: all 13 print pages now resolve to one scale, 1.00002, and the ruler
+measures 283.462 pt against a theoretical 283.465 (99.999 mm).
+
+**Known consequence: the default now raises two warnings, not one** — §9.5's clean-default property
+is relaxed accordingly, and its test now asserts one warning _about the fender_ plus the Sheet B
+one. This is not something to tune away. With 2 struts and a 100 mm mudflap Sheet B is 220 mm tall
+and no reasonable default fits it (the ceiling is roughly a 52 mm mudflap, and a 52 mm mudflap is a
+worse fender). **The real fix is to paginate Sheet B like Sheet A — see §10.6.**
+
 ## 10. Open questions
 
 _(§9.3, §9.4, §9.5, §9.6 and the test approach are all resolved — see above. Two left, neither
@@ -447,6 +477,13 @@ the DOM read in the UI layer, not the model. Check this during WP7.
 **10.5 — The front Side preset also trips the coverage warning.** 120 + 140 = 260°, same as the old
 rear pair (§9.16). A front fender does want substantial lead, so there is no obviously-correct
 number to point it at the way rear could point at `DEFAULTS`. Needs someone who has ridden one.
+
+**10.6 — Paginate Sheet B. RECOMMENDED NEXT.** Sheet B does not fit A4 for most realistic configs
+(§9.18), so it currently clips and warns. Sheet A already solves exactly this problem by tiling, and
+`TilingModel` is most of the machinery. Doing the same for Sheet B would remove a standing warning
+from the default config and make the parts sheet usable at 1:1 for any strut length or mudflap. Not
+huge, but it touches `tiling.ts` and the print tree, so it wants its own package rather than being
+folded into WP8 or WP11.
 
 **10.2 — Does the repo keep CC0?** It's CC0 now. Fine for patterns; unusual for code. Worth a
 deliberate choice before the first real commit.
