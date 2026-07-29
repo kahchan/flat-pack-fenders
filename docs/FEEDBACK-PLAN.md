@@ -83,9 +83,9 @@ draw the true length, letting an over-long strut overshoot visibly. Add a warnin
 **Confirmed: the wheel does shrink.** Both `crossSection.ts` and `isometric.ts` size their viewBox
 from the _fender's_ extent:
 
-```ts
-const xw = finished + 130; // crossSection.ts
-const isoViewBox = fit - to - content(ext); // isometric.ts
+```text
+crossSection.ts   xw = finished + 130        viewBox width follows the fender
+isometric.ts      isoViewBox = fit(ext)      ext is the accumulated content bounding box
 ```
 
 So widening the crown grows the viewBox, and everything inside — including the wheel — renders
@@ -112,10 +112,10 @@ width does. That is right, but it reads as a wheel and confuses people — label
 
 **Confirmed, and worse than "arbitrary".**
 
-```ts
-OVERLAP = 20; // defaults.ts, a magic number
-panelCount = Math.ceil(g.L / 250); // pattern.ts:200, another one
-PW = 267; // the actual A4 live width
+```text
+OVERLAP    = 20                     defaults.ts, a magic number
+panelCount = ceil(L / 250)          pattern.ts:200, another one
+PW         = 267                    the actual A4 live width
 ```
 
 Panels are cut to ~250 mm, then each is cut a further 20 mm past its seam for the lap — so a panel
