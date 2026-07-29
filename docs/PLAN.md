@@ -18,7 +18,7 @@ The design file is **not a mockup — it is a working app**, ~1160 lines. It shi
 | Views    | Isometric preview (64-segment facet shading, rotatable ±80°), cross-section w/ dimensions, print tiles                                               |
 | Export   | SVG (1 unit = 1 mm, Inkscape layers CUT/FOLD/HOLES) and DXF (LWPOLYLINE + CIRCLE)                                                                    |
 | Print    | A4 landscape tiling, 15 mm safe margin, 12 mm tile overlap, 100 mm scale ruler per sheet                                                             |
-| Copy     | 8 conditional warnings, 15 engineering notes, 8–10 assembly steps, 11-row spec table                                                                 |
+| Copy     | 7 conditional warnings, 15 engineering notes, 8–10 assembly steps, 11-row spec table                                                                 |
 
 23 parameters across 6 groups. **The port is a translation job, not a design job** — the risk is
 numerical fidelity, not invention.
