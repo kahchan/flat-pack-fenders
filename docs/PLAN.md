@@ -404,16 +404,15 @@ Y-flip, same layer strings, same order), so entity geometry really is pinned aga
 header is new in both and pinned only against itself. If the header ever needs to change, the test
 will not tell you whether you broke compatibility — check against a real CAD tool instead.
 
-**9.16 — The Side selector's rear coverage was stale.** _(Found by WP7.)_ Clicking Front/Rear jumps
-`lead`/`trail` to canned values: the design hardcoded front → 120/140 and rear → **60/200**. But
-60 + 200 = 260°, which trips the "coverage exceeds frame" warning that §9.5 picked the new rear
-default (40/175, 215°) to avoid — so clicking "Rear" on a fresh fender would silently wall the UI in
-red. Exactly the trap §5's preset correction already fixed once. `src/lib/sideDefaults.ts` now points
-the rear pair at `DEFAULTS.lead`/`DEFAULTS.trail` rather than literals, so the two cannot drift apart
-again. Front keeps its literal 120/140, which is fine at 260°... **no** — front is also 260°. It
-trips the same warning. Left as the design had it for now, because unlike rear there is no
-"correct" front default to point at; a front fender genuinely does want a lot of lead. Worth a look
-when someone rides one. See §10.5.
+**9.16 — The Side selector's canned coverage trips the coverage warning.** _(Found by WP7.)_
+Clicking Front/Rear jumps `lead`/`trail` to fixed values: the design hardcoded front → 120/140 and
+rear → 60/200. **Both sum to 260°**, over the 220° threshold, so either button walls a fresh fender
+in red — exactly the trap §5's preset correction already fixed once.
+
+Rear is fixed: `src/lib/sideDefaults.ts` points it at `DEFAULTS.lead`/`DEFAULTS.trail` rather than
+literals, so the selector and the default cannot drift apart again. **Front is not**, and is left at
+120/140 deliberately: a front fender genuinely wants substantial lead, so unlike rear there is no
+obviously-correct value to point it at. See §10.5.
 
 **9.17 — A warning can quote a negative percentage.** _(Found by WP7.)_ The "tail narrower than
 tyre" warning ends `keep the taper under ${f0((1 - (s.tyre+6)/g.crown0)*100)}%`. Once tyre width
