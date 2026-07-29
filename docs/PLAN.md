@@ -374,8 +374,11 @@ The label contradicts the line it points at. A cross-section is a picture of the
 not cosmetic — someone checking their folded part against the drawing will measure a real
 discrepancy and distrust the pattern.
 
-**Recommend:** label with `skirtTrue` and keep `g.skirt` for Sheet A only. **Ported as-is pending
-your call**, since it changes drawing output. See §10.3.
+**RESOLVED — labels the finished dimension.** `crossSection.ts` now reads `skirtTrue`. Position,
+styling and every other label are untouched; only the number changed. The `skirt < 12` warning still
+reads the flat value, which is correct — that one is about material around the fastener holes, a
+flat-pattern concern. Worst case found in the fixtures was the hemmed 650b: drawn 32 mm, labelled
+38 mm.
 
 **9.13 — The isometric bounding box ignores fasteners.** _(Found by WP3.)_ Facets, rails, caps,
 wheel, struts and mudflap all feed the `ext` accumulator via `note()`; the dart seam / hole / slot
@@ -406,13 +409,10 @@ will not tell you whether you broke compatibility — check against a real CAD t
 _(§9.3, §9.4, §9.5, §9.6 and the test approach are all resolved — see above. Two left, neither
 blocking.)_
 
-**10.1 — Dark mode?** The DS defines a full dark palette; the design file pins light. The drawings
-need their own inverted palette (paper→dark, cut lines→light), which is real design work. Plan
-assumes light-only for v1 with `--draw-*` tokens structured for a later drop-in.
-
-**10.3 — Fix the cross-section skirt label?** See §9.12. The drawing and its own annotation
-disagree by the bend allowance. Recommend labelling the finished dimension (`skirtTrue`); currently
-ported faithfully to the design, which shows the flat one.
+**10.1 — Dark mode. RESOLVED: light only.** The output of this app is paper. A dark canvas would
+have to invert back to white for every print and export anyway, so the second palette would exist
+only for the screen half of a tool whose point is the printed half. `--draw-*` stays structured for
+a later drop-in if that ever changes.
 
 **10.4 — Verify `color-mix()` in Safari.** The isometric facet ramp emits
 `color-mix(in srgb, rgb(var(--draw-facet-lit)) N%, rgb(var(--draw-facet-dark)) M%)` as an SVG `fill`.

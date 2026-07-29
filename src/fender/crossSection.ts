@@ -6,9 +6,16 @@ import type { FenderConfig, Geometry, Label, XsecModel, XsecPath } from './types
  * The side-on cross-section: tyre, rim, clearance gap, folded skirt profile and the
  * finished outside-width dimension line.
  *
- * The source's `g.skirt` is the FLAT (bend-compensated) skirt length, not the config's
- * `skirt` value — the "SKIRT" label and the `skirt < 12` warning both read the flat
- * value too. Ported faithfully; it is what the design shows.
+ * The SKIRT label reads `skirtTrue`, deliberately diverging from the design (PLAN §9.12).
+ *
+ * The source labelled it `g.skirt` — the flat, bend-compensated length — while drawing the
+ * profile from `g.proj`/`g.drop`, which come from the true folded length. So the design's
+ * default drew a 26 mm skirt and annotated it "SKIRT 25": the label contradicted the line
+ * it pointed at. A cross-section is a picture of the finished object, so the finished
+ * dimension is the correct one here; 25.44 is a flat-pattern number and belongs on Sheet A.
+ *
+ * The `skirt < 12` warning still reads the flat value, which is right — that warning is
+ * about material around the fastener holes, which is a flat-pattern concern.
  */
 export function buildCrossSection(s: FenderConfig, g: Geometry = geo(s)): XsecModel {
   const tR = s.tyre / 2;
@@ -83,7 +90,7 @@ export function buildCrossSection(s: FenderConfig, g: Geometry = geo(s)): XsecMo
       size: 6,
       fill: 'var(--draw-label-dim)',
       anchor: 'start',
-      text: `SKIRT ${f0(g.skirt)} @ ${s.angle}°`
+      text: `SKIRT ${f0(g.skirtTrue)} @ ${s.angle}°`
     },
     {
       x: 16,
