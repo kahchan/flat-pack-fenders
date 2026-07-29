@@ -1,0 +1,270 @@
+/* ─────────────────────────────────────────────
+   WP8 — tablet (760-1099px) and phone (<760px)
+   layouts, PLAN §4. Everything here is additive:
+   the desk (≥1100px) rules in app.css are never
+   overridden, only supplemented inside the media
+   queries below.
+   ───────────────────────────────────────────── */
+
+/* `.control-rail` is reused unmodified inside the tablet drawer and the phone sheet.
+   `flex: 1` is a no-op on the desk grid cell (grid ignores flex properties on grid
+   items) and lets the rail fill a flex parent everywhere else. */
+.control-rail {
+  flex: 1;
+  min-height: 0;
+}
+
+@media (max-width: 1099px) {
+  .app-shell {
+    display: block;
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .canvas-pane {
+    overflow: visible;
+    padding-bottom: 160px;
+  }
+
+  /* Every wide SVG sits in an overflow-x scroll container with a right-edge fade
+     (PLAN §4); Sheet A's own `min-width: 720px` is what actually triggers it. */
+  .panel,
+  .print-tile-card {
+    overflow-x: auto;
+    position: relative;
+  }
+
+  .panel::after,
+  .print-tile-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 28px;
+    background: linear-gradient(to right, transparent, var(--draw-paper));
+    pointer-events: none;
+  }
+}
+
+/* ── Tablet (760-1099px): overlay drawer ── */
+
+@media (min-width: 760px) and (max-width: 1099px) {
+  .assembled-block {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--color-bg);
+    margin: 0 calc(-1 * var(--space-8)) var(--space-4);
+    padding: var(--space-4) var(--space-8) 0;
+  }
+}
+
+.rail-pill {
+  position: fixed;
+  right: var(--space-5);
+  bottom: var(--space-5);
+  z-index: 30;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-fg);
+  color: var(--color-bg);
+  padding: 14px 22px;
+  font-size: 12px;
+  box-shadow: var(--shadow-2);
+  cursor: pointer;
+  max-width: min(420px, calc(100vw - 2 * var(--space-5)));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rail-drawer-scrim {
+  position: fixed;
+  inset: 0;
+  background: var(--color-overlay);
+  z-index: 40;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-slide) var(--ease-out);
+}
+
+.rail-drawer-scrim--open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.rail-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 392px;
+  max-width: 88vw;
+  background: var(--color-bg-alt);
+  border-left: 1px solid var(--color-border);
+  box-shadow: var(--shadow-nav);
+  z-index: 41;
+  transform: translateX(100%);
+  transition: transform var(--dur-slide) var(--ease-out);
+  display: flex;
+  flex-direction: column;
+}
+
+.rail-drawer--open {
+  transform: translateX(0);
+}
+
+.rail-drawer:not(.rail-drawer--open) {
+  pointer-events: none;
+}
+
+.rail-drawer__close {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: 1;
+  border: none;
+  background: var(--draw-paper);
+  border-radius: var(--radius-pill);
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow-1);
+}
+
+/* ── Phone (<760px): single column, sticky isometric header, bottom sheet ── */
+
+@media (max-width: 759px) {
+  .canvas-pane {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+
+  .assembled-block {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--color-bg);
+    margin: 0 calc(-1 * var(--space-4)) var(--space-4);
+    padding: var(--space-3) var(--space-4) 0;
+    /* Isometric pinned as a sticky header, ~38vh (PLAN §4) — overrides the desk
+       `--iso-max-h` default of 68vh via the CSS var the svg's inline style reads. */
+    --iso-max-h: 38vh;
+  }
+
+  .assembled-block .panel {
+    padding: 12px 14px 8px;
+  }
+
+  /* Tabs become a segmented control. */
+  .tab-bar {
+    border-bottom: none;
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-pill);
+    padding: 4px;
+    gap: 2px;
+    margin: 20px 0 16px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    text-align: center;
+    margin: 0;
+    padding: 9px 6px;
+    border-radius: var(--radius-pill);
+    border-bottom: none;
+  }
+
+  .tab-btn--active {
+    background: var(--draw-paper);
+    color: var(--color-fg);
+    box-shadow: var(--shadow-1);
+    border-bottom-color: transparent;
+  }
+}
+
+.bottom-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 41;
+  background: var(--color-bg-alt);
+  border-top: 1px solid var(--color-border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: var(--shadow-nav);
+  display: flex;
+  flex-direction: column;
+  overscroll-behavior: contain;
+}
+
+.bottom-sheet__grab {
+  flex-shrink: 0;
+  touch-action: none;
+  cursor: grab;
+  padding: var(--space-2) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bottom-sheet__presets {
+  flex-shrink: 0;
+  padding: 0 var(--space-4) var(--space-3);
+}
+
+.bottom-sheet__handle {
+  width: 36px;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--color-border-strong);
+  margin: 0 auto;
+}
+
+.bottom-sheet__specline {
+  font-size: 11px;
+  color: var(--color-fg-muted);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bottom-sheet__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 var(--space-4) 40px;
+}
+
+.preset-chip-strip {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.preset-chip {
+  flex: 0 0 auto;
+  border: 1px solid var(--color-border);
+  background: var(--draw-paper);
+  color: var(--color-fg);
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.preset-chip--selected {
+  background: var(--color-accent-pale);
+  border-color: var(--color-accent);
+}
+
+/* `.bottom-sheet` and `.rail-drawer`/`.rail-pill` are screen-only overlays, hidden under
+   print by the existing `.screen-only` rule in global.css — nothing further needed here. */

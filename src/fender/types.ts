@@ -232,6 +232,35 @@ export interface BlankModel {
   bboxH: number;
 }
 
+/**
+ * One part (strut, mudflap, or hardware piece), positioned on a packed Sheet B page
+ * (PLAN §12). Geometry (`outline`/`folds`/`holes`/`label`) is in LOCAL space — as if the
+ * part sat unrotated at its own origin (0,0) — and the renderer wraps it in a single
+ * `<g transform>` built from `x`/`y`/`rotated`/`w`/`h` (the part's natural, pre-rotation
+ * size), so rotating that one group carries the label around with the part for free.
+ */
+export interface PackedPart {
+  outline: Path;
+  folds: Path[];
+  holes: Hole[];
+  label: Label;
+  x: number;
+  y: number;
+  /** Natural (pre-rotation) width/height, INCLUDING the label row reserved below the
+   * part's own geometry — this is the whole unit the packer placed and the transform
+   * rotates, so it's also the real footprint to use for overlap/bounds checks. */
+  w: number;
+  h: number;
+  rotated: boolean;
+}
+
+/** One PW × PARTS_PH page of Sheet B, packed by `packRects` (PLAN §12). */
+export interface PartsPage {
+  parts: PackedPart[];
+  width: number;
+  height: number;
+}
+
 export interface PartsModel {
   outlines: Path[];
   folds: Path[];
@@ -241,8 +270,20 @@ export interface PartsModel {
   viewBox: string;
   width: number;
   height: number;
-  /** False when Sheet B is wider than the A4 live area. */
+  /**
+   * Whether Sheet B packs onto one PW × PARTS_PH page (PLAN §12) — no longer the
+   * design's width-only, single-column check. `outlines`/`folds`/`holes`/`labels`/
+   * `viewBox`/`width`/`height` above stay the old single continuous layout unchanged
+   * (SVG/DXF export and the laser bed don't care about A4 pagination); `pages` is the
+   * new packed layout the screen/print tree actually draws.
+   */
   fitsA4: boolean;
+  /** One entry per PW × PARTS_PH page needed to fit every part. */
+  pages: PartsPage[];
+  /** Longest side (mm) of each part that doesn't fit a PW × PARTS_PH page in EITHER
+   * orientation — empty unless a strut is longer than the page in every rotation. This
+   * is the only Sheet-B condition still worth a warning; needing more pages is not. */
+  oversizedParts: number[];
   /** Count of butt straps / clips, 0 for joins that need none. */
   extraCount: number;
   extraLabel: string;
