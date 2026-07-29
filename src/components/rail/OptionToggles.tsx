@@ -1,0 +1,54 @@
+import { useMemo } from 'react';
+import { hemHint } from '../../lib/controlText';
+import { OptionButton } from './OptionButton';
+import type { ConfigKey, FenderConfig } from '../../fender/types';
+
+interface OptionTogglesProps {
+  config: FenderConfig;
+  setField: <K extends ConfigKey>(key: K, value: FenderConfig[K]) => void;
+}
+
+type ToggleKey = 'tongue' | 'fuse' | 'nest' | 'hem';
+
+/** Design source lines 330-343. */
+export function OptionToggles({ config, setField }: OptionTogglesProps) {
+  const toggles: { k: ToggleKey; label: string; note: string }[] = useMemo(
+    () => [
+      { k: 'tongue', label: 'Frame-mount tongue', note: 'Slotted tab at the nose — slides to take up tolerance' },
+      {
+        k: 'fuse',
+        label: 'Sacrificial strut end',
+        note: 'Single oversize hole that shears before the wheel locks'
+      },
+      { k: 'nest', label: 'Nest a second fender', note: 'Ghost outline of the pair, tail-to-nose, to save stock' },
+      { k: 'hem', label: 'Hemmed skirt edge', note: hemHint(config) }
+    ],
+    [config]
+  );
+
+  return (
+    <div className="rail-group">
+      <div className="rail-group-label">Options</div>
+      <div className="option-list">
+        {toggles.map((o) => {
+          const on = config[o.k];
+          return (
+            <OptionButton
+              key={o.k}
+              label={o.label}
+              note={o.note}
+              selected={on}
+              emphasis="tinted"
+              onClick={() => setField(o.k, !on)}
+              trailing={
+                <span className={`toggle-btn__state${on ? ' toggle-btn__state--on' : ''}`}>
+                  {on ? 'ON' : 'OFF'}
+                </span>
+              }
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
