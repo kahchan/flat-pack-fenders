@@ -125,7 +125,17 @@ Six, each a `Partial<FenderConfig>` merged over `DEFAULTS`:
 | Cargo / folder 20″  | **the design file's original defaults** — rear, 20in, tyre 50, clear 16, crown 62, skirt 30, 60/200°, taper 25, flaps 16, 3 struts, strutLen 220, flap 90, single |
 | Hole-free minimal   | join `none`, 1 strut, tongue on, mudflap 0                                                                                                                        |
 
-The **new app default is "Rear commuter 700c"** (§9.5), not the 20″ config.
+The **new app default is "Rear commuter 700c"** (§9.5), not the 20″ config — and the preset of
+that name is **deliberately identical to it**, so clicking it returns you to the fresh-load state.
+
+_Corrected during WP6._ This table originally gave that preset 55°/200°, which is 255° of coverage —
+it would have tripped the very warning §9.5 picked the default to avoid, and a preset that silently
+differs from the state sharing its name is a trap. Notation in this table: `X/Y°` is `lead`/`trail`;
+singular "flap N" is `mudflap`, plural "flaps N" is the flap count.
+
+Only Cargo 20″ is pinned to a golden value (it must equal the design's original defaults, asserted
+against the `cargo-20in-single` fixture case). The other four presets' exact numbers are a reading
+of this table, not a verified reference — adjust them freely if they ride badly.
 
 **Placement:** horizontal scroll strip at the top of the control rail (desktop) / in the sheet's peek
 state (phone), so a phone user lands on presets first. Each card ~108×92: a **live mini
@@ -139,10 +149,16 @@ Fixed field order, `.`-separated, version-prefixed. `thick` travels as tenths so
 a `.`:
 
 ```
-#f1.rear.20in.50.0.16.62.30.55.8.60.200.25.70.16.3.220.90.zip.single.1.0.0.0
      side wheel tyre mR clear crown skirt angle thick(×10) lead trail taper
      taperAt flaps struts strutLen mudflap join stock tongue fuse nest hem
+
+#f1.rear.20in.50.0.16.62.30.55.8.60.200.25.70.16.3.220.90.zip.single    ← Cargo 20″ preset
+#f1                                                                     ← DEFAULTS
 ```
+
+Note the second case: when every field is default the hash collapses to the bare version tag, and
+the hook clears the hash entirely rather than writing `#f1`. The worked example above encodes the
+**Cargo 20″** values, not `DEFAULTS` — they were the default when §6 was written.
 
 - Trailing values equal to defaults are dropped; the decoder backfills from `DEFAULTS`.
 - **Decode is untrusted input.** Clamp every numeric to its `PARAM_SPECS` `[min,max]`; fall back to
@@ -237,7 +253,7 @@ beyond vitest itself.
 | ✅ **WP3** | `isometric.ts`                                                                                                         | WP0           | Self-contained; verify visually against the design                |
 | ✅ **WP4** | `warnings.ts`, `notes.ts`, `specs.ts`                                                                                  | WP0           | Mostly copy — transcribe prose verbatim, keep the em-dashes       |
 | ✅ **WP5** | `pathPolys.ts`, `svg.ts`, `dxf.ts`                                                                                     | WP1, WP2      | Diff exported SVG against the design's own export                 |
-| **WP6**    | `urlCodec.ts`, `presets.ts`, `useFenderConfig.ts`                                                                      | WP0           | §5, §6                                                            |
+| ✅ **WP6** | `urlCodec.ts`, `presets.ts`, `useFenderConfig.ts`                                                                      | WP0           | §5, §6                                                            |
 | **WP7**    | Desktop UI shell — canvas, control rail, tabs, warnings banner, spec table                                             | WP0           | Can stub `buildModel()` from a fixture                            |
 | **WP8**    | Responsive layer — drawer, bottom sheet, scroll containers                                                             | WP7           | **Load `apple-design` skill first**                               |
 | **WP9**    | Print stylesheet + `.print-only` DOM                                                                                   | WP1, WP2, WP7 | Verify by actually printing to PDF and measuring the 100 mm ruler |
