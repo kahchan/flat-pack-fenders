@@ -245,20 +245,20 @@ beyond vitest itself.
 
 `WP0` is a hard gate. `WP1`–`WP6` then run **in parallel** — they share only `types.ts` + `defaults.ts`.
 
-| WP         | Scope                                                                                                                  | Depends on    | Notes                                                             |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------- | ------------- | ----------------------------------------------------------------- |
-| ✅ **WP0** | Scaffold (Vite/TS strict/vitest/gh-pages), self-hosted fonts, vendored tokens, `types.ts`, `defaults.ts`, `Button.tsx` | —             | **Blocks everything. Freeze the contract before fanning out.**    |
-| ✅ **WP1** | `geometry.ts`, `pattern.ts` + the §7 fixture tests                                                                     | WP0           | Largest + highest risk. Must hit §7 exactly.                      |
-| ✅ **WP2** | `parts.ts`, `crossSection.ts`, `tiling.ts`                                                                             | WP0           | Tiling must cover the nested pair (§9.4)                          |
-| ✅ **WP3** | `isometric.ts`                                                                                                         | WP0           | Self-contained; verify visually against the design                |
-| ✅ **WP4** | `warnings.ts`, `notes.ts`, `specs.ts`                                                                                  | WP0           | Mostly copy — transcribe prose verbatim, keep the em-dashes       |
-| ✅ **WP5** | `pathPolys.ts`, `svg.ts`, `dxf.ts`                                                                                     | WP1, WP2      | Diff exported SVG against the design's own export                 |
-| ✅ **WP6** | `urlCodec.ts`, `presets.ts`, `useFenderConfig.ts`                                                                      | WP0           | §5, §6                                                            |
-| **WP7**    | Desktop UI shell — canvas, control rail, tabs, warnings banner, spec table                                             | WP0           | Can stub `buildModel()` from a fixture                            |
-| **WP8**    | Responsive layer — drawer, bottom sheet, scroll containers                                                             | WP7           | **Load `apple-design` skill first**                               |
-| **WP9**    | Print stylesheet + `.print-only` DOM                                                                                   | WP1, WP2, WP7 | Verify by actually printing to PDF and measuring the 100 mm ruler |
-| **WP10**   | Preset strip UI + mini cross-section thumbs                                                                            | WP2, WP6, WP7 |                                                                   |
-| **WP11**   | `export/pdf.ts` — hand-written vector PDF writer                                                                       | WP1, WP2, WP5 | §11. Zero deps. Verify by measuring the ruler in the output.      |
+| WP          | Scope                                                                                                                  | Depends on    | Notes                                                             |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------- | ------------- | ----------------------------------------------------------------- |
+| ✅ **WP0**  | Scaffold (Vite/TS strict/vitest/gh-pages), self-hosted fonts, vendored tokens, `types.ts`, `defaults.ts`, `Button.tsx` | —             | **Blocks everything. Freeze the contract before fanning out.**    |
+| ✅ **WP1**  | `geometry.ts`, `pattern.ts` + the §7 fixture tests                                                                     | WP0           | Largest + highest risk. Must hit §7 exactly.                      |
+| ✅ **WP2**  | `parts.ts`, `crossSection.ts`, `tiling.ts`                                                                             | WP0           | Tiling must cover the nested pair (§9.4)                          |
+| ✅ **WP3**  | `isometric.ts`                                                                                                         | WP0           | Self-contained; verify visually against the design                |
+| ✅ **WP4**  | `warnings.ts`, `notes.ts`, `specs.ts`                                                                                  | WP0           | Mostly copy — transcribe prose verbatim, keep the em-dashes       |
+| ✅ **WP5**  | `pathPolys.ts`, `svg.ts`, `dxf.ts`                                                                                     | WP1, WP2      | Diff exported SVG against the design's own export                 |
+| ✅ **WP6**  | `urlCodec.ts`, `presets.ts`, `useFenderConfig.ts`                                                                      | WP0           | §5, §6                                                            |
+| ✅ **WP7**  | Desktop UI shell — canvas, control rail, tabs, warnings banner, spec table                                             | WP0           | Can stub `buildModel()` from a fixture                            |
+| **WP8**     | Responsive layer — drawer, bottom sheet, scroll containers                                                             | WP7           | **Load `apple-design` skill first**                               |
+| **WP9**     | Print stylesheet + `.print-only` DOM                                                                                   | WP1, WP2, WP7 | Verify by actually printing to PDF and measuring the 100 mm ruler |
+| ✅ **WP10** | Preset strip UI + mini cross-section thumbs                                                                            | WP2, WP6, WP7 |                                                                   |
+| **WP11**    | `export/pdf.ts` — hand-written vector PDF writer                                                                       | WP1, WP2, WP5 | §11. Zero deps. Verify by measuring the ruler in the output.      |
 
 Each agent gets: the golden values for its slice, the relevant source line range from
 `scratchpad/fender.html`, and the frozen `types.ts`.
@@ -404,6 +404,24 @@ Y-flip, same layer strings, same order), so entity geometry really is pinned aga
 header is new in both and pinned only against itself. If the header ever needs to change, the test
 will not tell you whether you broke compatibility — check against a real CAD tool instead.
 
+**9.16 — The Side selector's rear coverage was stale.** _(Found by WP7.)_ Clicking Front/Rear jumps
+`lead`/`trail` to canned values: the design hardcoded front → 120/140 and rear → **60/200**. But
+60 + 200 = 260°, which trips the "coverage exceeds frame" warning that §9.5 picked the new rear
+default (40/175, 215°) to avoid — so clicking "Rear" on a fresh fender would silently wall the UI in
+red. Exactly the trap §5's preset correction already fixed once. `src/lib/sideDefaults.ts` now points
+the rear pair at `DEFAULTS.lead`/`DEFAULTS.trail` rather than literals, so the two cannot drift apart
+again. Front keeps its literal 120/140, which is fine at 260°... **no** — front is also 260°. It
+trips the same warning. Left as the design had it for now, because unlike rear there is no
+"correct" front default to point at; a front fender genuinely does want a lot of lead. Worth a look
+when someone rides one. See §10.5.
+
+**9.17 — A warning can quote a negative percentage.** _(Found by WP7.)_ The "tail narrower than
+tyre" warning ends `keep the taper under ${f0((1 - (s.tyre+6)/g.crown0)*100)}%`. Once tyre width
+exceeds crown width — reachable on the Tyre width slider — that expression goes negative and the
+warning reads "keep the taper under -56%", which is not advice. Inherited verbatim and left in the
+frozen `warnings.ts`. Cheap fix when someone wants it: clamp at 0 and change the wording to say the
+crown must be widened, since at that point no taper value can help.
+
 ## 10. Open questions
 
 _(§9.3, §9.4, §9.5, §9.6 and the test approach are all resolved — see above. Two left, neither
@@ -414,13 +432,22 @@ have to invert back to white for every print and export anyway, so the second pa
 only for the screen half of a tool whose point is the printed half. `--draw-*` stays structured for
 a later drop-in if that ever changes.
 
-**10.4 — Verify `color-mix()` in Safari.** The isometric facet ramp emits
+**10.4 — `color-mix()` in Safari. LARGELY RESOLVED.** Verified on real WebKit — iPadOS 26 Simulator,
+Safari, 1032px — where the facet ramp renders a correct smooth gradient with no fallback or black
+fills. Not literally checked on **macOS** Safari, which is a different build. If you see flat or
+black facets in the isometric on your Mac, this is the cause and §10.4's fallback below is the fix.
+
+_Original note:_ The isometric facet ramp emits
 `color-mix(in srgb, rgb(var(--draw-facet-lit)) N%, rgb(var(--draw-facet-dark)) M%)` as an SVG `fill`.
 Confirmed rendering correctly in Chromium. `color-mix()` is Safari 16.2+ and SVG presentation
 attributes accept CSS colour functions, so it should be fine, but it is **unverified on Safari/iOS**
 and Kah is on macOS. If it fails there, the fallback is to have the component resolve the two tokens
 once via `getComputedStyle` and pass literal `rgb()` down — which keeps `src/fender/` pure by doing
 the DOM read in the UI layer, not the model. Check this during WP7.
+
+**10.5 — The front Side preset also trips the coverage warning.** 120 + 140 = 260°, same as the old
+rear pair (§9.16). A front fender does want substantial lead, so there is no obviously-correct
+number to point it at the way rear could point at `DEFAULTS`. Needs someone who has ridden one.
 
 **10.2 — Does the repo keep CC0?** It's CC0 now. Fine for patterns; unusual for code. Worth a
 deliberate choice before the first real commit.
