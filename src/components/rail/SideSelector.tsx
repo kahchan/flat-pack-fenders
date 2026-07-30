@@ -8,8 +8,8 @@ interface SideSelectorProps {
 }
 
 const SIDES: { k: Side; label: string; note: string }[] = [
-  { k: 'front', label: 'Front', note: 'One fork-crown mount · struts to the blade eyelets' },
-  { k: 'rear', label: 'Rear', note: 'Chainstay + seatstay bridge mounts · struts to the dropouts' }
+  { k: 'front', label: 'Front', note: 'One fork-crown mount, struts to the blade eyelets' },
+  { k: 'rear', label: 'Rear', note: 'Chainstay + seatstay bridge mounts, struts to the dropouts' }
 ];
 
 /**

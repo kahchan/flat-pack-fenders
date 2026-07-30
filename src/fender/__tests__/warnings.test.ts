@@ -45,6 +45,18 @@ const ID_ORDER = [
 /** Ids with no fixture counterpart at all — new checks, not source transcriptions. */
 const NEW_IDS = new Set(['sheet-b-too-wide', 'tyre-too-wide', 'strut-too-long']);
 
+// PLAN FEEDBACK WP17 — these four ids' text lost an em-dash each (decision A3), reworded
+// as a colon per the notes.ts scheme (it introduces the reason/consequence, same as
+// notes.test.ts's CORRECTED_INDICES). golden.json keeps the original design wording as
+// the historical record, so these are excluded from the verbatim comparison below rather
+// than regenerated; see the "corrected prose" block for what actually changed.
+const REWORDED_IDS = new Set([
+  'coverage-exceeds-frame',
+  'radius-estimated',
+  'tail-narrower-than-tyre',
+  'darts-too-wide'
+]);
+
 describe.each(CASES)('buildWarnings(%s)', (_name, c) => {
   const warnings = buildWarnings(c.config);
 
@@ -53,9 +65,22 @@ describe.each(CASES)('buildWarnings(%s)', (_name, c) => {
     // overflows, and the fixture records the design's width-only wording (PLAN §9.18).
     // tyre-too-wide and strut-too-long have no fixture counterpart at all (PLAN §13.2,
     // §13.4) — the design source never checked either condition.
-    const ours = warnings.filter((w) => !NEW_IDS.has(w.id)).map((w) => w.text);
-    const theirs = c.warnings.map((w) => w.text).filter((t) => !t.startsWith('Sheet B is'));
+    // Both arrays are still in fixed source-condition order at this point, so pairing
+    // them up by index (before the WP17 REWORDED_IDS filter) is safe.
+    const oursWithId = warnings.filter((w) => !NEW_IDS.has(w.id));
+    const theirsText = c.warnings.map((w) => w.text).filter((t) => !t.startsWith('Sheet B is'));
+    const pairs = oursWithId.map((w, i) => [w, theirsText[i]] as const);
+
+    const ours = pairs.filter(([w]) => !REWORDED_IDS.has(w.id)).map(([w]) => w.text);
+    const theirs = pairs.filter(([w]) => !REWORDED_IDS.has(w.id)).map(([, t]) => t);
     expect(ours).toEqual(theirs);
+  });
+
+  it('reworded warnings drop their em-dash but keep the same facts (WP17)', () => {
+    for (const w of warnings) {
+      if (!REWORDED_IDS.has(w.id)) continue;
+      expect(w.text, w.id).not.toMatch(/—/);
+    }
   });
 
   it('sheet-b-too-wide only fires when a part cannot fit a page in either orientation (PLAN §12)', () => {
@@ -190,6 +215,6 @@ describe('warnings invariants', () => {
     const w = buildWarnings(wide).find((x) => x.id === 'tail-narrower-than-tyre');
     expect(w).toBeDefined();
     expect(w!.text).not.toMatch(/-\d+%/);
-    expect(w!.text).toMatch(/no taper helps here — widen the crown instead/);
+    expect(w!.text).toMatch(/no taper helps here: widen the crown instead/);
   });
 });

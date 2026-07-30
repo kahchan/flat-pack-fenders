@@ -115,7 +115,7 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
       size: 4.5,
       fill: 'var(--draw-fold)',
       anchor: 'middle',
-      text: `HEM ${f0(g.hem)} MM — FOLD BACK 180°`
+      text: `HEM ${f0(g.hem)} MM: FOLD BACK 180°`
     });
   }
 
@@ -259,7 +259,7 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
         size: 4.5,
         fill: 'var(--draw-seam)',
         anchor: 'middle',
-        text: `SEAM ${i} — CUT PANEL ${i} TO HERE +${OVERLAP} MM LAP`
+        text: `SEAM ${i}: CUT PANEL ${i} TO HERE +${OVERLAP} MM LAP`
       });
 
       // PLAN FEEDBACK WP15 §15.2 — the lap carried no annotation on paper, so there was
@@ -273,7 +273,7 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
         size: 4.5,
         fill: 'var(--draw-seam)',
         anchor: 'middle',
-        text: `PANEL ${i + 1} UNDER — PANEL ${i} LAPS OVER IT`
+        text: `PANEL ${i + 1} UNDER: PANEL ${i} LAPS OVER IT`
       });
       const arrowY = g.yc + 8;
       const arrowHalf = 6;
@@ -296,7 +296,7 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
       size: 5,
       fill: 'var(--draw-label-dim)',
       anchor: 'middle',
-      text: `CENTRELINE · BLANK ${f0(g.L)} × ${f0(g.Wd)} mm · ${g.n} FLAPS`
+      text: `CENTRELINE, BLANK ${f0(g.L)} × ${f0(g.Wd)} mm, ${g.n} FLAPS`
     },
     {
       x: 4,
@@ -320,7 +320,7 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
       size: 4.5,
       fill: 'var(--draw-label-dim)',
       anchor: 'end',
-      text: s.mudflap > 0 ? 'TAIL · MUDFLAP' : 'TAIL'
+      text: s.mudflap > 0 ? 'TAIL, MUDFLAP' : 'TAIL'
     }
   ];
 
@@ -331,7 +331,7 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
       size: 4.5,
       fill: 'var(--draw-label-dim)',
       anchor: 'start',
-      text: s.side === 'front' ? 'TONGUE · FORK ARCH' : 'TONGUE · CHAINSTAY BRIDGE'
+      text: s.side === 'front' ? 'TONGUE, FORK ARCH' : 'TONGUE, CHAINSTAY BRIDGE'
     });
   }
 

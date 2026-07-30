@@ -28,7 +28,9 @@ describe('PRINT_STROKE', () => {
 });
 
 describe('RULER_CAPTION', () => {
-  it('is the exact source string (fender.html:1004)', () => {
-    expect(RULER_CAPTION).toBe('100 mm — measure to check scale');
+  // PLAN FEEDBACK WP17 (decision A3) — the design source (fender.html:1004) reads
+  // "100 mm — measure to check scale"; the em-dash is now a colon. Facts unchanged.
+  it('drops the source em-dash but keeps the same instruction (WP17)', () => {
+    expect(RULER_CAPTION).toBe('100 mm: measure to check scale');
   });
 });

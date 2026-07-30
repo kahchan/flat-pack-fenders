@@ -7,10 +7,10 @@ interface JoinSelectorProps {
 }
 
 const JOINS: { k: JoinKey; label: string; note: string }[] = [
-  { k: 'zip', label: 'Zip ties', note: '4 mm holes top and bottom · no tools' },
-  { k: 'rivet', label: 'Rivets', note: '3.2 mm holes · butt straps' },
-  { k: 'slot', label: 'Slot & tab', note: 'no hardware · folded clips' },
-  { k: 'none', label: 'Hole-free', note: 'scored channel · tie round the girth' }
+  { k: 'zip', label: 'Zip ties', note: '4 mm holes top and bottom, no tools' },
+  { k: 'rivet', label: 'Rivets', note: '3.2 mm holes, butt straps' },
+  { k: 'slot', label: 'Slot & tab', note: 'no hardware, folded clips' },
+  { k: 'none', label: 'Hole-free', note: 'scored channel, tie round the girth' }
 ];
 
 /** Design source lines 306-316. */

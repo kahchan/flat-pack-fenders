@@ -17,5 +17,10 @@ export const PRINT_STROKE = {
   slot: 0.6
 } as const;
 
-/** Printed beside the 100 mm ruler on every tile — source line 1004. */
-export const RULER_CAPTION = '100 mm — measure to check scale';
+/**
+ * Printed beside the 100 mm ruler on every tile — source line 1004.
+ *
+ * PLAN FEEDBACK WP17 (decision A3) — the source's em-dash is now a colon (it introduces
+ * the instruction, same as notes.ts's scheme); see printStrokes.test.ts for the original.
+ */
+export const RULER_CAPTION = '100 mm: measure to check scale';

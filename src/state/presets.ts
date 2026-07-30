@@ -31,14 +31,14 @@ export const PRESETS: Preset[] = [
   preset(
     'rear-700c',
     'Rear commuter 700c',
-    `Rear · 700c · 35 mm tyre · ${COVERAGE.rear.lead}°/${COVERAGE.rear.trail}° · 20 flaps · 2 struts`,
+    `Rear, 700c, 35 mm tyre, ${COVERAGE.rear.lead}°/${COVERAGE.rear.trail}°, 20 flaps, 2 struts`,
     {}
   ),
 
   preset(
     'front-700c',
     'Front commuter 700c',
-    `Front · 700c · 35 mm tyre · ${COVERAGE.front.lead}°/${COVERAGE.front.trail}° · 20 flaps · 2 struts`,
+    `Front, 700c, 35 mm tyre, ${COVERAGE.front.lead}°/${COVERAGE.front.trail}°, 20 flaps, 2 struts`,
     {
       side: 'front',
       wheel: '700c',
@@ -52,7 +52,7 @@ export const PRESETS: Preset[] = [
     }
   ),
 
-  preset('gravel-650b', 'Gravel 650b', 'Rear · 650b · 50 mm tyre · hemmed skirt · 22 flaps', {
+  preset('gravel-650b', 'Gravel 650b', 'Rear, 650b, 50 mm tyre, hemmed skirt, 22 flaps', {
     side: 'rear',
     wheel: '650b',
     tyre: 50,
@@ -63,7 +63,7 @@ export const PRESETS: Preset[] = [
     hem: true
   }),
 
-  preset('mtb-26in', 'MTB 26″', 'Rear · 26in · 55 mm tyre · 78 mm crown · 18 flaps', {
+  preset('mtb-26in', 'MTB 26″', 'Rear, 26in, 55 mm tyre, 78 mm crown, 18 flaps', {
     side: 'rear',
     wheel: '26in',
     tyre: 55,
@@ -78,7 +78,7 @@ export const PRESETS: Preset[] = [
   preset(
     'cargo-20in',
     'Cargo / folder 20″',
-    'Rear · 20in · 50 mm tyre · 3 struts · single-sheet blank',
+    'Rear, 20in, 50 mm tyre, 3 struts, single-sheet blank',
     {
       side: 'rear',
       wheel: '20in',
@@ -109,7 +109,7 @@ export const PRESETS: Preset[] = [
   preset(
     'hole-free-minimal',
     'Hole-free minimal',
-    'No rivets or zip-ties · 1 strut · slotted tongue mount',
+    'No rivets or zip-ties, 1 strut, slotted tongue mount',
     {
       join: 'none',
       struts: 1,

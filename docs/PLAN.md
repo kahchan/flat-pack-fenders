@@ -565,7 +565,7 @@ vertically frees a lot of column width.
 - A small 2D packer in `src/fender/` (pure, like everything else there): rectangles in, positions
   and 0°/90° rotations out, packed into `PW × PARTS_PH` pages. First-fit-decreasing is plenty; this
   is a handful of rectangles, not a cutting-stock problem.
-- Parts keep their identity — a rotated strut is still `STRUT 1 · 160 × 14`, and its label rotates
+- Parts keep their identity — a rotated strut is still `STRUT 1, 160 × 14`, and its label rotates
   with it and stays readable (never upside down; 90° counter-clockwise reads bottom-to-top).
 - Drop the unconditional 22 mm hardware row when `extraCount === 0`.
 - `PartsModel` gains pages; `fitsA4` becomes "fits in one page" rather than a warning trigger, and

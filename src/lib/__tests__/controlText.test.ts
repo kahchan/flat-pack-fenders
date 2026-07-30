@@ -77,7 +77,7 @@ describe('hemHint', () => {
 
   it('reports the fold-back distance once thickness is set', () => {
     expect(hemHint({ ...DEFAULTS, thick: 0.8 })).toBe(
-      'Folds 6 mm back on itself — stiffer, no sharp edge'
+      'Folds 6 mm back on itself: stiffer, no sharp edge'
     );
   });
 });
@@ -87,7 +87,7 @@ describe('stockNotes', () => {
     const g = geo(DEFAULTS);
     const notes = stockNotes(g);
     expect(notes.single).toMatch(/mm in one piece$/);
-    expect(notes.a4).toMatch(/panels · 20 mm laps$/);
+    expect(notes.a4).toMatch(/panels, 20 mm laps$/);
   });
 });
 
@@ -95,7 +95,7 @@ describe('partsSizeLabel / partsFitNote', () => {
   it('summarises struts, mudflap and join hardware', () => {
     const g = geo(DEFAULTS);
     const parts = buildParts(DEFAULTS, g);
-    expect(partsSizeLabel(DEFAULTS, parts)).toBe('2 struts · 1 mudflap');
+    expect(partsSizeLabel(DEFAULTS, parts)).toBe('2 struts, 1 mudflap');
   });
 
   it('adds hardware count for rivet/slot joins', () => {
@@ -110,7 +110,7 @@ describe('partsSizeLabel / partsFitNote', () => {
     const g = geo(config);
     const parts = buildParts(config, g);
     expect(partsFitNote(parts)).toBe(
-      parts.fitsA4 ? 'fits A4 at full size' : 'wider than A4 — cut struts by measurement'
+      parts.fitsA4 ? 'fits A4 at full size' : 'wider than A4: cut struts by measurement'
     );
   });
 });

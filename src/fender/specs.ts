@@ -58,7 +58,7 @@ export function buildSpecs(
     {
       label: 'Bend allowance',
       value: `${g.bendComp >= 0 ? '+' : ''}${f1(g.bendComp)} mm`,
-      note: s.thick > 0 ? `per fold · setback ${f1(g.setback)}, arc ${f1(g.BA)}` : 'zero-thickness model'
+      note: s.thick > 0 ? `per fold, setback ${f1(g.setback)}, arc ${f1(g.BA)}` : 'zero-thickness model'
     },
     {
       label: 'Total take-up',
@@ -68,7 +68,7 @@ export function buildSpecs(
     {
       label: 'Blank area',
       value: `${f1((g.L * g.Wd) / 1e6)} m²`,
-      note: s.nest ? 'each · nested pair shares the stock width' : 'before darts are cut'
+      note: s.nest ? 'each, nested pair shares the stock width' : 'before darts are cut'
     },
     {
       label: 'Material panels',
@@ -86,16 +86,24 @@ export function buildSpecs(
   ];
 }
 
-/** e.g. "Rear · 700c · 622 · 215° (40/175) · 85 mm wide · 20 flaps · 2 struts". Source line ~1092. */
+/**
+ * e.g. "Rear, 700c / 29″ / 622, 215° (40/175), 85 mm wide, 20 flaps, 2 struts". Source
+ * line ~1092.
+ *
+ * PLAN FEEDBACK WP17 (decision A3) — the list separator between distinct facts is now a
+ * comma, not `·`. The wheel label's own `/` (700c / 29″ / 622, settled by WP16 §16.4) is
+ * untouched: it separates alternate names for the SAME fact, not different facts, so
+ * mixing it with the outer comma reads fine rather than ambiguous.
+ */
 export function assembledLabel(
   s: FenderConfig,
   g: Geometry = geo(s),
   xsec: XsecModel = buildCrossSection(s, g)
 ): string {
-  return `${s.side === 'front' ? 'Front' : 'Rear'} · ${WHEELS[s.wheel].label} · ${f0(g.cov)}° (${s.lead}/${s.trail}) · ${f0(xsec.finished)} mm wide · ${g.n} flaps · ${s.struts} struts${s.mudflap > 0 ? ` · ${f0(s.mudflap)} mm flap` : ''}`;
+  return `${s.side === 'front' ? 'Front' : 'Rear'}, ${WHEELS[s.wheel].label}, ${f0(g.cov)}° (${s.lead}/${s.trail}), ${f0(xsec.finished)} mm wide, ${g.n} flaps, ${s.struts} struts${s.mudflap > 0 ? `, ${f0(s.mudflap)} mm flap` : ''}`;
 }
 
 /** One-line spec printed on the instruction sheet. Source line ~1110. */
 export function printSpecLine(s: FenderConfig, g: Geometry = geo(s)): string {
-  return `${WHEELS[s.wheel].label} · tyre ${s.tyre} (R ${f0(g.tyreR)}) · crown ${s.crown} → ${f0(g.crownTail)} · skirt ${s.skirt} @ ${s.angle}° · clearance ${s.clear} · ${s.lead}°/${s.trail}° · ${g.n} flaps · ${s.struts} struts · mudflap ${s.mudflap}`;
+  return `${WHEELS[s.wheel].label}, tyre ${s.tyre} (R ${f0(g.tyreR)}), crown ${s.crown} → ${f0(g.crownTail)}, skirt ${s.skirt} @ ${s.angle}°, clearance ${s.clear}, ${s.lead}°/${s.trail}°, ${g.n} flaps, ${s.struts} struts, mudflap ${s.mudflap}`;
 }
