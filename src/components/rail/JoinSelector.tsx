@@ -25,7 +25,7 @@ export function JoinSelector({ config, setField }: JoinSelectorProps) {
             label={o.label}
             note={o.note}
             selected={config.join === o.k}
-            emphasis="tinted"
+            emphasis="dark"
             onClick={() => setField('join', o.k)}
           />
         ))}

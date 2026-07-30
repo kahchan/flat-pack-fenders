@@ -71,7 +71,7 @@
   background: var(--color-fg);
   color: var(--color-bg);
   padding: 14px 22px;
-  font-size: 12px;
+  font-size: var(--text-mono-sm-size);
   box-shadow: var(--shadow-2);
   cursor: pointer;
   max-width: min(420px, calc(100vw - 2 * var(--space-5)));
@@ -130,7 +130,7 @@
   border-radius: var(--radius-pill);
   width: 32px;
   height: 32px;
-  font-size: 18px;
+  font-size: var(--text-heading-sm-size);
   line-height: 1;
   cursor: pointer;
   box-shadow: var(--shadow-1);
@@ -226,7 +226,11 @@
 }
 
 .bottom-sheet__specline {
-  font-size: 11px;
+  /* Caption, not mono-sm: this line lives inside the fixed 96px peek budget
+     (`PEEK_HEIGHT`, sheetPhysics.ts) alongside the grab handle and the preset row, and
+     that constant is out of scope here — mono-sm's 16px would push the peek state past
+     its own height. */
+  font-size: var(--text-caption-size);
   color: var(--color-fg-muted);
   text-align: center;
   overflow: hidden;
@@ -241,11 +245,41 @@
   padding: 0 var(--space-4) 40px;
 }
 
+/* Front/rear grouping (PLAN FEEDBACK WP16 §16.3) stays one row here, unlike the desk
+   rail's stacked groups — the 96px peek budget has no room for a second heading row,
+   so `PresetChipStrip` renders the group as an inline `__label` divider inside the
+   same scroller instead. Position/`::after` fade is the same pinned-mask technique as
+   `.panel::after` above. */
 .preset-chip-strip {
+  position: relative;
   display: flex;
   gap: 6px;
   overflow-x: auto;
   padding-bottom: 2px;
+}
+
+.preset-chip-strip::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 2px;
+  width: 28px;
+  background: linear-gradient(to right, transparent, var(--color-bg-alt));
+  pointer-events: none;
+}
+
+.preset-chip-strip__group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.preset-chip-strip__label {
+  flex: 0 0 auto;
+  font-size: var(--text-caption-size);
+  color: var(--color-fg-faint);
 }
 
 .preset-chip {
@@ -255,7 +289,7 @@
   color: var(--color-fg);
   border-radius: var(--radius-pill);
   padding: 6px 12px;
-  font-size: 11px;
+  font-size: var(--text-caption-size);
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;

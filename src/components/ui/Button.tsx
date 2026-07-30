@@ -14,9 +14,9 @@ interface ButtonProps {
 }
 
 const SIZES: Record<Size, CSSProperties> = {
-  sm: { padding: '6px 14px', fontSize: '12px', lineHeight: 1 },
-  md: { padding: '10px 22px', fontSize: '13px', lineHeight: 1 },
-  lg: { padding: '14px 30px', fontSize: '15px', lineHeight: 1 }
+  sm: { padding: '6px 14px', fontSize: 'var(--text-caption-size)', lineHeight: 1 },
+  md: { padding: '10px 22px', fontSize: 'var(--text-body-sm-size)', lineHeight: 1 },
+  lg: { padding: '14px 30px', fontSize: 'var(--text-body-md-size)', lineHeight: 1 }
 };
 
 export function Button({

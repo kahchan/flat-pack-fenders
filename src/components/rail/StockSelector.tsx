@@ -27,7 +27,7 @@ export function StockSelector({ config, g, setField }: StockSelectorProps) {
             label={o.label}
             note={o.note}
             selected={config.stock === o.k}
-            emphasis="tinted"
+            emphasis="dark"
             onClick={() => setField('stock', o.k)}
           />
         ))}

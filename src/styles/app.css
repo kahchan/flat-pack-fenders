@@ -43,7 +43,7 @@
 
 .section-heading .meta {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--text-mono-sm-size);
   color: var(--color-fg-muted);
 }
 
@@ -81,7 +81,7 @@
 }
 
 .rotate-row .rotate-label {
-  font-size: 11px;
+  font-size: var(--text-label-size);
   letter-spacing: var(--text-label-track);
   text-transform: uppercase;
   color: var(--color-fg-faint);
@@ -93,7 +93,7 @@
 }
 
 .rotate-row .rotate-value {
-  font-size: 12px;
+  font-size: var(--text-mono-sm-size);
   color: var(--color-fg-faint);
   width: 56px;
   text-align: right;
@@ -116,7 +116,7 @@
 }
 
 .warning-banner__title {
-  font-size: 11px;
+  font-size: var(--text-label-size);
   letter-spacing: var(--text-label-track);
   text-transform: uppercase;
   color: var(--color-accent);
@@ -127,7 +127,9 @@
   background: none;
   padding: 0 2px;
   font-family: inherit;
-  font-size: 18px;
+  /* Dismiss glyph, not body copy — sized off heading-sm rather than a body token so it
+     reads as a tap target, not a sentence. */
+  font-size: var(--text-heading-sm-size);
   line-height: 1;
   color: var(--color-accent);
   cursor: pointer;
@@ -140,7 +142,7 @@
 }
 
 .warning-banner__item {
-  font-size: 13.5px;
+  font-size: var(--text-body-md-size);
   line-height: 1.5;
   text-wrap: pretty;
 }
@@ -159,7 +161,7 @@
   margin-right: 26px;
   margin-bottom: -1px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: var(--text-body-sm-size);
   font-weight: 600;
   letter-spacing: 0.02em;
   cursor: pointer;
@@ -189,7 +191,7 @@
   gap: 26px;
   margin-top: 12px;
   flex-wrap: wrap;
-  font-size: 12px;
+  font-size: var(--text-caption-size);
   color: var(--color-fg-muted);
 }
 
@@ -216,13 +218,13 @@
 }
 
 .eng-note__title {
-  font-size: 14px;
+  font-size: var(--text-body-md-size);
   font-weight: 600;
   margin-bottom: 5px;
 }
 
 .eng-note__body {
-  font-size: 14px;
+  font-size: var(--text-body-md-size);
   line-height: 1.65;
   color: var(--color-fg-muted);
   text-wrap: pretty;
@@ -230,7 +232,7 @@
 
 .eng-note__formula {
   font-family: var(--font-mono);
-  font-size: 12.5px;
+  font-size: var(--text-mono-sm-size);
   color: var(--color-brand);
   margin-top: 6px;
 }
@@ -248,7 +250,7 @@
   display: flex;
   justify-content: space-between;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--text-mono-sm-size);
   color: var(--color-fg-muted);
   margin-bottom: 8px;
 }
@@ -278,12 +280,12 @@
 
 .assembly-steps .step-n {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--text-mono-sm-size);
   color: var(--color-accent);
 }
 
 .assembly-steps .step-body {
-  font-size: 14px;
+  font-size: var(--text-body-md-size);
   line-height: 1.6;
   color: var(--color-fg-muted);
   text-wrap: pretty;
@@ -308,7 +310,7 @@
 }
 
 .rail-kicker {
-  font-size: 11px;
+  font-size: var(--text-label-size);
   letter-spacing: var(--text-label-track);
   text-transform: uppercase;
   color: var(--color-fg-faint);
@@ -316,7 +318,7 @@
 }
 
 .rail-title {
-  font-size: 30px;
+  font-size: var(--text-heading-lg-size);
   line-height: 1.06;
   letter-spacing: -0.03em;
   font-weight: 700;
@@ -325,7 +327,7 @@
 
 .rail-lede {
   margin: 0;
-  font-size: 13.5px;
+  font-size: var(--text-body-lg-size);
   line-height: 1.6;
   color: var(--color-fg-muted);
   text-wrap: pretty;
@@ -344,7 +346,7 @@
 }
 
 .rail-group-label {
-  font-size: 11px;
+  font-size: var(--text-label-size);
   letter-spacing: var(--text-label-track);
   text-transform: uppercase;
   color: var(--color-fg-faint);
@@ -363,7 +365,7 @@
   border-radius: var(--radius-sm);
   padding: 10px 12px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: var(--text-body-sm-size);
   cursor: pointer;
   text-align: left;
   transition: background var(--dur-fast) ease;
@@ -391,7 +393,7 @@
 
 .option-btn__note {
   display: block;
-  font-size: 11.5px;
+  font-size: var(--text-caption-size);
   opacity: 0.7;
   margin-top: 3px;
   line-height: 1.35;
@@ -399,7 +401,7 @@
 
 .option-btn--compact .option-btn__note,
 .option-btn--tinted .option-btn__note {
-  font-size: 12px;
+  font-size: var(--text-caption-size);
   opacity: 1;
   color: var(--color-fg-faint);
   margin-top: 2px;
@@ -413,7 +415,7 @@
 
 .toggle-btn__state {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--text-label-size);
   letter-spacing: var(--text-label-track);
   color: var(--color-fg-faint);
   flex-shrink: 0;
@@ -448,13 +450,13 @@
 }
 
 .slider-item__head label {
-  font-size: 13px;
+  font-size: var(--text-body-sm-size);
   color: var(--color-fg-muted);
 }
 
 .slider-item__value {
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: var(--text-mono-sm-size);
   font-weight: 500;
 }
 
@@ -465,7 +467,7 @@
 }
 
 .slider-item__hint {
-  font-size: 11.5px;
+  font-size: var(--text-caption-size);
   color: var(--color-fg-faint);
   line-height: 1.4;
 }
@@ -481,7 +483,7 @@
 
 .rail-footnote {
   margin: -12px 0 0;
-  font-size: 11.5px;
+  font-size: var(--text-caption-size);
   line-height: 1.55;
   color: var(--color-fg-faint);
 }
@@ -511,14 +513,14 @@
 }
 
 .spec-row__label {
-  font-size: 11px;
+  font-size: var(--text-label-size);
   letter-spacing: var(--text-label-track);
   text-transform: uppercase;
   color: var(--color-fg-faint);
 }
 
 .spec-row__note {
-  font-size: 11.5px;
+  font-size: var(--text-caption-size);
   color: var(--color-fg-faint);
   margin-top: 3px;
   line-height: 1.4;
@@ -526,14 +528,35 @@
 
 .spec-row__value {
   font-family: var(--font-mono);
-  font-size: 15px;
+  font-size: var(--text-mono-sm-size);
   font-weight: 500;
   white-space: nowrap;
 }
 
-/* ── Preset strip ── */
+/* ── Preset strip (PLAN FEEDBACK WP16 §16.3) ── */
+
+/* Front/rear groups, each its own labelled scroller — six presets in one flat row
+   read as complete at three; splitting by side also shortens each row enough that
+   the scroll affordance below actually needs to do its job. */
+.preset-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.preset-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.preset-group-label {
+  font-size: var(--text-caption-size);
+  color: var(--color-fg-faint);
+}
 
 .preset-strip {
+  position: relative;
   display: flex;
   gap: 8px;
   overflow-x: auto;
@@ -541,10 +564,28 @@
   margin: 0 -4px;
 }
 
+/* Right-edge fade + a deliberately partial next card, so a scrollable row reads as
+   scrollable before anyone touches it. Absolutely positioned against `.preset-strip`
+   itself (both the scroll container and the containing block here), so it stays
+   pinned to the viewport edge rather than scrolling away with the cards — same
+   technique as `.panel::after` in responsive.css. Harmless over a row that fits
+   without scrolling (front's single card): the gradient just fades into the same
+   background colour behind it. */
+.preset-strip::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 4px;
+  width: 36px;
+  background: linear-gradient(to right, transparent, var(--color-bg-alt));
+  pointer-events: none;
+}
+
 .preset-card {
   flex: 0 0 auto;
-  width: 108px;
-  height: 92px;
+  width: 116px;
+  height: 100px;
   border: 1px solid var(--color-border);
   background: var(--draw-paper);
   border-radius: var(--radius-sm);
@@ -570,7 +611,7 @@
 }
 
 .preset-card__name {
-  font-size: 11px;
+  font-size: var(--text-caption-size);
   font-weight: 600;
   line-height: 1.2;
   color: var(--color-fg);
@@ -578,7 +619,7 @@
 
 .preset-card__spec {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--text-caption-size);
   color: var(--color-fg-faint);
   line-height: 1.3;
   white-space: nowrap;

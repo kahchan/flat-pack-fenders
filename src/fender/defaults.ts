@@ -1,10 +1,17 @@
 import type { ConfigKey, FenderConfig, ParamSpec, Side, WheelKey, WheelSpec } from './types';
 
+/**
+ * Labels are written dot-free already (PLAN FEEDBACK WP16 §16.4, decision A3): WP17
+ * strips `·` from the rest of the app's prose, and a label written with one today
+ * would only have to be revisited then. 700c gets its imperial name added too — 700c
+ * and 29″ share the 622 mm bead seat, same rim under two different marketing names,
+ * which is worth stating rather than assuming.
+ */
 export const WHEELS: Record<WheelKey, WheelSpec> = {
-  '700c': { bsd: 622, label: '700c · 622' },
-  '650b': { bsd: 584, label: '650b · 584' },
-  '26in': { bsd: 559, label: '26" · 559' },
-  '20in': { bsd: 406, label: '20" · 406' }
+  '700c': { bsd: 622, label: '700c / 29″ / 622' },
+  '650b': { bsd: 584, label: '650b / 584' },
+  '26in': { bsd: 559, label: '26" / 559' },
+  '20in': { bsd: 406, label: '20" / 406' }
 };
 
 export const D2 = Math.PI / 180;
@@ -22,11 +29,18 @@ export const TONGUE_W = 24;
 export const BEVEL_L = 20;
 
 /**
- * Lead/trail coverage per side (PLAN §13.1 / §9.16) — the single source `DEFAULTS`,
- * `PRESETS` and the rail's Side selector (`src/lib/sideDefaults.ts`) all read, so the
- * three cannot drift apart again the way they did once. Rear sums to exactly 220°, the
- * "coverage exceeds frame" threshold — deliberately on the line, not over it, so a
- * fresh rear fender does not trip that warning on its own.
+ * Lead/trail coverage per side (PLAN §13.1 / §9.16) — source of truth for `PRESETS`
+ * only (PLAN FEEDBACK §16.5, decision A1). Rear sums to exactly 220°, the "coverage
+ * exceeds frame" threshold — deliberately on the line, not over it, so a fresh rear
+ * fender does not trip that warning on its own.
+ *
+ * `DEFAULTS` and the rail's Side selector (`src/lib/sideDefaults.ts`) used to read this
+ * too, collapsed into one constant by WP13 specifically because the three had drifted
+ * apart once (§9.16). A1 deliberately decouples those two again, trading that
+ * protection for the freedom to tune the default and the quick-start side values
+ * separately from the presets — both keep their own literal, equal to this today by
+ * intent, not by reference. If you find three sets of coverage numbers, this is why:
+ * it's the intended shape, not the bug §9.16 describes returning.
  */
 export const COVERAGE: Record<Side, { lead: number; trail: number }> = {
   front: { lead: 55, trail: 120 },
@@ -89,8 +103,11 @@ export const STRUT_FOLD_INSET = 26;
  *
  * The original values ship intact as the "Cargo / folder 20in" preset.
  *
- * `lead`/`trail` come from `COVERAGE.rear` (PLAN §13.1) rather than their own literals,
- * so this, the preset cards and the Side selector cannot drift apart again.
+ * `lead`/`trail` are this config's own literals, not a read of `COVERAGE.rear` (PLAN
+ * FEEDBACK §16.5, decision A1 — see `COVERAGE`'s doc comment for why they were
+ * decoupled). 120/100 is the same effective coverage `COVERAGE.rear` holds today, kept
+ * identical on purpose so decoupling changes nothing behaviourally, but this default is
+ * now free to diverge from the presets later without dragging them along.
  */
 export const DEFAULTS: FenderConfig = {
   side: 'rear',
@@ -102,8 +119,8 @@ export const DEFAULTS: FenderConfig = {
   skirt: 26,
   angle: 55,
   thick: 0.8,
-  lead: COVERAGE.rear.lead,
-  trail: COVERAGE.rear.trail,
+  lead: 120,
+  trail: 100,
   taper: 15,
   taperAt: 70,
   flaps: 20,

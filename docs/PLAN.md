@@ -418,8 +418,9 @@ Clicking Front/Rear jumps `lead`/`trail` to fixed values: the design hardcoded f
 rear → 60/200. **Both sum to 260°**, over the 220° threshold, so either button walls a fresh fender
 in red — exactly the trap §5's preset correction already fixed once.
 
-**RESOLVED by WP13.** Both sides now read a single `COVERAGE` constant in `defaults.ts`, which
-`DEFAULTS`, `PRESETS` and `sideDefaults.ts` all consume — front 55/120 (175°), rear 120/100 (220°),
+**RESOLVED by WP13, then partly re-split by decision A1 in WP16.** `COVERAGE` in `defaults.ts` is now
+the source of truth for **`PRESETS` only**; `DEFAULTS` and `sideDefaults.ts` carry their own explicit
+literals so they can be tuned independently. All three still hold the same numbers — front 55/120 (175°), rear 120/100 (220°),
 supplied by the rider rather than inferred. Rear sits exactly on the 220° threshold, deliberately on
 the line rather than over it. §10.5 is closed with it.
 
