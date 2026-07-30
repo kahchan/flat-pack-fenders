@@ -42,6 +42,27 @@ export const PH = 180;
 export const OV = 12;
 
 /**
+ * Panel length, derived from the page rather than a bare literal (PLAN FEEDBACK WP15
+ * §15.1). Panels were cut to a magic ~250 mm, then each cut a further `OVERLAP` mm past
+ * its seam to form the lap — so a panel plus its lap could reach 270 mm against PW's
+ * 267 mm of printable width. The lap could push a panel off the sheet.
+ *
+ * `PANEL_SAFETY` keeps the lap clear of the trim edge; `PANEL_L` is the longest a panel
+ * can be while still leaving room for its own lap inside that safe width, so
+ * `PANEL_L + OVERLAP ≤ PW` always holds by construction — see pattern.test.ts's
+ * invariant test.
+ */
+export const PANEL_SAFETY = 4;
+export const PANEL_L = PW - 2 * PANEL_SAFETY - OVERLAP;
+
+/**
+ * Vertical room reserved above each slot on a combined print page (PLAN FEEDBACK WP15
+ * §15.3) for its own "Sheet A tile r·c" / "Sheet B page n" caption, so stacking two
+ * slots on one page never runs one's content into the other's label.
+ */
+export const PRINT_CAPTION_H = 6;
+
+/**
  * Live height available to Sheet B, which gives up 8 mm of PH to its title line.
  *
  * The design checked Sheet B against PW only and never against this, so a parts sheet

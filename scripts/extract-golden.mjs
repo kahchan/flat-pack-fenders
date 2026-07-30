@@ -22,6 +22,12 @@ const PW = 267, PH = 180, OV = 12;
 // port's actual behaviour, exactly as §9.4 (nesting) and §9.18 (Sheet B viewBox) added
 // new, sanctioned geometry to this "verbatim transcription" script.
 const BEVEL_L = 20;
+// PLAN FEEDBACK WP15 §15.1 — PANEL_SAFETY/PANEL_L are new, not in the design source
+// (which just divided by a bare ~250 mm literal). Mirrors src/fender/defaults.ts's
+// derivation exactly: the longest a panel can be while still leaving PANEL_SAFETY mm of
+// margin for its own OVERLAP lap inside PW, so panelL + OVERLAP ≤ PW always.
+const PANEL_SAFETY = 4;
+const PANEL_L = PW - 2 * PANEL_SAFETY - OVERLAP;
 // PLAN §14 — same divergence, this time for the on-screen viewBoxes: the design sizes
 // both `xsec()` and `isometric()` viewBoxes from the fender's own extent, which rescales
 // the wheel drawn inside them as the fender grows. `xsec()`/`isometric()` below pin them
@@ -118,7 +124,7 @@ function blank(s) {
     { d: `M ${s.tongue ? -TONGUE_L : 0},${f1(g.yc)} L ${f1(g.L)},${f1(g.yc)}` }
   ];
 
-  const holes = [], slots = [], scoreLines = [], lapLines = [];
+  const holes = [], slots = [], scoreLines = [], lapLines = [], lapArrows = [];
   if (g.hem > 0) {
     const hemT = (x) => yFreeT(x) + g.hem, hemB = (x) => yFreeB(x) - g.hem;
     const xs = g.knee > 0 && g.knee < g.L ? [0, g.knee, g.L] : [0, g.L];
@@ -171,7 +177,7 @@ function blank(s) {
   const seams = [];
   let panelCount = 1;
   if (s.stock === 'a4') {
-    panelCount = Math.max(1, Math.ceil(g.L / 250));
+    panelCount = Math.max(1, Math.ceil(g.L / PANEL_L));
     const panelL = g.L / panelCount;
     for (let i = 1; i < panelCount; i++) {
       const x = i * panelL;
@@ -184,6 +190,17 @@ function blank(s) {
         if (s.join === 'slot') slots.push({ x: f1(xm - 1.5), y: f1(y - 6), w: 3, h: 12 });
         else holes.push({ cx: f1(xm), cy: f1(y), r: s.join === 'rivet' ? 1.6 : 2 });
       }
+      // PLAN FEEDBACK WP15 §15.2 — lapArrows is new, not in the design source: a small
+      // drawn arrow at each lap pointing the direction water runs (downstream, from the
+      // top panel onto the one underneath), mirroring pattern.ts exactly.
+      const arrowY = g.yc + 8;
+      const arrowHalf = 6;
+      const head = 2.5;
+      const ax0 = xm - arrowHalf;
+      const ax1 = xm + arrowHalf;
+      lapArrows.push({
+        d: `M ${f1(ax0)},${f1(arrowY)} L ${f1(ax1)},${f1(arrowY)} M ${f1(ax1 - head)},${f1(arrowY - head)} L ${f1(ax1)},${f1(arrowY)} L ${f1(ax1 - head)},${f1(arrowY + head)}`
+      });
     }
   }
 
@@ -193,7 +210,7 @@ function blank(s) {
   const x0 = (s.tongue ? -TONGUE_L : 0) - 6;
   const viewBox = `${f1(x0 - M)} ${f1(-M)} ${f1(bboxW + M * 2 + 12)} ${f1(bboxH + M * 2)}`;
 
-  return { g, blankOutline, foldLines, scoreLines, holes, slots, seams, lapLines, panelCount, strutFrac, viewBox, bboxW, bboxH, mounts, inset };
+  return { g, blankOutline, foldLines, scoreLines, holes, slots, seams, lapLines, lapArrows, panelCount, strutFrac, viewBox, bboxW, bboxH, mounts, inset };
 }
 
 function parts(s, g) {
@@ -757,6 +774,7 @@ for (const [name, cfg] of Object.entries(CASES)) {
       slotCount: r.slots.length,
       seamCount: r.seams.length,
       lapCount: r.lapLines.length,
+      lapArrows: r.lapArrows.map((f) => f.d),
       panelCount: r.panelCount,
       strutFrac: r.strutFrac,
       viewBox: r.viewBox,

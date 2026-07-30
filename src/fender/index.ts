@@ -4,6 +4,7 @@ import { buildCrossSection } from './crossSection';
 import { buildNotes, buildSteps } from './notes';
 import { buildBlank } from './pattern';
 import { buildParts } from './parts';
+import { buildPrintLayout } from './printLayout';
 import { assembledLabel, buildSpecs, printSpecLine } from './specs';
 import { buildTiling } from './tiling';
 import { buildWarnings } from './warnings';
@@ -27,6 +28,7 @@ export function buildModel(config: FenderConfig, spin: number = SPIN_DEFAULT): D
   const iso = buildIsometric(config, g, spin, blank);
   const xsec = buildCrossSection(config, g);
   const tiling = buildTiling(config, g, blank);
+  const printLayout = buildPrintLayout(tiling, parts);
   const warnings = buildWarnings(config, g, parts, blank);
   const notes = buildNotes(config, g, blank);
   const steps = buildSteps(config, g, blank, tiling);
@@ -40,6 +42,7 @@ export function buildModel(config: FenderConfig, spin: number = SPIN_DEFAULT): D
     iso,
     xsec,
     tiling,
+    printLayout,
     warnings,
     notes,
     steps,

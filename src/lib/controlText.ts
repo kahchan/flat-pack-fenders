@@ -1,4 +1,4 @@
-import { OVERLAP, PARAM_SPECS, f0, f1 } from '../fender/defaults';
+import { OVERLAP, PANEL_L, PARAM_SPECS, f0, f1 } from '../fender/defaults';
 import type { ConfigKey, FenderConfig, Geometry, NumericSpec, PartsModel } from '../fender/types';
 
 /**
@@ -150,7 +150,7 @@ export function hemHint(s: FenderConfig): string {
 export function stockNotes(g: Geometry): { single: string; a4: string } {
   return {
     single: `${f0(g.L)} × ${f0(g.Wd)} mm in one piece`,
-    a4: `${Math.max(1, Math.ceil(g.L / 250))} panels · ${OVERLAP} mm laps`
+    a4: `${Math.max(1, Math.ceil(g.L / PANEL_L))} panels · ${OVERLAP} mm laps`
   };
 }
 

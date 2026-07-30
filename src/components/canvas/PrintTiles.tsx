@@ -32,6 +32,9 @@ export function PrintTiles({ tiles, blank, tileCountLabel }: PrintTilesProps) {
               {blank.lapLines.map((lp, j) => (
                 <path key={j} d={lp.d} fill="none" stroke="var(--draw-cut)" strokeWidth={0.5} strokeDasharray="3 3" />
               ))}
+              {blank.lapArrows.map((a, j) => (
+                <path key={j} d={a.d} fill="none" stroke="var(--draw-seam)" strokeWidth={0.7} strokeLinejoin="round" strokeLinecap="round" />
+              ))}
               {blank.foldLines.map((f, j) => (
                 <path key={j} d={f.d} fill="none" stroke="var(--draw-fold-print)" strokeWidth={0.7} strokeDasharray="9 5" />
               ))}

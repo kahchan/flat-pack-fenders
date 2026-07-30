@@ -95,12 +95,16 @@ input[type='range'] {
   background: #fff;
 }
 
+/* Assembly instructions (PLAN FEEDBACK WP15 §15.4) — same label treatment, rule and
+   colour tokens as the screen app (rail-kicker/rail-divider/assembly-steps), not a
+   one-off. `--color-*` throughout: this page is chrome (UI copy), not drawing
+   geometry, so it reads no `--draw-*` tokens. */
 .print-page--instructions {
   padding: 15mm 18mm;
   page-break-after: auto;
   break-after: auto;
   font-family: var(--font-sans);
-  color: var(--draw-label);
+  color: var(--color-fg);
 }
 
 .print-page__label,
@@ -126,28 +130,81 @@ input[type='range'] {
   color: var(--draw-label);
 }
 
+/* A combined page (PLAN FEEDBACK WP15 §15.3) stacks one or more slots — the shrunk
+   last Sheet-A tile row and/or Sheet B's pages — instead of giving each its own whole
+   page. `.print-slot` positions purely by `top` (set inline from the packed layout);
+   nothing here scales anything, so every slot still prints at true 1:1. */
+.print-page--combined {
+  position: relative;
+}
+
+.print-slot {
+  position: absolute;
+  left: 0;
+}
+
+.print-slot__caption {
+  position: absolute;
+  left: 0;
+  font-family: var(--font-mono);
+  font-size: 7pt;
+  color: var(--draw-label);
+  white-space: nowrap;
+}
+
+.print-instructions-kicker {
+  font-size: var(--text-label-size);
+  letter-spacing: var(--text-label-track);
+  text-transform: uppercase;
+  font-weight: var(--text-label-weight);
+  color: var(--color-fg-faint);
+  margin-bottom: 6pt;
+}
+
 .print-instructions-title {
   font-size: 20pt;
   font-weight: 700;
   letter-spacing: -0.02em;
+  color: var(--color-fg);
+}
+
+.print-instructions-rule {
+  height: 1px;
+  background: var(--color-border);
+  margin: 10pt 0 8pt;
 }
 
 .print-instructions-spec {
-  font-family: var(--font-mono);
   font-size: 8pt;
-  margin-top: 4pt;
+  color: var(--color-fg-muted);
 }
 
 .print-instructions-list {
   margin: 14pt 0 0;
-  padding-left: 16pt;
+  padding-left: 0;
+  list-style: none;
   columns: 2;
   column-gap: 20pt;
   font-size: 9.5pt;
   line-height: 1.55;
+  color: var(--color-fg-muted);
 }
 
 .print-instructions-list li {
   margin-bottom: 9pt;
   break-inside: avoid;
+  display: flex;
+  gap: 8pt;
+}
+
+.print-instructions-list__n {
+  font-size: 8pt;
+  color: var(--color-accent);
+  flex-shrink: 0;
+  padding-top: 1pt;
+}
+
+.print-instructions-list b {
+  color: var(--color-fg);
+  font-weight: 600;
 }
