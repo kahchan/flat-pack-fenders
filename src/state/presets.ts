@@ -1,7 +1,11 @@
 import { COVERAGE, DEFAULTS } from '../fender/defaults';
 import type { FenderConfig } from '../fender/types';
 
-/** PLAN §5's six presets, each a `Partial<FenderConfig>` merged over `DEFAULTS`. */
+/**
+ * PLAN §5's presets, each a `Partial<FenderConfig>` merged over `DEFAULTS`. Seven as of
+ * WP18: the original six plus `front-gravel-650b`, added so the Front group in
+ * `PresetStrip` is not a single card against Rear's five (PLAN FEEDBACK WP18).
+ */
 export interface Preset {
   id: string;
   name: string;
@@ -72,13 +76,48 @@ export const PRESETS: Preset[] = [
     flaps: 18
   }),
 
-  // The design file's original defaults — see PLAN §9.5. Values match the
-  // `cargo-20in-single` case in src/fender/__tests__/golden.json field for field;
-  // presets.test.ts asserts that deep-equality directly against the fixture.
+  preset(
+    'front-gravel-650b',
+    'Front gravel 650b',
+    'Front, 650b, 50 mm tyre, hemmed skirt, 22 flaps',
+    {
+      side: 'front',
+      wheel: '650b',
+      tyre: 50,
+      clear: 18,
+      crown: 72,
+      skirt: 32,
+      flaps: 22,
+      hem: true,
+      lead: COVERAGE.front.lead,
+      trail: COVERAGE.front.trail,
+      mudflap: 60
+    }
+  ),
+
+  // NOT the design file's original defaults (PLAN FEEDBACK WP18). Those values —
+  // 260° coverage, a tail narrower than the tyre, 1221 mm of stock in one piece and
+  // struts 24 mm longer than the real mount distance — trip four warnings, which is
+  // the same wall-of-red problem DEFAULTS was rewritten to avoid (see DEFAULTS'
+  // comment), just recreated under a different preset. A preset that ships broken
+  // teaches people to ignore the warning banner.
+  //
+  // This keeps the wheel and the intent — a short-wheel cargo/folding fender with a
+  // wide crown for panniers and a low taper so the tail still clears a 50 mm tyre —
+  // and fixes the four numbers that tripped: coverage 60/140 (200°, was 60/200 = 260°),
+  // taper down to 5% (was 25%, crownTail was 46.5 mm against a 56 mm floor), stock 'a4'
+  // (was 'single', at 939 mm this still fits one piece but a 4-panel cargo fender is
+  // easier to print and post than one 1221 mm roll), and strutLen 200 mm (was 220,
+  // against a ~196 mm real mount distance).
+  //
+  // The original values are not lost: they are pinned as the `cargo-20in-single` case
+  // in src/fender/__tests__/golden.json, checked directly against that literal in
+  // presets.test.ts rather than against this preset, so the historical record no
+  // longer constrains what ships.
   preset(
     'cargo-20in',
     'Cargo / folder 20″',
-    'Rear, 20in, 50 mm tyre, 3 struts, single-sheet blank',
+    'Rear, 20in, 50 mm tyre, 3 struts, A4 panels',
     {
       side: 'rear',
       wheel: '20in',
@@ -90,15 +129,15 @@ export const PRESETS: Preset[] = [
       angle: 55,
       thick: 0.8,
       lead: 60,
-      trail: 200,
-      taper: 25,
+      trail: 140,
+      taper: 5,
       taperAt: 70,
       flaps: 16,
       struts: 3,
-      strutLen: 220,
+      strutLen: 200,
       mudflap: 90,
       join: 'zip',
-      stock: 'single',
+      stock: 'a4',
       tongue: true,
       fuse: false,
       nest: false,
