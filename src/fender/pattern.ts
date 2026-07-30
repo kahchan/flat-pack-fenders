@@ -1,4 +1,4 @@
-import { OVERLAP, TONGUE_L, TONGUE_W, f0, f1 } from './defaults';
+import { OVERLAP, PANEL_L, TONGUE_L, TONGUE_W, f0, f1 } from './defaults';
 import { crownAt, geo } from './geometry';
 import type { BlankModel, FenderConfig, Geometry, Hole, Label, Path, Slot } from './types';
 
@@ -96,6 +96,7 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
   const scoreLines: Path[] = [];
   const seams: Path[] = [];
   const lapLines: Path[] = [];
+  const lapArrows: Path[] = [];
   const extraLabels: Label[] = [];
 
   // ── Hem ────────────────────────────────────────────────────────────────────
@@ -213,10 +214,19 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
   // ── Panel seams ────────────────────────────────────────────────────────────
   // Butting two panels edge to edge leaves nothing to fasten. Each panel is cut OVERLAP
   // past its seam and laps UNDER the next, so one row of fasteners passes through both
-  // layers. Lap direction matters more than fastener choice: forward panel on top.
+  // layers. Lap direction matters more than fastener choice: forward panel on top —
+  // in the loop below, panel `i` (smaller x, upstream) is the top layer and panel
+  // `i + 1` (the next one, downstream) is the one that goes under it.
+  //
+  // `panelCount` comes from PANEL_L, not a bare ~250 mm literal (PLAN FEEDBACK WP15
+  // §15.1): PANEL_L is the longest a panel can be while still leaving PANEL_SAFETY mm
+  // of margin for its own OVERLAP lap inside PW, so splitting L into `panelCount` equal
+  // panels always keeps every panel at or under PANEL_L — `panelL + OVERLAP ≤ PW` holds
+  // for every case (see pattern.test.ts's invariant test), which the old fixed 250 mm
+  // divisor did not guarantee.
   let panelCount = 1;
   if (s.stock === 'a4') {
-    panelCount = Math.max(1, Math.ceil(g.L / 250));
+    panelCount = Math.max(1, Math.ceil(g.L / PANEL_L));
     const panelL = g.L / panelCount;
 
     for (let i = 1; i < panelCount; i++) {
@@ -250,6 +260,30 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
         fill: 'var(--draw-seam)',
         anchor: 'middle',
         text: `SEAM ${i} — CUT PANEL ${i} TO HERE +${OVERLAP} MM LAP`
+      });
+
+      // PLAN FEEDBACK WP15 §15.2 — the lap carried no annotation on paper, so there was
+      // no way to tell which panel went over and which went under. Name it explicitly,
+      // and draw a small arrow (not a text glyph — the self-hosted print fonts don't
+      // subset an arrow character) pointing the direction water runs across the joint:
+      // downstream, from the top panel onto the one underneath.
+      extraLabels.push({
+        x: f1(xm),
+        y: f1(yFreeB(xm) + 9),
+        size: 4.5,
+        fill: 'var(--draw-seam)',
+        anchor: 'middle',
+        text: `PANEL ${i + 1} UNDER — PANEL ${i} LAPS OVER IT`
+      });
+      const arrowY = g.yc + 8;
+      const arrowHalf = 6;
+      const head = 2.5;
+      const ax0 = xm - arrowHalf;
+      const ax1 = xm + arrowHalf;
+      lapArrows.push({
+        d:
+          `M ${f1(ax0)},${f1(arrowY)} L ${f1(ax1)},${f1(arrowY)}` +
+          ` M ${f1(ax1 - head)},${f1(arrowY - head)} L ${f1(ax1)},${f1(arrowY)} L ${f1(ax1 - head)},${f1(arrowY + head)}`
       });
     }
   }
@@ -330,6 +364,7 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
     slots,
     seams,
     lapLines,
+    lapArrows,
     labels,
     panelCount,
     strutFrac,

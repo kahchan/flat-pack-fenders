@@ -223,6 +223,10 @@ export interface BlankModel {
   slots: Slot[];
   seams: Path[];
   lapLines: Path[];
+  /** Small arrow glyph at each lap (PLAN FEEDBACK WP15 §15.2), pointing the direction
+   * water runs across the joint — downstream, from the panel on top onto the one
+   * underneath. One entry per lap, same order as `lapLines`. */
+  lapArrows: Path[];
   labels: Label[];
   /** Panels the blank is split into when stock is 'a4'. 1 = single sheet. */
   panelCount: number;
@@ -316,12 +320,51 @@ export interface XsecModel {
 export interface TilingModel {
   cols: number;
   rows: number;
-  /** rows × cols + Sheet B + instructions. */
+  /** rows × cols + Sheet B + instructions — a nominal tile/piece count (how many
+   * distinct windows into the blank you'll trim and tape), not the number of physical
+   * sheets of paper a print job actually consumes; see `PrintLayout.pageCount` for
+   * that. */
   sheetCount: number;
+  /** Real content height of the LAST tile row, mm — at most `PH`, often much less
+   * (every earlier row is necessarily full). Drives `buildPrintLayout`'s packing
+   * (PLAN FEEDBACK WP15 §15.3). */
+  lastRowH: number;
   rects: TileRect[];
   tiles: PrintTile[];
   /** Transform placing the nested second blank, or null when nesting is off. */
   nestTransform: string | null;
+}
+
+// ── Print pagination (PLAN FEEDBACK WP15 §15.3) ─────────────────────────────
+
+/** One Sheet-A tile or Sheet-B parts page, placed on a shared physical print page by
+ * `buildPrintLayout`'s reuse of `packRects` (PLAN §12's packer). */
+export interface PrintSlot {
+  kind: 'sheetA' | 'sheetB';
+  /** Index into `TilingModel.tiles` (sheetA) or `PartsModel.pages` (sheetB). */
+  index: number;
+  /** Vertical offset within the physical page, mm. */
+  y: number;
+  /** Real content height of this slot, mm — at most PH. */
+  h: number;
+}
+
+/** One physical A4 page combining the shrunk last Sheet-A row with Sheet B, instead of
+ * each claiming a whole page regardless of how little of it is used. */
+export interface PrintPage {
+  slots: PrintSlot[];
+}
+
+export interface PrintLayout {
+  /** Tile indices printed one-per-page, unchanged — every row except the last, which
+   * is packed onto `pages` below instead. */
+  fullTileIndices: number[];
+  /** Physical pages combining the last Sheet-A row with Sheet B's pages. */
+  pages: PrintPage[];
+  /** Real number of physical sheets the print job needs: full tiles + combined pages +
+   * the instructions page. This is the number that drops under WP15 §15.3, unlike
+   * `TilingModel.sheetCount`. */
+  pageCount: number;
 }
 
 export interface Warning {
@@ -357,6 +400,7 @@ export interface DrawingModel {
   iso: IsoModel;
   xsec: XsecModel;
   tiling: TilingModel;
+  printLayout: PrintLayout;
   warnings: Warning[];
   notes: EngNote[];
   steps: AssemblyStep[];

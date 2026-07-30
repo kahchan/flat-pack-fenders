@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import golden from './golden.json';
+import { OVERLAP, PW, WHEELS } from '../defaults';
+import { geo } from '../geometry';
 import { buildBlank } from '../pattern';
-import type { FenderConfig } from '../types';
+import type { FenderConfig, WheelKey } from '../types';
 
 type Case = {
   config: FenderConfig;
@@ -13,6 +15,7 @@ type Case = {
     slotCount: number;
     seamCount: number;
     lapCount: number;
+    lapArrows: string[];
     panelCount: number;
     strutFrac: number[];
     viewBox: string;
@@ -71,6 +74,11 @@ describe.each(CASES)('buildBlank(%s)', (_name, c) => {
     expect(b.scoreLines).toHaveLength(g.scoreLineCount);
     expect(b.seams).toHaveLength(g.seamCount);
     expect(b.lapLines).toHaveLength(g.lapCount);
+  });
+
+  it('lap arrows match exactly, one per lap', () => {
+    expect(b.lapArrows.map((a) => a.d)).toEqual(g.lapArrows);
+    expect(b.lapArrows).toHaveLength(g.lapCount);
   });
 
   it('panel count and strut positions match', () => {
@@ -140,5 +148,33 @@ describe('pattern invariants', () => {
     const ys = [...foldTop.matchAll(/,(-?[\d.]+)/g)].map((m) => Number(m[1]));
     expect(ys[0]).toBeCloseTo(ys[1]!, 6); // flat until the knee
     expect(ys[2]!).toBeGreaterThan(ys[1]!); // then the crown closes in
+  });
+
+  // PLAN FEEDBACK WP15 §15.1 — the invariant that was silently violated: a panel plus
+  // its lap must never exceed the printable page width. Swept across every wheel,
+  // coverage combination and stock choice, not just one case, since the old ~250 mm
+  // literal happened to hold for the shipped presets but not in general.
+  it('every panel plus its lap fits the printable page width, for every wheel/coverage/stock', () => {
+    const wheels = Object.keys(WHEELS) as WheelKey[];
+    const leads = [0, 40, 55, 120, 160];
+    const trails = [0, 100, 120, 160, 200];
+    let checked = 0;
+    for (const wheel of wheels) {
+      for (const lead of leads) {
+        for (const trail of trails) {
+          if (lead + trail <= 0) continue;
+          for (const stock of ['single', 'a4'] as const) {
+            const cfg: FenderConfig = { ...base, wheel, lead, trail, stock };
+            const b = buildBlank(cfg, geo(cfg));
+            if (stock !== 'a4' || b.panelCount <= 1) continue;
+            const panelL = geo(cfg).L / b.panelCount;
+            expect(panelL + OVERLAP).toBeLessThanOrEqual(PW);
+            checked++;
+          }
+        }
+      }
+    }
+    // Guard against the loop accidentally skipping every panelled case.
+    expect(checked).toBeGreaterThan(0);
   });
 });

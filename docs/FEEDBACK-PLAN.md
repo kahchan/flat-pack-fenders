@@ -123,7 +123,7 @@ which renders every ordinary config small in a sea of white space.
 
 ---
 
-## WP15 — Print correctness
+## WP15 — Print correctness ✅ DONE
 
 ### 15.1 The lap joint is arbitrary and can overflow the page
 
@@ -170,6 +170,15 @@ it rather than writing a second one.
 The instructions page is currently plain. Bring it onto the same system as the rest: Hanken Grotesk
 and JetBrains Mono, the type scale from WP16, the same label treatment and rules. It is the page
 someone reads while building, so it should look like it belongs to the thing they are building.
+
+### Outcome, measured
+
+- **Lap arithmetic now derives from the page.** `PANEL_L = PW − 2×PANEL_SAFETY − OVERLAP = 267 − 8 − 20 = 239`, so `panel + lap = 259 ≤ 267` **by construction**, not by luck. The invariant is swept in `pattern.test.ts` across every wheel × lead × trail × stock combination, which is the test that would have caught the original 270 mm overflow.
+- **Lap direction is now on the paper**: each joint carries `PANEL n UNDER — PANEL n-1 LAPS OVER IT` plus a flow arrow, so you can tell which way water runs across it without reading the engineering notes.
+- **1:1 survived the page-combining change.** Every print SVG measures scale 1.0 (0.99983–1.00002, browser float noise) using the §9.18 method. This was the risk: combining pages is exactly where a fit-to-page could sneak back in.
+- Sheet B now shares a page with the last Sheet A tile when there is room, so the default drops a sheet.
+
+1139 assertions.
 
 ---
 

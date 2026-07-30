@@ -72,6 +72,9 @@ export function SheetA({ config, g, blank, tiling }: SheetAProps) {
           {blank.lapLines.map((lp, i) => (
             <path key={i} d={lp.d} fill="none" stroke="var(--draw-seam)" strokeWidth={1} strokeDasharray="4 4" opacity={0.7} />
           ))}
+          {blank.lapArrows.map((a, i) => (
+            <path key={i} d={a.d} fill="none" stroke="var(--draw-seam)" strokeWidth={1.2} strokeLinejoin="round" strokeLinecap="round" />
+          ))}
           <DrawingLabels labels={blank.labels} scale={2.4} />
         </svg>
       </div>
