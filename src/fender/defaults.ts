@@ -101,7 +101,12 @@ export const STRUT_FOLD_INSET = 26;
  * That one should fire. It is the largest single error in the whole pattern and it is
  * the one thing only the user can fix.
  *
- * The original values ship intact as the "Cargo / folder 20in" preset.
+ * The original values no longer ship as a preset (PLAN FEEDBACK WP18): they tripped
+ * four of those warnings themselves, which is the same wall-of-red problem this default
+ * exists to avoid. They are pinned instead as the `cargo-20in-single` case in
+ * src/fender/__tests__/golden.json, the historical record `presets.test.ts` checks
+ * directly rather than against the "Cargo / folder 20in" preset, which now ships a
+ * working config under the same wheel and intent.
  *
  * `lead`/`trail` are this config's own literals, not a read of `COVERAGE.rear` (PLAN
  * FEEDBACK §16.5, decision A1 — see `COVERAGE`'s doc comment for why they were

@@ -272,7 +272,7 @@ Two cautions:
 
 ---
 
-## WP18 — Every preset ships warning-free
+## WP18 — Every preset ships warning-free ✅ DONE
 
 A shipped preset that greets you in red teaches people to ignore the warnings, which is exactly what
 PLAN §9.5 chose the new default to avoid. Right now five of six are clean and `cargo-20in` fires
@@ -323,6 +323,41 @@ for (const p of PRESETS) {
 
 This is the kind of test that keeps working as presets are added, and it will fail loudly the next
 time a warning threshold moves.
+
+### Outcome, measured
+
+The four other presets were re-verified rather than assumed, and stayed clean. `cargo-20in` was
+retargeted, not deleted; a seventh preset was added to balance the Front/Rear split. Final table,
+every preset through `buildWarnings()`:
+
+| Preset              | Warnings           |
+| ------------------- | ------------------ |
+| `rear-700c`         | `radius-estimated` |
+| `front-700c`        | `radius-estimated` |
+| `gravel-650b`       | `radius-estimated` |
+| `mtb-26in`          | `radius-estimated` |
+| `front-gravel-650b` | `radius-estimated` |
+| `cargo-20in`        | `radius-estimated` |
+| `hole-free-minimal` | `radius-estimated` |
+
+**`cargo-20in` retargeted**, same wheel and intent (a short-wheel cargo/folding fender, wide 62 mm
+crown for panniers), four numbers changed to clear the four warnings it fired: coverage 60°/140°
+(200°, was 60°/200° = 260°), taper down to 5% (crownTail 58.9 mm, was 46.5 mm against the 56 mm
+floor), `stock: 'a4'` (was `'single'`; 939 mm of stock still fits one piece, but four A4 panels are
+easier to print and post than a 1221 mm roll), `strutLen` 200 mm (was 220, against a real mount
+distance of ~196 mm). Spec line updated from "single-sheet blank" to "A4 panels" to match.
+
+**The historical pin moved off `PRESETS` entirely.** `presets.test.ts` now asserts the
+`cargo-20in-single` golden fixture equals the design's original literal values directly — it no
+longer looks up `PRESETS.find(id === 'cargo-20in')` at all, so retargeting the preset cannot
+silently take the pin down with it, and the fixture stays the historical record on its own.
+
+**`front-gravel-650b` added**, the obvious front counterpart to `gravel-650b`: same wheel, tyre,
+clearance, crown, skirt, flap count and hemmed skirt, just `side: 'front'` with `COVERAGE.front`'s
+55°/120° (175°) in place of the rear default's 220°. Clean on the first try — the rear config already
+sat well inside every threshold, and front coverage is strictly smaller.
+
+1164 assertions, up from 1159.
 
 ---
 
