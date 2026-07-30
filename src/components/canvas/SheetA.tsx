@@ -17,7 +17,7 @@ export function SheetA({ config, g, blank, tiling }: SheetAProps) {
   return (
     <section>
       <div className="section-heading">
-        <h2>Sheet A — fender blank</h2>
+        <h2>Sheet A, fender blank</h2>
         <span className="meta">{blankSizeLabel}</span>
         <span className="meta meta--accent">{tileCountLabel}</span>
       </div>
@@ -81,7 +81,7 @@ export function SheetA({ config, g, blank, tiling }: SheetAProps) {
       <div className="legend-row">
         <span>—— cut line</span>
         <span className="legend--fold">– – fold / score (don&rsquo;t cut)</span>
-        <span className="legend--seam">– – A4 tile edge · panel seam</span>
+        <span className="legend--seam">– – A4 tile edge, panel seam</span>
         <span className="legend--ghost">– – nested second fender</span>
         <span className="legend--seam">· · · panel lap edge</span>
       </div>

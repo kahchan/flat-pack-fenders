@@ -227,7 +227,7 @@ function parts(s, g) {
     partsHoles.push({ cx: 12, cy: f1(y + r), r: 2.5 }, { cx: f1(s.strutLen / 2), cy: f1(y + r), r: 2 });
     if (s.fuse) partsHoles.push({ cx: f1(s.strutLen - 12), cy: f1(y + r), r: 3.2 });
     else partsHoles.push({ cx: f1(s.strutLen - 12), cy: f1(y + r), r: 2.5 }, { cx: f1(s.strutLen - 22), cy: f1(y + r), r: 2.5 });
-    partsLabels.push({ x: f1(s.strutLen + 8), y: f1(y + r + 2), size: 5, text: `STRUT ${i + 1} · ${f0(s.strutLen)} × ${SWD}${s.fuse ? ' · FUSE END' : ''}` });
+    partsLabels.push({ x: f1(s.strutLen + 8), y: f1(y + r + 2), size: 5, text: `STRUT ${i + 1}, ${f0(s.strutLen)} × ${SWD}${s.fuse ? ', FUSE END' : ''}` });
   }
   py += s.struts * (SWD + 9) + 14;
   if (s.mudflap > 0) {
@@ -235,7 +235,7 @@ function parts(s, g) {
     partsOutlines.push({ d: `M 0,${f1(py)} h ${f1(w)} v ${f1(h - rr)} q 0,${f1(rr)} ${f1(-rr)},${f1(rr)} h ${f1(-(w - 2 * rr))} q ${f1(-rr)},0 ${f1(-rr)},${f1(-rr)} Z` });
     partsFolds.push({ d: `M 0,${f1(py + 16)} h ${f1(w)}` });
     for (const k of [-0.3, 0, 0.3]) partsHoles.push({ cx: f1(w / 2 + w * k), cy: f1(py + 8), r: 2 });
-    partsLabels.push({ x: f1(w + 8), y: f1(py + 10), size: 5, text: `MUDFLAP · ${f0(w)} × ${f0(h)} mm · lap 16 mm under the tail` });
+    partsLabels.push({ x: f1(w + 8), y: f1(py + 10), size: 5, text: `MUDFLAP, ${f0(w)} × ${f0(h)} mm, lap 16 mm under the tail` });
     py += s.mudflap + 16;
   }
   const extraN = s.join === 'rivet' || s.join === 'slot' ? g.n - 1 : 0;
@@ -246,7 +246,7 @@ function parts(s, g) {
     partsOutlines.push({ d: `M ${f1(x)},${f1(y)} h ${w} v ${h} h ${-w} Z` });
     if (s.join === 'rivet') for (const cx of [8, 26]) for (const cy of [4.5, 9.5]) partsHoles.push({ cx: f1(x + cx), cy: f1(y + cy), r: 1.6 });
     else partsFolds.push({ d: `M ${f1(x + 6)},${f1(y)} v ${h} M ${f1(x + 28)},${f1(y)} v ${h}` });
-    if (i === 0) partsLabels.push({ x: f1(x), y: f1(y - 3), size: 5, text: `${extraLabel} × ${extraN} · 34 × 14 mm` });
+    if (i === 0) partsLabels.push({ x: f1(x), y: f1(y - 3), size: 5, text: `${extraLabel} × ${extraN}, 34 × 14 mm` });
   }
   const partsW = Math.max(s.strutLen + 96, g.crownTail + 150);
   const partsH = py + Math.max(1, Math.ceil(extraN / 6)) * 22 + 10;
@@ -430,8 +430,8 @@ function tiling(s, g, bboxW, bboxH) {
       const ox = x0 + c * stepX, oy = r * stepY - 6;
       tileRects.push({ x: f1(ox), y: f1(oy), w: PW, h: PH });
       printTiles.push({
-        label: `Sheet A — tile ${r + 1}·${c + 1} of ${rows}·${cols}`,
-        meta: `${WHEELS[s.wheel].label} · ${f0(g.cov)}° · 1:1`,
+        label: `Sheet A, tile ${r + 1}×${c + 1} of ${rows}×${cols}`,
+        meta: `${WHEELS[s.wheel].label}, ${f0(g.cov)}°, 1:1`,
         viewBox: `${f1(ox)} ${f1(oy)} ${PW} ${PH}`,
         frame: `M ${f1(ox)},${f1(oy)} h ${PW} v ${PH} h ${-PW} Z`,
         ruler: `M ${f1(ox + 8)},${f1(oy + PH - 10)} h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4`,
@@ -672,9 +672,9 @@ function specs(s, g, finished, panelCount, cols, rows) {
     { label: 'Finished width', value: `${f0(finished)} mm`, note: `tail ${f0(g.crownTail + 2 * g.proj)} mm after taper` },
     { label: 'Flap pitch', value: `${f0(g.pitch)} mm`, note: `arc ÷ ${g.n} flaps` },
     { label: 'Dart width', value: `${f1(g.notch)} mm`, note: s.thick > 0 ? `incl. ${f1(s.thick)} mm thickness clearance` : 'at the free edge, tapering to 0 at the fold' },
-    { label: 'Bend allowance', value: `${g.bendComp >= 0 ? '+' : ''}${f1(g.bendComp)} mm`, note: s.thick > 0 ? `per fold · setback ${f1(g.setback)}, arc ${f1(g.BA)}` : 'zero-thickness model' },
+    { label: 'Bend allowance', value: `${g.bendComp >= 0 ? '+' : ''}${f1(g.bendComp)} mm`, note: s.thick > 0 ? `per fold, setback ${f1(g.setback)}, arc ${f1(g.BA)}` : 'zero-thickness model' },
     { label: 'Total take-up', value: `${f1(g.removal)} mm`, note: 'removed by all darts, one side' },
-    { label: 'Blank area', value: `${f1((g.L * g.Wd) / 1e6)} m²`, note: s.nest ? 'each · nested pair shares the stock width' : 'before darts are cut' },
+    { label: 'Blank area', value: `${f1((g.L * g.Wd) / 1e6)} m²`, note: s.nest ? 'each, nested pair shares the stock width' : 'before darts are cut' },
     { label: 'Material panels', value: panelCount === 1 ? 'one sheet' : `× ${panelCount}`, note: panelCount === 1 ? `needs ${f0(g.L)} mm of stock` : `each ≈ ${f0(g.L / panelCount + OVERLAP)} × ${f0(g.Wd)} mm incl. lap` },
     { label: 'Sheets to print', value: `${rows * cols + 2}`, note: `${cols} × ${rows} tiles + parts + instructions` }
   ];
@@ -766,8 +766,8 @@ for (const [name, cfg] of Object.entries(CASES)) {
   const en = engNotes(cfg, r.g, r.panelCount, r.inset, r.mounts);
   const sp = specs(cfg, r.g, x.finished, r.panelCount, t.cols, t.rows);
   const jn = joinNote(cfg.join);
-  const assembledLabel = `${cfg.side === 'front' ? 'Front' : 'Rear'} · ${WHEELS[cfg.wheel].label} · ${f0(r.g.cov)}° (${cfg.lead}/${cfg.trail}) · ${f0(x.finished)} mm wide · ${r.g.n} flaps · ${cfg.struts} struts${cfg.mudflap > 0 ? ` · ${f0(cfg.mudflap)} mm flap` : ''}`;
-  const printSpecLine = `${WHEELS[cfg.wheel].label} · tyre ${cfg.tyre} (R ${f0(r.g.tyreR)}) · crown ${cfg.crown} → ${f0(r.g.crownTail)} · skirt ${cfg.skirt} @ ${cfg.angle}° · clearance ${cfg.clear} · ${cfg.lead}°/${cfg.trail}° · ${r.g.n} flaps · ${cfg.struts} struts · mudflap ${cfg.mudflap}`;
+  const assembledLabel = `${cfg.side === 'front' ? 'Front' : 'Rear'}, ${WHEELS[cfg.wheel].label}, ${f0(r.g.cov)}° (${cfg.lead}/${cfg.trail}), ${f0(x.finished)} mm wide, ${r.g.n} flaps, ${cfg.struts} struts${cfg.mudflap > 0 ? `, ${f0(cfg.mudflap)} mm flap` : ''}`;
+  const printSpecLine = `${WHEELS[cfg.wheel].label}, tyre ${cfg.tyre} (R ${f0(r.g.tyreR)}), crown ${cfg.crown} → ${f0(r.g.crownTail)}, skirt ${cfg.skirt} @ ${cfg.angle}°, clearance ${cfg.clear}, ${cfg.lead}°/${cfg.trail}°, ${r.g.n} flaps, ${cfg.struts} struts, mudflap ${cfg.mudflap}`;
   out[name] = {
     config: cfg,
     geo: g,

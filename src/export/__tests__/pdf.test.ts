@@ -3,7 +3,7 @@ import golden from './golden.json';
 import { buildModel } from '../../fender/index';
 import { DEFAULTS } from '../../fender/defaults';
 import { buildDxf } from '../dxf';
-import { buildPdf } from '../pdf';
+import { buildPdf, pdfTextLiteral } from '../pdf';
 import { buildSvg } from '../svg';
 import type { DrawingModel, FenderConfig } from '../../fender/types';
 
@@ -183,15 +183,28 @@ describe('buildPdf — page count and structure match the print tree', () => {
 });
 
 describe('buildPdf — WinAnsi text encoding', () => {
-  it('em dash, middle dot, degree sign and curly quotes all survive into the file as single bytes', () => {
+  it('the default config really uses a middle dot and a degree sign in its spec line', () => {
     const model = withoutSheetB(buildModel(DEFAULTS));
-    expect(model.printSpecLine).toMatch(/[·°]/); // sanity: the default really uses these
+    expect(model.printSpecLine).toMatch(/°/); // sanity: the default really uses these
+  });
+
+  // PLAN FEEDBACK WP17 (decision A3) dropped every em-dash from this app's own printed
+  // prose, so real content no longer exercises that WinAnsi mapping. Test the encoder
+  // directly instead of fishing for the byte in incidental content — a curly apostrophe,
+  // an em dash and a middle dot must each survive as a single WinAnsi byte, not a 3-byte
+  // UTF-8 sequence (which would also corrupt every xref offset after it).
+  it('em dash, middle dot, degree sign and curly quotes each encode to a single WinAnsi byte', () => {
+    expect(pdfTextLiteral('—')).toBe(`(${String.fromCharCode(0x97)})`); // em dash
+    expect(pdfTextLiteral('·')).toBe('(·)'); // middle dot, already Latin-1
+    expect(pdfTextLiteral('°')).toBe('(°)'); // degree sign, already Latin-1
+    expect(pdfTextLiteral('’')).toBe(`(${String.fromCharCode(0x92)})`); // curly apostrophe
+  });
+
+  it('a curly apostrophe in a real step body still survives into the file as a single byte', () => {
+    const model = withoutSheetB(buildModel(DEFAULTS));
     const pdf = bytesToBinaryString(buildPdf(model));
-    // The instructions page carries an em dash in its title and (for most configs) a
-    // curly apostrophe in a step body — both must appear as the single WinAnsi byte,
-    // not a 3-byte UTF-8 sequence (which would also corrupt every xref offset after it).
-    expect(pdf).toContain(String.fromCharCode(0x97)); // em dash
-    expect(pdf).not.toMatch(/\xe2\x80\x94/); // UTF-8 em dash, must NOT appear
+    expect(pdf).toContain(String.fromCharCode(0x92)); // curly apostrophe, e.g. "don't slice"
+    expect(pdf).not.toMatch(/\xe2\x80\x99/); // UTF-8 curly apostrophe, must NOT appear
   });
 });
 

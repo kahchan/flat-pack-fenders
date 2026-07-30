@@ -12,7 +12,7 @@ export function SheetB({ config, parts }: SheetBProps) {
   return (
     <section>
       <div className="section-heading">
-        <h2>Sheet B — struts, mudflap &amp; hardware</h2>
+        <h2>Sheet B, struts, mudflap &amp; hardware</h2>
         <span className="meta">{partsSizeLabel(config, parts)}</span>
       </div>
       <div className="panel">

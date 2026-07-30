@@ -66,7 +66,7 @@ export function buildSliderGroups(
           'crown',
           'Crown width',
           `${s.crown} mm`,
-          `Flat panel over the tyre · finished ${f0(finished)} mm`
+          `Flat panel over the tyre, finished ${f0(finished)} mm`
         ),
         item(
           'skirt',
@@ -79,7 +79,7 @@ export function buildSliderGroups(
           'thick',
           'Material thickness',
           `${f1(s.thick)} mm`,
-          `Bend allowance ${g.bendComp >= 0 ? '+' : ''}${f1(g.bendComp)} mm per fold · darts widened by ${f1(s.thick)} mm`
+          `Bend allowance ${g.bendComp >= 0 ? '+' : ''}${f1(g.bendComp)} mm per fold, darts widened by ${f1(s.thick)} mm`
         )
       ]
     },
@@ -91,13 +91,13 @@ export function buildSliderGroups(
           'trail',
           'Trail (behind the axle)',
           `${s.trail}°`,
-          `Total ${f0(g.cov)}° · ${f0(g.L)} mm of arc`
+          `Total ${f0(g.cov)}°, ${f0(g.L)} mm of arc`
         ),
         item(
           'taper',
           'Tail taper',
           `${s.taper}%`,
-          `Tail narrows to ${f0(g.crownTail)} mm — clears the frame at the mount`
+          `Tail narrows to ${f0(g.crownTail)} mm: clears the frame at the mount`
         ),
         item(
           'taperAt',
@@ -114,7 +114,7 @@ export function buildSliderGroups(
           'flaps',
           'Flap count',
           `× ${s.flaps}`,
-          `${f0(g.pitch)} mm pitch · ${f1(g.notch)} mm dart. More flaps = smoother curve, more fastening.`
+          `${f0(g.pitch)} mm pitch, ${f1(g.notch)} mm dart. More flaps = smoother curve, more fastening.`
         )
       ]
     },
@@ -132,7 +132,7 @@ export function buildSliderGroups(
           'mudflap',
           'Mudflap length',
           s.mudflap > 0 ? `${s.mudflap} mm` : 'none',
-          'Separate bolt-on part — replace it without recutting the fender'
+          'Separate bolt-on part: replace it without recutting the fender'
         )
       ]
     }
@@ -142,7 +142,7 @@ export function buildSliderGroups(
 /** The "Hemmed skirt edge" toggle's note. Source line 1038. */
 export function hemHint(s: FenderConfig): string {
   return s.thick > 0
-    ? `Folds ${f0(2 * s.thick + 4)} mm back on itself — stiffer, no sharp edge`
+    ? `Folds ${f0(2 * s.thick + 4)} mm back on itself: stiffer, no sharp edge`
     : 'Set a material thickness first';
 }
 
@@ -150,18 +150,18 @@ export function hemHint(s: FenderConfig): string {
 export function stockNotes(g: Geometry): { single: string; a4: string } {
   return {
     single: `${f0(g.L)} × ${f0(g.Wd)} mm in one piece`,
-    a4: `${Math.max(1, Math.ceil(g.L / PANEL_L))} panels · ${OVERLAP} mm laps`
+    a4: `${Math.max(1, Math.ceil(g.L / PANEL_L))} panels, ${OVERLAP} mm laps`
   };
 }
 
 /** Sheet B's size summary line. Source line 1094. */
 export function partsSizeLabel(s: FenderConfig, parts: PartsModel): string {
-  const flap = s.mudflap > 0 ? ' · 1 mudflap' : '';
-  const extra = parts.extraCount ? ` · ${parts.extraCount} ${parts.extraLabel.toLowerCase()}s` : '';
+  const flap = s.mudflap > 0 ? ', 1 mudflap' : '';
+  const extra = parts.extraCount ? `, ${parts.extraCount} ${parts.extraLabel.toLowerCase()}s` : '';
   return `${s.struts} struts${flap}${extra}`;
 }
 
 /** Whether Sheet B prints 1:1 on A4. Source line 1095. */
 export function partsFitNote(parts: PartsModel): string {
-  return parts.fitsA4 ? 'fits A4 at full size' : 'wider than A4 — cut struts by measurement';
+  return parts.fitsA4 ? 'fits A4 at full size' : 'wider than A4: cut struts by measurement';
 }

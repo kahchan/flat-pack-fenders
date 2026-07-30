@@ -51,7 +51,7 @@ function localStrut(index: number, len: number, fuse: boolean): LocalPart {
     y: f1(STRUT_W + 5),
     size: 5,
     anchor: 'start',
-    text: `STRUT ${index + 1} · ${f0(len)} × ${STRUT_W}${fuse ? ' · FUSE END' : ''}`
+    text: `STRUT ${index + 1}, ${f0(len)} × ${STRUT_W}${fuse ? ', FUSE END' : ''}`
   };
   return { id: `strut-${index}`, outline, folds, holes, label, w: len, h: STRUT_W };
 }
@@ -72,7 +72,7 @@ function localMudflap(w: number, h: number): LocalPart {
     y: f1(h + 5),
     size: 5,
     anchor: 'start',
-    text: `MUDFLAP · ${f0(w)} × ${f0(h)} mm · lap 16 mm under the tail`
+    text: `MUDFLAP, ${f0(w)} × ${f0(h)} mm, lap 16 mm under the tail`
   };
   return { id: 'mudflap', outline, folds, holes, label, w, h };
 }
@@ -184,7 +184,7 @@ export function buildParts(s: FenderConfig, g: Geometry = geo(s)): PartsModel {
       x: f1(s.strutLen + 8),
       y: f1(y + r + 2),
       size: 5,
-      text: `STRUT ${i + 1} · ${f0(s.strutLen)} × ${STRUT_W}${s.fuse ? ' · FUSE END' : ''}`
+      text: `STRUT ${i + 1}, ${f0(s.strutLen)} × ${STRUT_W}${s.fuse ? ', FUSE END' : ''}`
     });
   }
   py += s.struts * (STRUT_W + 9) + 14;
@@ -208,7 +208,7 @@ export function buildParts(s: FenderConfig, g: Geometry = geo(s)): PartsModel {
       x: f1(w + 8),
       y: f1(py + 10),
       size: 5,
-      text: `MUDFLAP · ${f0(w)} × ${f0(h)} mm · lap 16 mm under the tail`
+      text: `MUDFLAP, ${f0(w)} × ${f0(h)} mm, lap 16 mm under the tail`
     });
     py += s.mudflap + 16;
   }
@@ -237,7 +237,7 @@ export function buildParts(s: FenderConfig, g: Geometry = geo(s)): PartsModel {
         x: f1(x),
         y: f1(y - 3),
         size: 5,
-        text: `${extraLabel} × ${extraCount} · 34 × 14 mm`
+        text: `${extraLabel} × ${extraCount}, 34 × 14 mm`
       });
     }
   }
@@ -253,7 +253,7 @@ export function buildParts(s: FenderConfig, g: Geometry = geo(s)): PartsModel {
   for (let i = 0; i < s.struts; i++) locals.push(localStrut(i, s.strutLen, s.fuse));
   if (s.mudflap > 0) locals.push(localMudflap(g.crownTail, s.mudflap));
   for (let i = 0; i < extraCount; i++) {
-    locals.push(localExtra(i, s.join as 'rivet' | 'slot', i === 0 ? `${extraLabel} × ${extraCount} · 34 × 14 mm` : null));
+    locals.push(localExtra(i, s.join as 'rivet' | 'slot', i === 0 ? `${extraLabel} × ${extraCount}, 34 × 14 mm` : null));
   }
   const pages = packParts(locals);
 

@@ -51,7 +51,7 @@ export function PrintCombinedPage({ page, tiling, parts, config, blank, pageInde
         return (
           <div key={i} className="print-slot" style={{ top: `${slot.y}mm` }}>
             <div className="print-slot__caption" style={{ top: captionTop }}>
-              Sheet B — struts, mudflap &amp; hardware · 1:1 · page {slot.index + 1} of {parts.pages.length}
+              Sheet B, struts, mudflap &amp; hardware, 1:1, page {slot.index + 1} of {parts.pages.length}
             </div>
             <SheetBPageSvg page={partsPage} height={slot.h} />
           </div>

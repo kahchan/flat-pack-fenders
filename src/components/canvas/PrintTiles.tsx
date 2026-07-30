@@ -11,7 +11,7 @@ export function PrintTiles({ tiles, blank, tileCountLabel }: PrintTilesProps) {
   return (
     <section>
       <div className="section-heading">
-        <h2>Print sheets — A4 landscape, 1:1</h2>
+        <h2>Print sheets, A4 landscape, 1:1</h2>
         <span className="meta">{tileCountLabel}</span>
         <span className="meta meta--faint">15 mm safe margin</span>
       </div>

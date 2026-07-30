@@ -29,14 +29,14 @@ export function buildWarnings(
   if (g.cov > 220) {
     warnings.push({
       id: 'coverage-exceeds-frame',
-      text: `${f0(g.cov)}° of coverage wraps past the frame. Measure from the tyre to the fork crown (front) or seat tube (rear) before cutting — most frames foul somewhere between 200° and 240°.`
+      text: `${f0(g.cov)}° of coverage wraps past the frame. Measure from the tyre to the fork crown (front) or seat tube (rear) before cutting: most frames foul somewhere between 200° and 240°.`
     });
   }
 
   if (s.measuredR === 0) {
     warnings.push({
       id: 'radius-estimated',
-      text: `Tyre radius is estimated at ${f0(g.tyreRcalc)} mm from BSD + section width. Measure the real thing and set “Measured tyre radius” — a 5 mm error here shifts every dart.`
+      text: `Tyre radius is estimated at ${f0(g.tyreRcalc)} mm from BSD + section width. Measure the real thing and set “Measured tyre radius”: a 5 mm error here shifts every dart.`
     });
   }
 
@@ -49,17 +49,17 @@ export function buildWarnings(
     const advice =
       taperPct > 0
         ? `keep the taper under ${f0(taperPct)}% or widen the crown`
-        : 'no taper helps here — widen the crown instead';
+        : 'no taper helps here: widen the crown instead';
     warnings.push({
       id: 'tail-narrower-than-tyre',
-      text: `Tapered tail is ${f0(g.crownTail)} mm, narrower than the ${s.tyre} mm tyre. It will throw spray sideways at the very end — ${advice}.`
+      text: `Tapered tail is ${f0(g.crownTail)} mm, narrower than the ${s.tyre} mm tyre. It will throw spray sideways at the very end: ${advice}.`
     });
   }
 
   if (g.notch > 8) {
     warnings.push({
       id: 'darts-too-wide',
-      text: `Darts are ${f1(g.notch)} mm wide — the curve will read as facets and the gaps are hard to close cleanly. Add flaps.`
+      text: `Darts are ${f1(g.notch)} mm wide: the curve will read as facets and the gaps are hard to close cleanly. Add flaps.`
     });
   }
 
@@ -85,7 +85,7 @@ export function buildWarnings(
     const longest = Math.max(...parts.oversizedParts);
     warnings.push({
       id: 'sheet-b-too-wide',
-      text: `A part is ${f0(longest)} mm long — longer than the ${PW} mm print page in any orientation. Shorten it to about ${f0(PW - 8)} mm, or cut it from stock by measurement instead.`
+      text: `A part is ${f0(longest)} mm long: longer than the ${PW} mm print page in any orientation. Shorten it to about ${f0(PW - 8)} mm, or cut it from stock by measurement instead.`
     });
   }
 

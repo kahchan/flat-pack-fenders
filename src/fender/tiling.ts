@@ -40,8 +40,12 @@ export function buildTiling(
       const oy = r * stepY - 6;
       rects.push({ x: f1(ox), y: f1(oy), w: PW, h: PH });
       tiles.push({
-        label: `Sheet A — tile ${r + 1}·${c + 1} of ${rows}·${cols}`,
-        meta: `${WHEELS[s.wheel].label} · ${f0(g.cov)}° · 1:1`,
+        // PLAN FEEDBACK WP17 (decision A3) — `·` is gone in both places, but not to the
+        // same character: `r+1`/`c+1` is a row-by-column COORDINATE (like a dimension),
+        // so it becomes `×`, not a comma; `label`/`meta`'s own separators are a list of
+        // distinct facts, so those become commas, same as everywhere else in this pass.
+        label: `Sheet A, tile ${r + 1}×${c + 1} of ${rows}×${cols}`,
+        meta: `${WHEELS[s.wheel].label}, ${f0(g.cov)}°, 1:1`,
         viewBox: `${f1(ox)} ${f1(oy)} ${PW} ${PH}`,
         frame: `M ${f1(ox)},${f1(oy)} h ${PW} v ${PH} h ${-PW} Z`,
         ruler: `M ${f1(ox + 8)},${f1(oy + PH - 10)} h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4`,

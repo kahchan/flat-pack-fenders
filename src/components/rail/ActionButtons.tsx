@@ -54,11 +54,11 @@ export function ActionButtons({ model, onReset }: ActionButtonsProps) {
         for a laser or plotter.
       </p>
       <p className="rail-footnote">
-        PDF is the print sheets — the same 1:1 pattern, with a 100 mm ruler on every page — as a
-        file, for when there is no print dialog to hand.
+        PDF is the print sheets themselves, the same 1:1 pattern with a 100 mm ruler on every page,
+        saved as a file for when there is no print dialog to hand.
       </p>
       <p className="rail-footnote">
-        Print at 100%, margins &ldquo;none&rdquo; — never &ldquo;fit to page&rdquo;. Every sheet
+        Print at 100%, margins &ldquo;none&rdquo;, not &ldquo;fit to page&rdquo;. Every sheet
         carries a 100 mm ruler; measure it before cutting.
       </p>
     </>

@@ -23,7 +23,7 @@ export function PrintInstructionsPage({ printSpecLine, steps }: PrintInstruction
           <li key={s.n}>
             <span className="print-instructions-list__n mono">{s.n}</span>
             <span>
-              <b>{s.title}</b> — {s.body}
+              <b>{s.title}</b>: {s.body}
             </span>
           </li>
         ))}

@@ -180,19 +180,19 @@
           "x": "168.0",
           "y": "21.0",
           "size": 5,
-          "text": "STRUT 1 · 160 × 14"
+          "text": "STRUT 1, 160 × 14"
         },
         {
           "x": "168.0",
           "y": "44.0",
           "size": 5,
-          "text": "STRUT 2 · 160 × 14"
+          "text": "STRUT 2, 160 × 14"
         },
         {
           "x": "54.8",
           "y": "82.0",
           "size": 5,
-          "text": "MUDFLAP · 47 × 100 mm · lap 16 mm under the tail"
+          "text": "MUDFLAP, 47 × 100 mm, lap 16 mm under the tail"
         }
       ],
       "viewBox": "-2 0 256.0 220.0",
@@ -339,8 +339,8 @@
       ],
       "tiles": [
         {
-          "label": "Sheet A — tile 1·1 of 1·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 1×1 of 1×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "-40.0 -6.0 267 180",
           "frame": "M -40.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M -32.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -348,8 +348,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·2 of 1·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 1×2 of 1×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "215.0 -6.0 267 180",
           "frame": "M 215.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 223.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -357,8 +357,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·3 of 1·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 1×3 of 1×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "470.0 -6.0 267 180",
           "frame": "M 470.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 478.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -366,8 +366,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·4 of 1·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 1×4 of 1×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "725.0 -6.0 267 180",
           "frame": "M 725.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 733.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -375,8 +375,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·5 of 1·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 1×5 of 1×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "980.0 -6.0 267 180",
           "frame": "M 980.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 988.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -384,8 +384,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·6 of 1·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 1×6 of 1×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "1235.0 -6.0 267 180",
           "frame": "M 1235.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 1243.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -685,7 +685,7 @@
       {
         "label": "Bend allowance",
         "value": "-0.6 mm",
-        "note": "per fold · setback 0.8, arc 1.1"
+        "note": "per fold, setback 0.8, arc 1.1"
       },
       {
         "label": "Total take-up",
@@ -708,8 +708,8 @@
         "note": "6 × 1 tiles + parts + instructions"
       }
     ],
-    "assembledLabel": "Rear · 700c / 29″ / 622 · 220° (120/100) · 85 mm wide · 20 flaps · 2 struts · 100 mm flap",
-    "printSpecLine": "700c / 29″ / 622 · tyre 35 (R 346) · crown 55 → 47 · skirt 26 @ 55° · clearance 14 · 120°/100° · 20 flaps · 2 struts · mudflap 100"
+    "assembledLabel": "Rear, 700c / 29″ / 622, 220° (120/100), 85 mm wide, 20 flaps, 2 struts, 100 mm flap",
+    "printSpecLine": "700c / 29″ / 622, tyre 35 (R 346), crown 55 → 47, skirt 26 @ 55°, clearance 14, 120°/100°, 20 flaps, 2 struts, mudflap 100"
   },
   "cargo-20in-single": {
     "config": {
@@ -909,25 +909,25 @@
           "x": "228.0",
           "y": "21.0",
           "size": 5,
-          "text": "STRUT 1 · 220 × 14"
+          "text": "STRUT 1, 220 × 14"
         },
         {
           "x": "228.0",
           "y": "44.0",
           "size": 5,
-          "text": "STRUT 2 · 220 × 14"
+          "text": "STRUT 2, 220 × 14"
         },
         {
           "x": "228.0",
           "y": "67.0",
           "size": 5,
-          "text": "STRUT 3 · 220 × 14"
+          "text": "STRUT 3, 220 × 14"
         },
         {
           "x": "54.5",
           "y": "105.0",
           "size": 5,
-          "text": "MUDFLAP · 47 × 90 mm · lap 16 mm under the tail"
+          "text": "MUDFLAP, 47 × 90 mm, lap 16 mm under the tail"
         }
       ],
       "viewBox": "-2 0 316.0 233.0",
@@ -1068,8 +1068,8 @@
       ],
       "tiles": [
         {
-          "label": "Sheet A — tile 1·1 of 1·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 1×1 of 1×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "-40.0 -6.0 267 180",
           "frame": "M -40.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M -32.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -1077,8 +1077,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·2 of 1·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 1×2 of 1×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "215.0 -6.0 267 180",
           "frame": "M 215.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 223.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -1086,8 +1086,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·3 of 1·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 1×3 of 1×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "470.0 -6.0 267 180",
           "frame": "M 470.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 478.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -1095,8 +1095,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·4 of 1·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 1×4 of 1×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "725.0 -6.0 267 180",
           "frame": "M 725.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 733.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -1104,8 +1104,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·5 of 1·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 1×5 of 1×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "980.0 -6.0 267 180",
           "frame": "M 980.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 988.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -1412,7 +1412,7 @@
       {
         "label": "Bend allowance",
         "value": "-0.6 mm",
-        "note": "per fold · setback 0.8, arc 1.1"
+        "note": "per fold, setback 0.8, arc 1.1"
       },
       {
         "label": "Total take-up",
@@ -1435,8 +1435,8 @@
         "note": "5 × 1 tiles + parts + instructions"
       }
     ],
-    "assembledLabel": "Rear · 20\" / 406 · 260° (60/200) · 96 mm wide · 16 flaps · 3 struts · 90 mm flap",
-    "printSpecLine": "20\" / 406 · tyre 50 (R 253) · crown 62 → 47 · skirt 30 @ 55° · clearance 16 · 60°/200° · 16 flaps · 3 struts · mudflap 90"
+    "assembledLabel": "Rear, 20\" / 406, 260° (60/200), 96 mm wide, 16 flaps, 3 struts, 90 mm flap",
+    "printSpecLine": "20\" / 406, tyre 50 (R 253), crown 62 → 47, skirt 30 @ 55°, clearance 16, 60°/200°, 16 flaps, 3 struts, mudflap 90"
   },
   "front-700c": {
     "config": {
@@ -1613,19 +1613,19 @@
           "x": "168.0",
           "y": "21.0",
           "size": 5,
-          "text": "STRUT 1 · 160 × 14"
+          "text": "STRUT 1, 160 × 14"
         },
         {
           "x": "168.0",
           "y": "44.0",
           "size": 5,
-          "text": "STRUT 2 · 160 × 14"
+          "text": "STRUT 2, 160 × 14"
         },
         {
           "x": "49.3",
           "y": "82.0",
           "size": 5,
-          "text": "MUDFLAP · 41 × 60 mm · lap 16 mm under the tail"
+          "text": "MUDFLAP, 41 × 60 mm, lap 16 mm under the tail"
         }
       ],
       "viewBox": "-2 0 256.0 180.0",
@@ -1766,8 +1766,8 @@
       ],
       "tiles": [
         {
-          "label": "Sheet A — tile 1·1 of 1·5",
-          "meta": "700c / 29″ / 622 · 175° · 1:1",
+          "label": "Sheet A, tile 1×1 of 1×5",
+          "meta": "700c / 29″ / 622, 175°, 1:1",
           "viewBox": "-40.0 -6.0 267 180",
           "frame": "M -40.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M -32.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -1775,8 +1775,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·2 of 1·5",
-          "meta": "700c / 29″ / 622 · 175° · 1:1",
+          "label": "Sheet A, tile 1×2 of 1×5",
+          "meta": "700c / 29″ / 622, 175°, 1:1",
           "viewBox": "215.0 -6.0 267 180",
           "frame": "M 215.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 223.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -1784,8 +1784,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·3 of 1·5",
-          "meta": "700c / 29″ / 622 · 175° · 1:1",
+          "label": "Sheet A, tile 1×3 of 1×5",
+          "meta": "700c / 29″ / 622, 175°, 1:1",
           "viewBox": "470.0 -6.0 267 180",
           "frame": "M 470.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 478.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -1793,8 +1793,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·4 of 1·5",
-          "meta": "700c / 29″ / 622 · 175° · 1:1",
+          "label": "Sheet A, tile 1×4 of 1×5",
+          "meta": "700c / 29″ / 622, 175°, 1:1",
           "viewBox": "725.0 -6.0 267 180",
           "frame": "M 725.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 733.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -1802,8 +1802,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·5 of 1·5",
-          "meta": "700c / 29″ / 622 · 175° · 1:1",
+          "label": "Sheet A, tile 1×5 of 1×5",
+          "meta": "700c / 29″ / 622, 175°, 1:1",
           "viewBox": "980.0 -6.0 267 180",
           "frame": "M 980.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 988.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -2101,7 +2101,7 @@
       {
         "label": "Bend allowance",
         "value": "-0.6 mm",
-        "note": "per fold · setback 0.8, arc 1.1"
+        "note": "per fold, setback 0.8, arc 1.1"
       },
       {
         "label": "Total take-up",
@@ -2124,8 +2124,8 @@
         "note": "5 × 1 tiles + parts + instructions"
       }
     ],
-    "assembledLabel": "Front · 700c / 29″ / 622 · 175° (55/120) · 85 mm wide · 20 flaps · 2 struts · 60 mm flap",
-    "printSpecLine": "700c / 29″ / 622 · tyre 35 (R 346) · crown 55 → 41 · skirt 26 @ 55° · clearance 14 · 55°/120° · 20 flaps · 2 struts · mudflap 60"
+    "assembledLabel": "Front, 700c / 29″ / 622, 175° (55/120), 85 mm wide, 20 flaps, 2 struts, 60 mm flap",
+    "printSpecLine": "700c / 29″ / 622, tyre 35 (R 346), crown 55 → 41, skirt 26 @ 55°, clearance 14, 55°/120°, 20 flaps, 2 struts, mudflap 60"
   },
   "gravel-650b-hem-a4": {
     "config": {
@@ -2332,25 +2332,25 @@
           "x": "228.0",
           "y": "21.0",
           "size": 5,
-          "text": "STRUT 1 · 220 × 14"
+          "text": "STRUT 1, 220 × 14"
         },
         {
           "x": "228.0",
           "y": "44.0",
           "size": 5,
-          "text": "STRUT 2 · 220 × 14"
+          "text": "STRUT 2, 220 × 14"
         },
         {
           "x": "228.0",
           "y": "67.0",
           "size": 5,
-          "text": "STRUT 3 · 220 × 14"
+          "text": "STRUT 3, 220 × 14"
         },
         {
           "x": "62.0",
           "y": "105.0",
           "size": 5,
-          "text": "MUDFLAP · 54 × 90 mm · lap 16 mm under the tail"
+          "text": "MUDFLAP, 54 × 90 mm, lap 16 mm under the tail"
         }
       ],
       "viewBox": "-2 0 316.0 233.0",
@@ -2503,8 +2503,8 @@
       ],
       "tiles": [
         {
-          "label": "Sheet A — tile 1·1 of 1·7",
-          "meta": "650b / 584 · 260° · 1:1",
+          "label": "Sheet A, tile 1×1 of 1×7",
+          "meta": "650b / 584, 260°, 1:1",
           "viewBox": "-40.0 -6.0 267 180",
           "frame": "M -40.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M -32.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -2512,8 +2512,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·2 of 1·7",
-          "meta": "650b / 584 · 260° · 1:1",
+          "label": "Sheet A, tile 1×2 of 1×7",
+          "meta": "650b / 584, 260°, 1:1",
           "viewBox": "215.0 -6.0 267 180",
           "frame": "M 215.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 223.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -2521,8 +2521,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·3 of 1·7",
-          "meta": "650b / 584 · 260° · 1:1",
+          "label": "Sheet A, tile 1×3 of 1×7",
+          "meta": "650b / 584, 260°, 1:1",
           "viewBox": "470.0 -6.0 267 180",
           "frame": "M 470.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 478.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -2530,8 +2530,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·4 of 1·7",
-          "meta": "650b / 584 · 260° · 1:1",
+          "label": "Sheet A, tile 1×4 of 1×7",
+          "meta": "650b / 584, 260°, 1:1",
           "viewBox": "725.0 -6.0 267 180",
           "frame": "M 725.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 733.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -2539,8 +2539,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·5 of 1·7",
-          "meta": "650b / 584 · 260° · 1:1",
+          "label": "Sheet A, tile 1×5 of 1×7",
+          "meta": "650b / 584, 260°, 1:1",
           "viewBox": "980.0 -6.0 267 180",
           "frame": "M 980.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 988.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -2548,8 +2548,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·6 of 1·7",
-          "meta": "650b / 584 · 260° · 1:1",
+          "label": "Sheet A, tile 1×6 of 1×7",
+          "meta": "650b / 584, 260°, 1:1",
           "viewBox": "1235.0 -6.0 267 180",
           "frame": "M 1235.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 1243.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -2557,8 +2557,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·7 of 1·7",
-          "meta": "650b / 584 · 260° · 1:1",
+          "label": "Sheet A, tile 1×7 of 1×7",
+          "meta": "650b / 584, 260°, 1:1",
           "viewBox": "1490.0 -6.0 267 180",
           "frame": "M 1490.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 1498.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -2867,7 +2867,7 @@
       {
         "label": "Bend allowance",
         "value": "-0.8 mm",
-        "note": "per fold · setback 1.2, arc 1.7"
+        "note": "per fold, setback 1.2, arc 1.7"
       },
       {
         "label": "Total take-up",
@@ -2890,8 +2890,8 @@
         "note": "7 × 1 tiles + parts + instructions"
       }
     ],
-    "assembledLabel": "Rear · 650b / 584 · 260° (60/200) · 109 mm wide · 22 flaps · 3 struts · 90 mm flap",
-    "printSpecLine": "650b / 584 · tyre 50 (R 342) · crown 72 → 54 · skirt 32 @ 55° · clearance 18 · 60°/200° · 22 flaps · 3 struts · mudflap 90"
+    "assembledLabel": "Rear, 650b / 584, 260° (60/200), 109 mm wide, 22 flaps, 3 struts, 90 mm flap",
+    "printSpecLine": "650b / 584, tyre 50 (R 342), crown 72 → 54, skirt 32 @ 55°, clearance 18, 60°/200°, 22 flaps, 3 struts, mudflap 90"
   },
   "measured-no-taper-nojoin": {
     "config": {
@@ -3091,25 +3091,25 @@
           "x": "228.0",
           "y": "21.0",
           "size": 5,
-          "text": "STRUT 1 · 220 × 14"
+          "text": "STRUT 1, 220 × 14"
         },
         {
           "x": "228.0",
           "y": "44.0",
           "size": 5,
-          "text": "STRUT 2 · 220 × 14"
+          "text": "STRUT 2, 220 × 14"
         },
         {
           "x": "228.0",
           "y": "67.0",
           "size": 5,
-          "text": "STRUT 3 · 220 × 14"
+          "text": "STRUT 3, 220 × 14"
         },
         {
           "x": "70.0",
           "y": "105.0",
           "size": 5,
-          "text": "MUDFLAP · 62 × 90 mm · lap 16 mm under the tail"
+          "text": "MUDFLAP, 62 × 90 mm, lap 16 mm under the tail"
         }
       ],
       "viewBox": "-2 0 316.0 233.0",
@@ -3250,8 +3250,8 @@
       ],
       "tiles": [
         {
-          "label": "Sheet A — tile 1·1 of 1·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 1×1 of 1×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "-6.0 -6.0 267 180",
           "frame": "M -6.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 2.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -3259,8 +3259,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·2 of 1·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 1×2 of 1×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "249.0 -6.0 267 180",
           "frame": "M 249.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 257.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -3268,8 +3268,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·3 of 1·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 1×3 of 1×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "504.0 -6.0 267 180",
           "frame": "M 504.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 512.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -3277,8 +3277,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·4 of 1·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 1×4 of 1×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "759.0 -6.0 267 180",
           "frame": "M 759.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 767.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -3286,8 +3286,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·5 of 1·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 1×5 of 1×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "1014.0 -6.0 267 180",
           "frame": "M 1014.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 1022.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -3588,7 +3588,7 @@
       {
         "label": "Bend allowance",
         "value": "-0.6 mm",
-        "note": "per fold · setback 0.8, arc 1.1"
+        "note": "per fold, setback 0.8, arc 1.1"
       },
       {
         "label": "Total take-up",
@@ -3611,8 +3611,8 @@
         "note": "5 × 1 tiles + parts + instructions"
       }
     ],
-    "assembledLabel": "Rear · 20\" / 406 · 260° (60/200) · 96 mm wide · 16 flaps · 3 struts · 90 mm flap",
-    "printSpecLine": "20\" / 406 · tyre 50 (R 250) · crown 62 → 62 · skirt 30 @ 55° · clearance 16 · 60°/200° · 16 flaps · 3 struts · mudflap 90"
+    "assembledLabel": "Rear, 20\" / 406, 260° (60/200), 96 mm wide, 16 flaps, 3 struts, 90 mm flap",
+    "printSpecLine": "20\" / 406, tyre 50 (R 250), crown 62 → 62, skirt 30 @ 55°, clearance 16, 60°/200°, 16 flaps, 3 struts, mudflap 90"
   },
   "mtb-26in-slot-thick": {
     "config": {
@@ -3834,31 +3834,31 @@
           "x": "228.0",
           "y": "21.0",
           "size": 5,
-          "text": "STRUT 1 · 220 × 14"
+          "text": "STRUT 1, 220 × 14"
         },
         {
           "x": "228.0",
           "y": "44.0",
           "size": 5,
-          "text": "STRUT 2 · 220 × 14"
+          "text": "STRUT 2, 220 × 14"
         },
         {
           "x": "228.0",
           "y": "67.0",
           "size": 5,
-          "text": "STRUT 3 · 220 × 14"
+          "text": "STRUT 3, 220 × 14"
         },
         {
           "x": "66.5",
           "y": "105.0",
           "size": 5,
-          "text": "MUDFLAP · 59 × 90 mm · lap 16 mm under the tail"
+          "text": "MUDFLAP, 59 × 90 mm, lap 16 mm under the tail"
         },
         {
           "x": "2.0",
           "y": "198.0",
           "size": 5,
-          "text": "CLIP × 11 · 34 × 14 mm"
+          "text": "CLIP × 11, 34 × 14 mm"
         }
       ],
       "viewBox": "-2 0 316.0 255.0",
@@ -4011,8 +4011,8 @@
       ],
       "tiles": [
         {
-          "label": "Sheet A — tile 1·1 of 1·7",
-          "meta": "26\" / 559 · 260° · 1:1",
+          "label": "Sheet A, tile 1×1 of 1×7",
+          "meta": "26\" / 559, 260°, 1:1",
           "viewBox": "-40.0 -6.0 267 180",
           "frame": "M -40.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M -32.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -4020,8 +4020,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·2 of 1·7",
-          "meta": "26\" / 559 · 260° · 1:1",
+          "label": "Sheet A, tile 1×2 of 1×7",
+          "meta": "26\" / 559, 260°, 1:1",
           "viewBox": "215.0 -6.0 267 180",
           "frame": "M 215.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 223.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -4029,8 +4029,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·3 of 1·7",
-          "meta": "26\" / 559 · 260° · 1:1",
+          "label": "Sheet A, tile 1×3 of 1×7",
+          "meta": "26\" / 559, 260°, 1:1",
           "viewBox": "470.0 -6.0 267 180",
           "frame": "M 470.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 478.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -4038,8 +4038,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·4 of 1·7",
-          "meta": "26\" / 559 · 260° · 1:1",
+          "label": "Sheet A, tile 1×4 of 1×7",
+          "meta": "26\" / 559, 260°, 1:1",
           "viewBox": "725.0 -6.0 267 180",
           "frame": "M 725.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 733.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -4047,8 +4047,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·5 of 1·7",
-          "meta": "26\" / 559 · 260° · 1:1",
+          "label": "Sheet A, tile 1×5 of 1×7",
+          "meta": "26\" / 559, 260°, 1:1",
           "viewBox": "980.0 -6.0 267 180",
           "frame": "M 980.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 988.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -4056,8 +4056,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·6 of 1·7",
-          "meta": "26\" / 559 · 260° · 1:1",
+          "label": "Sheet A, tile 1×6 of 1×7",
+          "meta": "26\" / 559, 260°, 1:1",
           "viewBox": "1235.0 -6.0 267 180",
           "frame": "M 1235.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 1243.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -4065,8 +4065,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·7 of 1·7",
-          "meta": "26\" / 559 · 260° · 1:1",
+          "label": "Sheet A, tile 1×7 of 1×7",
+          "meta": "26\" / 559, 260°, 1:1",
           "viewBox": "1490.0 -6.0 267 180",
           "frame": "M 1490.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 1498.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -4384,7 +4384,7 @@
       {
         "label": "Bend allowance",
         "value": "-1.4 mm",
-        "note": "per fold · setback 2.1, arc 2.8"
+        "note": "per fold, setback 2.1, arc 2.8"
       },
       {
         "label": "Total take-up",
@@ -4407,8 +4407,8 @@
         "note": "7 × 1 tiles + parts + instructions"
       }
     ],
-    "assembledLabel": "Rear · 26\" / 559 · 260° (60/200) · 112 mm wide · 12 flaps · 3 struts · 90 mm flap",
-    "printSpecLine": "26\" / 559 · tyre 55 (R 335) · crown 78 → 59 · skirt 30 @ 55° · clearance 16 · 60°/200° · 12 flaps · 3 struts · mudflap 90"
+    "assembledLabel": "Rear, 26\" / 559, 260° (60/200), 112 mm wide, 12 flaps, 3 struts, 90 mm flap",
+    "printSpecLine": "26\" / 559, tyre 55 (R 335), crown 78 → 59, skirt 30 @ 55°, clearance 16, 60°/200°, 12 flaps, 3 struts, mudflap 90"
   },
   "nested-pair": {
     "config": {
@@ -4591,19 +4591,19 @@
           "x": "168.0",
           "y": "21.0",
           "size": 5,
-          "text": "STRUT 1 · 160 × 14"
+          "text": "STRUT 1, 160 × 14"
         },
         {
           "x": "168.0",
           "y": "44.0",
           "size": 5,
-          "text": "STRUT 2 · 160 × 14"
+          "text": "STRUT 2, 160 × 14"
         },
         {
           "x": "54.8",
           "y": "82.0",
           "size": 5,
-          "text": "MUDFLAP · 47 × 100 mm · lap 16 mm under the tail"
+          "text": "MUDFLAP, 47 × 100 mm, lap 16 mm under the tail"
         }
       ],
       "viewBox": "-2 0 256.0 220.0",
@@ -4786,8 +4786,8 @@
       ],
       "tiles": [
         {
-          "label": "Sheet A — tile 1·1 of 2·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 1×1 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "-40.0 -6.0 267 180",
           "frame": "M -40.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M -32.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -4795,8 +4795,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·2 of 2·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 1×2 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "215.0 -6.0 267 180",
           "frame": "M 215.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 223.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -4804,8 +4804,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·3 of 2·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 1×3 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "470.0 -6.0 267 180",
           "frame": "M 470.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 478.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -4813,8 +4813,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·4 of 2·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 1×4 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "725.0 -6.0 267 180",
           "frame": "M 725.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 733.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -4822,8 +4822,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·5 of 2·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 1×5 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "980.0 -6.0 267 180",
           "frame": "M 980.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 988.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -4831,8 +4831,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·6 of 2·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 1×6 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "1235.0 -6.0 267 180",
           "frame": "M 1235.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 1243.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -4840,8 +4840,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 2·1 of 2·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 2×1 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "-40.0 162.0 267 180",
           "frame": "M -40.0,162.0 h 267 v 180 h -267 Z",
           "ruler": "M -32.0,332.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -4849,8 +4849,8 @@
           "rulerY": "328.0"
         },
         {
-          "label": "Sheet A — tile 2·2 of 2·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 2×2 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "215.0 162.0 267 180",
           "frame": "M 215.0,162.0 h 267 v 180 h -267 Z",
           "ruler": "M 223.0,332.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -4858,8 +4858,8 @@
           "rulerY": "328.0"
         },
         {
-          "label": "Sheet A — tile 2·3 of 2·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 2×3 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "470.0 162.0 267 180",
           "frame": "M 470.0,162.0 h 267 v 180 h -267 Z",
           "ruler": "M 478.0,332.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -4867,8 +4867,8 @@
           "rulerY": "328.0"
         },
         {
-          "label": "Sheet A — tile 2·4 of 2·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 2×4 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "725.0 162.0 267 180",
           "frame": "M 725.0,162.0 h 267 v 180 h -267 Z",
           "ruler": "M 733.0,332.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -4876,8 +4876,8 @@
           "rulerY": "328.0"
         },
         {
-          "label": "Sheet A — tile 2·5 of 2·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 2×5 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "980.0 162.0 267 180",
           "frame": "M 980.0,162.0 h 267 v 180 h -267 Z",
           "ruler": "M 988.0,332.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -4885,8 +4885,8 @@
           "rulerY": "328.0"
         },
         {
-          "label": "Sheet A — tile 2·6 of 2·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 2×6 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "1235.0 162.0 267 180",
           "frame": "M 1235.0,162.0 h 267 v 180 h -267 Z",
           "ruler": "M 1243.0,332.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -5186,7 +5186,7 @@
       {
         "label": "Bend allowance",
         "value": "-0.6 mm",
-        "note": "per fold · setback 0.8, arc 1.1"
+        "note": "per fold, setback 0.8, arc 1.1"
       },
       {
         "label": "Total take-up",
@@ -5196,7 +5196,7 @@
       {
         "label": "Blank area",
         "value": "0.1 m²",
-        "note": "each · nested pair shares the stock width"
+        "note": "each, nested pair shares the stock width"
       },
       {
         "label": "Material panels",
@@ -5209,8 +5209,8 @@
         "note": "6 × 2 tiles + parts + instructions"
       }
     ],
-    "assembledLabel": "Rear · 700c / 29″ / 622 · 220° (120/100) · 85 mm wide · 20 flaps · 2 struts · 100 mm flap",
-    "printSpecLine": "700c / 29″ / 622 · tyre 35 (R 346) · crown 55 → 47 · skirt 26 @ 55° · clearance 14 · 120°/100° · 20 flaps · 2 struts · mudflap 100"
+    "assembledLabel": "Rear, 700c / 29″ / 622, 220° (120/100), 85 mm wide, 20 flaps, 2 struts, 100 mm flap",
+    "printSpecLine": "700c / 29″ / 622, tyre 35 (R 346), crown 55 → 47, skirt 26 @ 55°, clearance 14, 120°/100°, 20 flaps, 2 struts, mudflap 100"
   },
   "rivet-join": {
     "config": {
@@ -5792,25 +5792,25 @@
           "x": "168.0",
           "y": "21.0",
           "size": 5,
-          "text": "STRUT 1 · 160 × 14"
+          "text": "STRUT 1, 160 × 14"
         },
         {
           "x": "168.0",
           "y": "44.0",
           "size": 5,
-          "text": "STRUT 2 · 160 × 14"
+          "text": "STRUT 2, 160 × 14"
         },
         {
           "x": "54.8",
           "y": "82.0",
           "size": 5,
-          "text": "MUDFLAP · 47 × 100 mm · lap 16 mm under the tail"
+          "text": "MUDFLAP, 47 × 100 mm, lap 16 mm under the tail"
         },
         {
           "x": "2.0",
           "y": "185.0",
           "size": 5,
-          "text": "BUTT STRAP × 19 · 34 × 14 mm"
+          "text": "BUTT STRAP × 19, 34 × 14 mm"
         }
       ],
       "viewBox": "-2 0 256.0 286.0",
@@ -5957,8 +5957,8 @@
       ],
       "tiles": [
         {
-          "label": "Sheet A — tile 1·1 of 1·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 1×1 of 1×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "-40.0 -6.0 267 180",
           "frame": "M -40.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M -32.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -5966,8 +5966,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·2 of 1·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 1×2 of 1×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "215.0 -6.0 267 180",
           "frame": "M 215.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 223.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -5975,8 +5975,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·3 of 1·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 1×3 of 1×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "470.0 -6.0 267 180",
           "frame": "M 470.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 478.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -5984,8 +5984,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·4 of 1·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 1×4 of 1×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "725.0 -6.0 267 180",
           "frame": "M 725.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 733.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -5993,8 +5993,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·5 of 1·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 1×5 of 1×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "980.0 -6.0 267 180",
           "frame": "M 980.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 988.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -6002,8 +6002,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·6 of 1·6",
-          "meta": "700c / 29″ / 622 · 220° · 1:1",
+          "label": "Sheet A, tile 1×6 of 1×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
           "viewBox": "1235.0 -6.0 267 180",
           "frame": "M 1235.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 1243.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -6303,7 +6303,7 @@
       {
         "label": "Bend allowance",
         "value": "-0.6 mm",
-        "note": "per fold · setback 0.8, arc 1.1"
+        "note": "per fold, setback 0.8, arc 1.1"
       },
       {
         "label": "Total take-up",
@@ -6326,8 +6326,8 @@
         "note": "6 × 1 tiles + parts + instructions"
       }
     ],
-    "assembledLabel": "Rear · 700c / 29″ / 622 · 220° (120/100) · 85 mm wide · 20 flaps · 2 struts · 100 mm flap",
-    "printSpecLine": "700c / 29″ / 622 · tyre 35 (R 346) · crown 55 → 47 · skirt 26 @ 55° · clearance 14 · 120°/100° · 20 flaps · 2 struts · mudflap 100"
+    "assembledLabel": "Rear, 700c / 29″ / 622, 220° (120/100), 85 mm wide, 20 flaps, 2 struts, 100 mm flap",
+    "printSpecLine": "700c / 29″ / 622, tyre 35 (R 346), crown 55 → 47, skirt 26 @ 55°, clearance 14, 120°/100°, 20 flaps, 2 struts, mudflap 100"
   },
   "nested-cargo-20in": {
     "config": {
@@ -6527,25 +6527,25 @@
           "x": "228.0",
           "y": "21.0",
           "size": 5,
-          "text": "STRUT 1 · 220 × 14"
+          "text": "STRUT 1, 220 × 14"
         },
         {
           "x": "228.0",
           "y": "44.0",
           "size": 5,
-          "text": "STRUT 2 · 220 × 14"
+          "text": "STRUT 2, 220 × 14"
         },
         {
           "x": "228.0",
           "y": "67.0",
           "size": 5,
-          "text": "STRUT 3 · 220 × 14"
+          "text": "STRUT 3, 220 × 14"
         },
         {
           "x": "54.5",
           "y": "105.0",
           "size": 5,
-          "text": "MUDFLAP · 47 × 90 mm · lap 16 mm under the tail"
+          "text": "MUDFLAP, 47 × 90 mm, lap 16 mm under the tail"
         }
       ],
       "viewBox": "-2 0 316.0 233.0",
@@ -6716,8 +6716,8 @@
       ],
       "tiles": [
         {
-          "label": "Sheet A — tile 1·1 of 2·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 1×1 of 2×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "-40.0 -6.0 267 180",
           "frame": "M -40.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M -32.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -6725,8 +6725,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·2 of 2·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 1×2 of 2×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "215.0 -6.0 267 180",
           "frame": "M 215.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 223.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -6734,8 +6734,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·3 of 2·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 1×3 of 2×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "470.0 -6.0 267 180",
           "frame": "M 470.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 478.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -6743,8 +6743,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·4 of 2·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 1×4 of 2×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "725.0 -6.0 267 180",
           "frame": "M 725.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 733.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -6752,8 +6752,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 1·5 of 2·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 1×5 of 2×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "980.0 -6.0 267 180",
           "frame": "M 980.0,-6.0 h 267 v 180 h -267 Z",
           "ruler": "M 988.0,164.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -6761,8 +6761,8 @@
           "rulerY": "160.0"
         },
         {
-          "label": "Sheet A — tile 2·1 of 2·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 2×1 of 2×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "-40.0 162.0 267 180",
           "frame": "M -40.0,162.0 h 267 v 180 h -267 Z",
           "ruler": "M -32.0,332.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -6770,8 +6770,8 @@
           "rulerY": "328.0"
         },
         {
-          "label": "Sheet A — tile 2·2 of 2·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 2×2 of 2×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "215.0 162.0 267 180",
           "frame": "M 215.0,162.0 h 267 v 180 h -267 Z",
           "ruler": "M 223.0,332.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -6779,8 +6779,8 @@
           "rulerY": "328.0"
         },
         {
-          "label": "Sheet A — tile 2·3 of 2·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 2×3 of 2×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "470.0 162.0 267 180",
           "frame": "M 470.0,162.0 h 267 v 180 h -267 Z",
           "ruler": "M 478.0,332.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -6788,8 +6788,8 @@
           "rulerY": "328.0"
         },
         {
-          "label": "Sheet A — tile 2·4 of 2·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 2×4 of 2×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "725.0 162.0 267 180",
           "frame": "M 725.0,162.0 h 267 v 180 h -267 Z",
           "ruler": "M 733.0,332.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -6797,8 +6797,8 @@
           "rulerY": "328.0"
         },
         {
-          "label": "Sheet A — tile 2·5 of 2·5",
-          "meta": "20\" / 406 · 260° · 1:1",
+          "label": "Sheet A, tile 2×5 of 2×5",
+          "meta": "20\" / 406, 260°, 1:1",
           "viewBox": "980.0 162.0 267 180",
           "frame": "M 980.0,162.0 h 267 v 180 h -267 Z",
           "ruler": "M 988.0,332.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
@@ -7105,7 +7105,7 @@
       {
         "label": "Bend allowance",
         "value": "-0.6 mm",
-        "note": "per fold · setback 0.8, arc 1.1"
+        "note": "per fold, setback 0.8, arc 1.1"
       },
       {
         "label": "Total take-up",
@@ -7115,7 +7115,7 @@
       {
         "label": "Blank area",
         "value": "0.1 m²",
-        "note": "each · nested pair shares the stock width"
+        "note": "each, nested pair shares the stock width"
       },
       {
         "label": "Material panels",
@@ -7128,7 +7128,7 @@
         "note": "5 × 2 tiles + parts + instructions"
       }
     ],
-    "assembledLabel": "Rear · 20\" / 406 · 260° (60/200) · 96 mm wide · 16 flaps · 3 struts · 90 mm flap",
-    "printSpecLine": "20\" / 406 · tyre 50 (R 253) · crown 62 → 47 · skirt 30 @ 55° · clearance 16 · 60°/200° · 16 flaps · 3 struts · mudflap 90"
+    "assembledLabel": "Rear, 20\" / 406, 260° (60/200), 96 mm wide, 16 flaps, 3 struts, 90 mm flap",
+    "printSpecLine": "20\" / 406, tyre 50 (R 253), crown 62 → 47, skirt 30 @ 55°, clearance 16, 60°/200°, 16 flaps, 3 struts, mudflap 90"
   }
 }

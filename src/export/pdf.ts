@@ -137,7 +137,7 @@ function winAnsiByte(codePoint: number): number {
 /** A PDF literal string `(...)`, WinAnsi-encoded and with `()\` escaped. Every character
  * that reaches the content stream as text goes through here — nothing else in this file
  * ever writes a JS string's raw UTF-16 units into the output. */
-function pdfTextLiteral(text: string): string {
+export function pdfTextLiteral(text: string): string {
   let out = '';
   for (const ch of text) {
     const b = winAnsiByte(ch.codePointAt(0)!);
@@ -333,7 +333,7 @@ function sheetBPageContent(page: PartsPage, pageIndex: number, pageCount: number
       x: ox + 2,
       y: -6,
       size: 6,
-      text: `Sheet B — struts, mudflap & hardware · 1:1 · page ${pageIndex + 1} of ${pageCount}`,
+      text: `Sheet B, struts, mudflap & hardware, 1:1, page ${pageIndex + 1} of ${pageCount}`,
       anchor: 'start'
     },
     'normal'
@@ -382,7 +382,7 @@ function instructionsContent(printSpecLine: string, steps: AssemblyStep[]): stri
   const topY = (mmFromTop: number) => PAGE_H_PT - mmFromTop * SCALE_N;
 
   let s = '0 g\n';
-  s += `BT\n/F2 18 Tf\n${num(left)} ${num(topY(20))} Td\n${pdfTextLiteral('Flat-pack fender — assembly')} Tj\nET\n`;
+  s += `BT\n/F2 18 Tf\n${num(left)} ${num(topY(20))} Td\n${pdfTextLiteral('Flat-pack fender: assembly')} Tj\nET\n`;
   s += `BT\n/F1 10 Tf\n${num(left)} ${num(topY(30))} Td\n${pdfTextLiteral(printSpecLine)} Tj\nET\n`;
 
   const mid = Math.ceil(steps.length / 2);
@@ -391,7 +391,7 @@ function instructionsContent(printSpecLine: string, steps: AssemblyStep[]): stri
     const x = left + ci * (colW + gap);
     let y = 45;
     for (const step of col) {
-      s += `BT\n/F2 11 Tf\n${num(x)} ${num(topY(y))} Td\n${pdfTextLiteral(`${step.n} — ${step.title}`)} Tj\nET\n`;
+      s += `BT\n/F2 11 Tf\n${num(x)} ${num(topY(y))} Td\n${pdfTextLiteral(`${step.n}: ${step.title}`)} Tj\nET\n`;
       y += 6;
       const bodyLines = wrapText(step.body, colW, 9);
       for (const line of bodyLines) {

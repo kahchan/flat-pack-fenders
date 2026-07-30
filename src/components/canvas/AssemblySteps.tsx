@@ -24,7 +24,7 @@ export function AssemblySteps({ steps }: AssemblyStepsProps) {
           <li key={s.n}>
             <span className="step-n mono">{s.n}</span>
             <span className="step-body">
-              <b>{s.title}</b> — {s.body}
+              <b>{s.title}</b>: {s.body}
             </span>
           </li>
         ))}

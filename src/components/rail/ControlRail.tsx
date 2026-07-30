@@ -27,7 +27,7 @@ export function ControlRail({ model, setField, applyPreset, reset, showPresets =
   return (
     <aside className="control-rail screen-only">
       <div>
-        <div className="rail-kicker">Open source · v0.3</div>
+        <div className="rail-kicker">Open source, v0.3</div>
         <h1 className="rail-title">Flat-pack fender</h1>
         <p className="rail-lede">
           One flat blank, darted flaps that pull it into a U, separate struts and mudflap. Print at

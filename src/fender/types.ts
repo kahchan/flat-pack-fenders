@@ -405,7 +405,7 @@ export interface DrawingModel {
   notes: EngNote[];
   steps: AssemblyStep[];
   specs: SpecRow[];
-  /** e.g. "Rear · 700c · 622 · 215° (40/175) · 85 mm wide · 20 flaps · 2 struts". */
+  /** e.g. "Rear, 700c / 29″ / 622, 215° (40/175), 85 mm wide, 20 flaps, 2 struts". */
   assembledLabel: string;
   /** One-line spec printed on the instruction sheet. */
   printSpecLine: string;

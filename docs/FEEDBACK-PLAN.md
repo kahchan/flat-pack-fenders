@@ -254,7 +254,7 @@ so it is worth stating plainly rather than making people know it.
 
 ---
 
-## WP17 — Copy pass
+## WP17 — Copy pass ✅ DONE
 
 Run `/anthropic-skills:stop-slop` across all user-facing prose: the 16 engineering notes, assembly
 steps, warnings, preset descriptions, UI labels.
@@ -339,3 +339,38 @@ time a warning threshold moves.
 threshold or a geometry default — it is the cheapest way to catch a preset that has quietly gone bad.
 
 WP13 and WP15 both change golden fixtures; do not run them in parallel.
+
+### Outcome
+
+**Separator scheme: comma for lists, `/` for compound values, `×` for dimensions.**
+
+`/` was already taken by WP16's wheel label, so reusing it for lists would give
+`Rear / 700c / 29″ / 622 / 220°` — the same mixed-scheme mush the decision set out to remove.
+Commas keep the two levels distinct.
+
+|                | Before                                        | After                                                |
+| -------------- | --------------------------------------------- | ---------------------------------------------------- |
+| Assembled line | `Rear · 700c / 29″ / 622 · 220° · 85 mm wide` | `Rear, 700c / 29″ / 622, 220° (120/100), 85 mm wide` |
+| Tile label     | `Sheet A — tile 1·2 of 1·6`                   | `Sheet A, tile 1×2 of 1×6`                           |
+| Drawing label  | `SEAM 1 — CUT PANEL 1 TO HERE +20 MM LAP`     | `SEAM 1: CUT PANEL 1 TO HERE +20 MM LAP`             |
+| Preset spec    | `Rear · 650b · 50 mm tyre · hemmed skirt`     | `Rear, 650b, 50 mm tyre, hemmed skirt`               |
+
+In prose, em-dashes became a **colon** where the clause explains what precedes it and a **comma**
+where it merely interpolates — the rule `notes.ts` set, followed everywhere after.
+
+Print scale re-measured at 0.999814–0.999999. 1159 assertions.
+
+### Two characters deliberately kept
+
+`SheetA.tsx`'s on-screen legend still contains `—— cut line` and `· · · panel lap edge`. These are
+not punctuation: they are ASCII swatches **depicting the line styles they name**, doing the same job
+as `⌀`, `×` and `°`. Removing them would delete the visual key rather than clean it up.
+
+If they should go anyway, the right fix is to draw them as tiny inline SVG line samples rather than
+substitute different characters — which is a small piece of work, not a find-and-replace.
+
+### Scope note
+
+The original inventory of 15 files undercounted: it matched quoted string literals and missed **JSX
+text nodes**, which held em-dashes in eight more components. Worth remembering the next time
+user-facing text is audited by grep.

@@ -14,7 +14,7 @@ type ToggleKey = 'tongue' | 'fuse' | 'nest' | 'hem';
 export function OptionToggles({ config, setField }: OptionTogglesProps) {
   const toggles: { k: ToggleKey; label: string; note: string }[] = useMemo(
     () => [
-      { k: 'tongue', label: 'Frame-mount tongue', note: 'Slotted tab at the nose — slides to take up tolerance' },
+      { k: 'tongue', label: 'Frame-mount tongue', note: 'Slotted tab at the nose: slides to take up tolerance' },
       {
         k: 'fuse',
         label: 'Sacrificial strut end',
