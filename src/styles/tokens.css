@@ -98,16 +98,21 @@
   --fw-semibold: 600;
   --fw-bold: 700;
 
-  /* ── Type scale (subset actually used by this app) ── */
+  /* ── Type scale — 4px grid (PLAN FEEDBACK WP16 §16.1). Was scattered across 11-15px
+     literals inline in app.css/responsive.css; every one now routes through one of
+     these instead. body-sm/body-md/mono-sm land on the same 16px step and
+     body-lg/heading-sm both land on 20px — the table that set these values gives
+     them identical targets, not a mistake here. ── */
   --text-heading-xl-size: 36px;
-  --text-heading-lg-size: 28px;
-  --text-heading-md-size: 22px;
-  --text-heading-sm-size: 18px;
-  --text-body-lg-size: 18px;
+  --text-heading-lg-size: 32px;
+  --text-heading-md-size: 24px;
+  --text-heading-sm-size: 20px;
+  --text-body-lg-size: 20px;
   --text-body-md-size: 16px;
-  --text-body-sm-size: 14px;
+  --text-body-sm-size: 16px;
+  --text-mono-sm-size: 16px;
   --text-caption-size: 12px;
-  --text-label-size: 11px;
+  --text-label-size: 12px;
   --text-label-weight: 600;
   --text-label-track: 0.07em;
 

@@ -6,11 +6,13 @@
  */
 import { writeFileSync } from 'node:fs';
 
+// Labels mirrored from src/fender/defaults.ts (PLAN FEEDBACK WP16 §16.4) — dot-free
+// already, and 700c carries its 29″ imperial name since it shares the 622 mm bead seat.
 const WHEELS = {
-  '700c': { bsd: 622, label: '700c · 622' },
-  '650b': { bsd: 584, label: '650b · 584' },
-  '26in': { bsd: 559, label: '26" · 559' },
-  '20in': { bsd: 406, label: '20" · 406' }
+  '700c': { bsd: 622, label: '700c / 29″ / 622' },
+  '650b': { bsd: 584, label: '650b / 584' },
+  '26in': { bsd: 559, label: '26" / 559' },
+  '20in': { bsd: 406, label: '20" / 406' }
 };
 const D2 = Math.PI / 180;
 const f1 = (n) => (Math.round(n * 10) / 10).toFixed(1);
@@ -678,9 +680,12 @@ function specs(s, g, finished, panelCount, cols, rows) {
   ];
 }
 
-// PLAN §13.1 — lead/trail are the unified coverage numbers (rear 120/100, front
-// 55/120), replacing the source's own literals here too so this fixture generator
-// can't drift from src/fender/defaults.ts's COVERAGE either.
+// PLAN §13.1 / FEEDBACK §16.5 (decision A1) — lead/trail are DEFAULTS' own 120/100
+// literal in src/fender/defaults.ts. Up to WP16 that literal was `COVERAGE.rear.lead`/
+// `.trail`; A1 decoupled DEFAULTS from COVERAGE (COVERAGE is now PRESETS-only), so this
+// is no longer a read of the same constant — but the effective value is unchanged, so
+// this fixture generator's own 120/100 still matches it, on purpose rather than by
+// coincidence.
 const DEFAULTS = {
   side: 'rear', wheel: '700c', tyre: 35, measuredR: 0, clear: 14, crown: 55, skirt: 26, angle: 55,
   thick: 0.8, lead: 120, trail: 100, taper: 15, taperAt: 70, flaps: 20, struts: 2, strutLen: 160,

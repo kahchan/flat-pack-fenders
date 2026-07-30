@@ -38,7 +38,7 @@ export function OptionToggles({ config, setField }: OptionTogglesProps) {
               label={o.label}
               note={o.note}
               selected={on}
-              emphasis="tinted"
+              emphasis="dark"
               onClick={() => setField(o.k, !on)}
               trailing={
                 <span className={`toggle-btn__state${on ? ' toggle-btn__state--on' : ''}`}>

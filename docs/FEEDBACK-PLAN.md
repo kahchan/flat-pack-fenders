@@ -186,7 +186,7 @@ someone reads while building, so it should look like it belongs to the thing the
 
 ---
 
-## WP16 — Visual system
+## WP16 — Visual system ✅ DONE
 
 ### 16.1 Type scale on a 4 px grid
 
@@ -230,8 +230,27 @@ presets currently render as a flat row that looks complete at three.
 ### 16.4 700c = 29″
 
 Wheel labels are `700c · 622`. Add the imperial equivalent people actually shop for:
-`700c · 29″ · 622`. 700c and 29″ share the 622 mm bead seat — same rim, different marketing name —
+`700c / 29″ / 622`. 700c and 29″ share the 622 mm bead seat — same rim, different marketing name —
 so it is worth stating plainly rather than making people know it.
+
+### Outcome
+
+- **38 inline `fontSize` values removed**, all routed through tokens. Two literals left deliberately:
+  `DrawingLabels`' mm-based `Label.size`, and the print ruler's `fontSize={4}` — both millimetre
+  drawing annotations, explicitly out of scope.
+- Selection now reads identically everywhere: Join, Stock and Options switched from coral to dark.
+  Coral is back to meaning attention only.
+- Wheel labels are final and dot-free: **`700c / 29″ / 622`**, `650b / 584`, `26" / 559`, `20" / 406`.
+- `COVERAGE` re-scoped to presets only (A1), each decoupling commented against §9.16.
+- **Print scale unchanged**, re-measured: 0.99983–1.00002 across all seven print SVGs.
+
+**Two follow-ups this exposed:**
+
+1. `OptionButton`'s `emphasis="tinted"` variant now has **no callers** — dead code. Left in place
+   rather than removed as an unasked-for change; delete it when convenient.
+2. The **Front preset group holds exactly one card**. The grouping is correct for the data, but a
+   labelled group of one reads thin next to five. Worth adding a second front preset (a front gravel
+   or front 26″) rather than leaving the split lopsided — a UI question, not a bug.
 
 ---
 
@@ -241,7 +260,7 @@ Run `/anthropic-skills:stop-slop` across all user-facing prose: the 16 engineeri
 steps, warnings, preset descriptions, UI labels.
 
 Per A3, strip em-dashes and `·` from **sentences**, keep `·` where it delimits data. The distinction:
-`700c · 29″ · 622` is a delimiter and stays; "Score the fold lines — about a third of the way
+`700c / 29″ / 622` is a delimiter and stays; "Score the fold lines — about a third of the way
 through" is punctuation and goes.
 
 Two cautions:
