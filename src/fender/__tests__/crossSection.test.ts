@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import golden from './golden.json';
 import { buildCrossSection } from '../crossSection';
+import { DEFAULTS } from '../defaults';
 import { geo } from '../geometry';
 import type { FenderConfig } from '../types';
 
@@ -106,5 +107,36 @@ describe.each(CASES)('buildCrossSection(%s)', (_name, c) => {
   it('viewBox and finished width match', () => {
     expect(xs.viewBox).toBe(fixture.viewBox);
     expect(xs.finished).toBeCloseTo(fixture.finished, 10);
+  });
+});
+
+// PLAN §14 — the viewBox is pinned to the tyre + clearance envelope, not to `finished`,
+// so crown/skirt changes that stay inside that envelope must not move the viewBox, and
+// the tyre section circle must track `tyre` alone.
+describe('buildCrossSection viewBox envelope (PLAN §14)', () => {
+  it('is identical for two configs differing only in crown width within the envelope', () => {
+    // tyre=90 gives an envelope wide enough that a modest crown/skirt=0 combination
+    // never exceeds it, so both should land on exactly the same rounded viewBox.
+    const base: FenderConfig = { ...DEFAULTS, tyre: 90, skirt: 0, crown: 30 };
+    const wide: FenderConfig = { ...base, crown: 50 };
+    expect(buildCrossSection(wide).viewBox).toBe(buildCrossSection(base).viewBox);
+  });
+
+  it('widens the viewBox once the fender genuinely exceeds the envelope', () => {
+    const small: FenderConfig = { ...DEFAULTS, tyre: 90, skirt: 0, crown: 30 };
+    const huge: FenderConfig = { ...small, crown: 140 };
+    expect(buildCrossSection(huge).viewBox).not.toBe(buildCrossSection(small).viewBox);
+  });
+
+  it("the tyre section circle's diameter is proportional to tyre and independent of crown", () => {
+    const tyreCircle = (s: FenderConfig) => buildCrossSection(s).paths[0]!.d;
+
+    const narrow = tyreCircle({ ...DEFAULTS, crown: 30 });
+    const wide = tyreCircle({ ...DEFAULTS, crown: 140 });
+    expect(wide).toBe(narrow);
+
+    const smallTyre = tyreCircle({ ...DEFAULTS, tyre: 20 });
+    const bigTyre = tyreCircle({ ...DEFAULTS, tyre: 90 });
+    expect(bigTyre).not.toBe(smallTyre);
   });
 });

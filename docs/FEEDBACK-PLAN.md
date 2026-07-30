@@ -78,7 +78,7 @@ draw the true length, letting an over-long strut overshoot visibly. Add a warnin
 
 ---
 
-## WP14 — Make the visualisations tell the truth
+## WP14 — Make the visualisations tell the truth ✅ DONE
 
 **Confirmed: the wheel does shrink.** Both `crossSection.ts` and `isometric.ts` size their viewBox
 from the _fender's_ extent:
@@ -103,6 +103,23 @@ grows and shrinks against it.
 One clarification worth recording: the cross-section's circle is the **tyre section** (diameter =
 section width), not the wheel diameter. Changing 700c → 20″ correctly does nothing to it. Only tyre
 width does. That is right, but it reads as a wheel and confuses people — label it `TYRE SECTION`.
+
+### Outcome, measured
+
+**The reported complaint is fixed.** Cross-section viewBox width holds at exactly **220.0 mm across
+the whole clearance range (6→40 mm)** — only the height grows to admit the bigger gap, so increasing
+clearance now opens a visible gap against a fixed wheel instead of shrinking the wheel. Switching
+700c ↔ 20″ leaves the tyre circle and viewBox byte-identical. The label now reads `TYRE SECTION`.
+
+**Residual, quantified:** dragging **crown** alone across its full 30→140 mm range still rescales, in
+**12 discrete steps** (viewBox width 190 → 300 mm), shrinking the rendered tyre circle by about a
+third at the extreme. That is inherent: the envelope floors on the tyre but must still widen once
+`finished` genuinely exceeds it, or a 140 mm crown would be clipped.
+
+Judged acceptable, on the grounds that clearance is the value you fiddle with while judging fit and
+crown is one you set once and leave. Recorded rather than hidden, so nobody rediscovers it as a bug.
+A fully fixed frame is possible but would have to be sized for the widest fender anyone might build,
+which renders every ordinary config small in a sea of white space.
 
 ---
 

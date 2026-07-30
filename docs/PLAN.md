@@ -459,6 +459,17 @@ one. This is not something to tune away. With 2 struts and a 100 mm mudflap Shee
 and no reasonable default fits it (the ceiling is roughly a 52 mm mudflap, and a 52 mm mudflap is a
 worse fender). **The real fix is to paginate Sheet B like Sheet A — see §10.6.**
 
+**9.19 — Both preview viewBoxes followed the fender, not the wheel.** _(Reported by the rider, fixed
+in WP14.)_ `crossSection.ts` sized its viewBox `finished + 130` and `isometric.ts` fit to its own
+content bounding box, so growing the fender rescaled everything drawn inside — wheel included. The
+clearance gap appeared to grow partly because the wheel was shrinking against it, which makes the one
+judgement the drawing exists to support impossible to make by eye.
+
+Both are now floored on an absolute millimetre envelope derived from the tyre, rounded up to the next
+10 mm so a slider drag usually lands in the same bucket and redraws nothing. Measured result:
+clearance 6→40 mm holds the cross-section viewBox width at exactly 220.0. See FEEDBACK-PLAN WP14 for
+the residual on the crown axis, which is quantified and deliberate.
+
 ## 10. Open questions
 
 _(§9.3, §9.4, §9.5, §9.6 and the test approach are all resolved — see above. Two left, neither

@@ -145,6 +145,16 @@ export function buildIsometric(
   const outline: Path[] = [{ d: `${rail(0)} L ${railRev(3)} Z` }];
 
   // ── Wheel ghost ─────────────────────────────────────────────────────────────
+  // `noteWheel` tracks the wheel's own bounding box separately from `ext` (below), so
+  // it can anchor the viewBox to `tyreR` — already absolute — instead of to whatever
+  // the fender's own extent happens to be (PLAN §14).
+  const wheelExt = { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity };
+  const noteWheel = (p: Vec2) => {
+    if (p[0] < wheelExt.x0) wheelExt.x0 = p[0];
+    if (p[0] > wheelExt.x1) wheelExt.x1 = p[0];
+    if (p[1] < wheelExt.y0) wheelExt.y0 = p[1];
+    if (p[1] > wheelExt.y1) wheelExt.y1 = p[1];
+  };
   const wheel: Path[] = [];
   for (const offx of [-s.tyre / 2, s.tyre / 2]) {
     const p: Vec2[] = [];
@@ -152,6 +162,7 @@ export function buildIsometric(
       const aa = (i / 84) * 2 * Math.PI;
       const q = P(offx, g.tyreR * Math.sin(aa), g.tyreR * Math.cos(aa));
       note(q);
+      noteWheel(q);
       p.push(q);
     }
     wheel.push({ d: `M ${p.map((q) => `${f1(q[0])},${f1(q[1])}`).join(' L ')} Z` });
@@ -246,10 +257,25 @@ export function buildIsometric(
   }
 
   // ── Bounding box ─────────────────────────────────────────────────────────────
+  // PLAN §14 — the old viewBox was a tight fit around `ext` (the whole model's extent),
+  // so a bigger fender always grew the viewBox and shrank the wheel drawn inside it,
+  // even though the wheel ghost never moved in mm terms. `wheelExt` is a floor anchored
+  // only on `tyreR`/`s.tyre`/`spin` — never on crown, skirt or clearance — so it stays
+  // fixed while those are dragged and only yields once the fender's own content
+  // genuinely needs more room than the wheel does. Centring on the content's own
+  // midpoint (rather than its corner) keeps that extra room symmetric instead of piling
+  // it on one side. Rounding up to the next 10 mm is the hysteresis: most slider moves
+  // land in the same 10 mm bucket and redraw nothing.
   const pad = 14;
-  const bw = Math.max(1, ext.x1 - ext.x0) + pad * 2;
-  const bh = Math.max(1, ext.y1 - ext.y0) + pad * 2;
-  const viewBox = `${f1(ext.x0 - pad)} ${f1(ext.y0 - pad)} ${f1(bw)} ${f1(bh)}`;
+  const cx = (ext.x0 + ext.x1) / 2;
+  const cy = (ext.y0 + ext.y1) / 2;
+  const contentBw = Math.max(1, ext.x1 - ext.x0) + pad * 2;
+  const contentBh = Math.max(1, ext.y1 - ext.y0) + pad * 2;
+  const wheelBw = Math.max(1, wheelExt.x1 - wheelExt.x0) + pad * 2;
+  const wheelBh = Math.max(1, wheelExt.y1 - wheelExt.y0) + pad * 2;
+  const bw = Math.ceil(Math.max(contentBw, wheelBw) / 10) * 10;
+  const bh = Math.ceil(Math.max(contentBh, wheelBh) / 10) * 10;
+  const viewBox = `${f1(cx - bw / 2)} ${f1(cy - bh / 2)} ${f1(bw)} ${f1(bh)}`;
   const aspect = `${f1(bw)} / ${f1(bh)}`;
 
   return { facets, edges, outline, wheel, seams, holes, slots, struts, mudflap, viewBox, aspect };

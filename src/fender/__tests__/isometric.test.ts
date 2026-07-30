@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import golden from './golden.json';
 import { buildIsometric, NS } from '../isometric';
 import { buildBlank } from '../pattern';
+import { DEFAULTS } from '../defaults';
 import { geo } from '../geometry';
 import type { FenderConfig } from '../types';
 
@@ -192,5 +193,51 @@ describe('isometric invariants', () => {
     const real = buildIsometric(base, g, 18, realBlank);
     const withDrifted = buildIsometric(base, g, 18, drifted);
     expect(withDrifted.struts.map((p) => p.d)).not.toEqual(real.struts.map((p) => p.d));
+  });
+});
+
+// PLAN §14 — the wheel ghost is drawn from tyreR/tyre/spin alone, never from
+// crown/skirt/clear, so it must render byte-identical while those change; the viewBox
+// is floored on that same wheel extent, so a config that stays within it must not move.
+describe('buildIsometric viewBox envelope (PLAN §14)', () => {
+  it('the wheel ghost is independent of crown, skirt and clearance', () => {
+    const a = buildIsometric(DEFAULTS);
+    const wideCrown = buildIsometric({ ...DEFAULTS, crown: 140 });
+    const deepSkirt = buildIsometric({ ...DEFAULTS, skirt: 70 });
+    const bigClear = buildIsometric({ ...DEFAULTS, clear: 40 });
+
+    expect(wideCrown.wheel).toEqual(a.wheel);
+    expect(deepSkirt.wheel).toEqual(a.wheel);
+    expect(bigClear.wheel).toEqual(a.wheel);
+  });
+
+  it('the wheel ghost does change with tyre width, since that IS the wheel', () => {
+    const a = buildIsometric(DEFAULTS);
+    const wideTyre = buildIsometric({ ...DEFAULTS, tyre: 90 });
+    expect(wideTyre.wheel).not.toEqual(a.wheel);
+  });
+
+  it('viewBox width holds steady for a crown change that stays within the wheel envelope', () => {
+    // No struts/mudflap and a small arc, so the model's own content stays under the
+    // wheel-anchored floor across this crown range, demonstrating the floor holds.
+    const small: FenderConfig = {
+      ...DEFAULTS,
+      lead: 10,
+      trail: 10,
+      mudflap: 0,
+      struts: 0,
+      strutLen: 0,
+      skirt: 0,
+      crown: 30
+    };
+    const wideCrown: FenderConfig = { ...small, crown: 90 };
+    const bw = (vb: string) => Number(vb.split(' ')[2]);
+    expect(bw(buildIsometric(wideCrown).viewBox)).toBe(bw(buildIsometric(small).viewBox));
+  });
+
+  it('widens once the fender genuinely exceeds the wheel envelope', () => {
+    const small = buildIsometric({ ...DEFAULTS, crown: 30 });
+    const huge = buildIsometric({ ...DEFAULTS, crown: 140 });
+    expect(huge.viewBox).not.toBe(small.viewBox);
   });
 });
