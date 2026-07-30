@@ -272,7 +272,7 @@
           "size": 6,
           "fill": "#8898A8",
           "anchor": "middle",
-          "text": "TYRE ⌀35"
+          "text": "TYRE SECTION ⌀35"
         },
         {
           "x": 0,
@@ -283,7 +283,7 @@
           "text": "RIM"
         }
       ],
-      "viewBox": "-107.4 -22 214.8 117.7",
+      "viewBox": "-110.0 -22 220.0 120.0",
       "finished": 84.8259746902544
     },
     "tiling": {
@@ -443,8 +443,8 @@
         "mudflap": {
           "d": "M -399.9,161.6 L -373.9,191.1 L -354.9,284.0 L -380.9,254.5 Z"
         },
-        "viewBox": "-420.2 -409.4 842.3 797.8",
-        "aspect": "842.3 / 797.8"
+        "viewBox": "-424.1 -410.5 850.0 800.0",
+        "aspect": "850.0 / 800.0"
       },
       "-45": {
         "facetCount": 192,
@@ -500,8 +500,8 @@
         "mudflap": {
           "d": "M -28.6,313.2 L 28.6,313.2 L 28.6,399.4 L -28.6,399.4 Z"
         },
-        "viewBox": "-65.9 -454.8 131.9 892.5",
-        "aspect": "131.9 / 892.5"
+        "viewBox": "-70.0 -458.6 140.0 900.0",
+        "aspect": "140.0 / 900.0"
       }
     },
     "joinNote": "Two 4 mm holes at top and bottom of each dart, both sides. Pull the dart closed with a zip tie through each pair and snip the tails flush.",
@@ -1006,7 +1006,7 @@
           "size": 6,
           "fill": "#8898A8",
           "anchor": "middle",
-          "text": "TYRE ⌀50"
+          "text": "TYRE SECTION ⌀50"
         },
         {
           "x": 0,
@@ -1017,7 +1017,7 @@
           "text": "RIM"
         }
       ],
-      "viewBox": "-113.2 -22 226.4 141.0",
+      "viewBox": "-115.0 -22 230.0 150.0",
       "finished": 96.41458618106276
     },
     "tiling": {
@@ -1162,8 +1162,8 @@
         "mudflap": {
           "d": "M 87.5,208.6 L 113.3,237.9 L 205.6,180.0 L 179.8,150.7 Z"
         },
-        "viewBox": "-324.8 -315.9 628.8 629.3",
-        "aspect": "628.8 / 629.3"
+        "viewBox": "-325.4 -316.3 630.0 630.0",
+        "aspect": "630.0 / 630.0"
       },
       "-45": {
         "facetCount": 192,
@@ -1219,8 +1219,8 @@
         "mudflap": {
           "d": "M -28.5,187.7 L 28.5,187.7 L 28.5,97.1 L -28.5,97.1 Z"
         },
-        "viewBox": "-73.0 -343.4 146.1 686.8",
-        "aspect": "146.1 / 686.8"
+        "viewBox": "-75.0 -345.1 150.0 690.0",
+        "aspect": "150.0 / 690.0"
       }
     },
     "joinNote": "Two 4 mm holes at top and bottom of each dart, both sides. Pull the dart closed with a zip tie through each pair and snip the tails flush.",
@@ -1703,7 +1703,7 @@
           "size": 6,
           "fill": "#8898A8",
           "anchor": "middle",
-          "text": "TYRE ⌀35"
+          "text": "TYRE SECTION ⌀35"
         },
         {
           "x": 0,
@@ -1714,7 +1714,7 @@
           "text": "RIM"
         }
       ],
-      "viewBox": "-107.4 -22 214.8 117.7",
+      "viewBox": "-110.0 -22 220.0 120.0",
       "finished": 84.8259746902544
     },
     "tiling": {
@@ -1859,8 +1859,8 @@
         "mudflap": {
           "d": "M -351.7,267.1 L -328.7,293.1 L -296.0,335.4 L -318.9,309.4 Z"
         },
-        "viewBox": "-420.5 -409.4 821.8 797.7",
-        "aspect": "821.8 / 797.7"
+        "viewBox": "-424.6 -410.5 830.0 800.0",
+        "aspect": "830.0 / 800.0"
       },
       "-45": {
         "facetCount": 192,
@@ -1916,8 +1916,8 @@
         "mudflap": {
           "d": "M -25.3,400.5 L 25.3,400.5 L 25.3,431.2 L -25.3,431.2 Z"
         },
-        "viewBox": "-65.9 -454.9 131.9 900.1",
-        "aspect": "131.9 / 900.1"
+        "viewBox": "-70.0 -459.8 140.0 910.0",
+        "aspect": "140.0 / 910.0"
       }
     },
     "joinNote": "Two 4 mm holes at top and bottom of each dart, both sides. Pull the dart closed with a zip tie through each pair and snip the tails flush.",
@@ -2420,7 +2420,7 @@
           "size": 6,
           "fill": "#8898A8",
           "anchor": "middle",
-          "text": "TYRE ⌀50"
+          "text": "TYRE SECTION ⌀50"
         },
         {
           "x": 0,
@@ -2431,7 +2431,7 @@
           "text": "RIM"
         }
       ],
-      "viewBox": "-119.4 -22 238.7 143.0",
+      "viewBox": "-120.0 -22 240.0 150.0",
       "finished": 108.70889192646695
     },
     "tiling": {
@@ -2606,8 +2606,8 @@
         "mudflap": {
           "d": "M 119.3,281.8 L 149.4,315.8 L 241.7,257.8 L 211.6,223.8 Z"
         },
-        "viewBox": "-426.9 -414.6 827.9 826.3",
-        "aspect": "827.9 / 826.3"
+        "viewBox": "-427.9 -416.5 830.0 830.0",
+        "aspect": "830.0 / 830.0"
       },
       "-45": {
         "facetCount": 192,
@@ -2663,8 +2663,8 @@
         "mudflap": {
           "d": "M -33.1,251.2 L 33.1,251.2 L 33.1,160.6 L -33.1,160.6 Z"
         },
-        "viewBox": "-80.6 -454.9 161.1 909.6",
-        "aspect": "161.1 / 909.6"
+        "viewBox": "-85.0 -455.1 170.0 910.0",
+        "aspect": "170.0 / 910.0"
       }
     },
     "joinNote": "Two 4 mm holes at top and bottom of each dart, both sides. Pull the dart closed with a zip tie through each pair and snip the tails flush.",
@@ -3178,7 +3178,7 @@
           "size": 6,
           "fill": "#8898A8",
           "anchor": "middle",
-          "text": "TYRE ⌀50"
+          "text": "TYRE SECTION ⌀50"
         },
         {
           "x": 0,
@@ -3189,7 +3189,7 @@
           "text": "RIM"
         }
       ],
-      "viewBox": "-113.2 -22 226.4 141.0",
+      "viewBox": "-115.0 -22 230.0 150.0",
       "finished": 96.41458618106276
     },
     "tiling": {
@@ -3334,8 +3334,8 @@
         "mudflap": {
           "d": "M 82.0,201.2 L 116.5,240.3 L 208.8,182.4 L 174.3,143.3 Z"
         },
-        "viewBox": "-321.5 -312.8 622.2 625.6",
-        "aspect": "622.2 / 625.6"
+        "viewBox": "-325.4 -315.0 630.0 630.0",
+        "aspect": "630.0 / 630.0"
       },
       "-45": {
         "facetCount": 192,
@@ -3391,8 +3391,8 @@
         "mudflap": {
           "d": "M -38.0,185.6 L 38.0,185.6 L 38.0,95.0 L -38.0,95.0 Z"
         },
-        "viewBox": "-73.0 -339.8 146.1 679.4",
-        "aspect": "146.1 / 679.4"
+        "viewBox": "-75.0 -340.1 150.0 680.0",
+        "aspect": "150.0 / 680.0"
       }
     },
     "joinNote": "No holes at all. Score the marked line across both skirts and run one zip tie right around the girth of the fender in the scored channel. Nothing pierces the crown.",
@@ -3926,7 +3926,7 @@
           "size": 6,
           "fill": "#8898A8",
           "anchor": "middle",
-          "text": "TYRE ⌀55"
+          "text": "TYRE SECTION ⌀55"
         },
         {
           "x": 0,
@@ -3937,7 +3937,7 @@
           "text": "RIM"
         }
       ],
-      "viewBox": "-121.2 -22 242.4 148.1",
+      "viewBox": "-125.0 -22 250.0 150.0",
       "finished": 112.41458618106276
     },
     "tiling": {
@@ -4116,8 +4116,8 @@
         "mudflap": {
           "d": "M 114.6,272.5 L 147.1,309.3 L 239.4,251.4 L 206.8,214.5 Z"
         },
-        "viewBox": "-418.2 -406.5 812.5 809.9",
-        "aspect": "812.5 / 809.9"
+        "viewBox": "-421.9 -406.6 820.0 810.0",
+        "aspect": "820.0 / 810.0"
       },
       "-45": {
         "facetCount": 192,
@@ -4177,8 +4177,8 @@
         "mudflap": {
           "d": "M -35.8,244.6 L 35.8,244.6 L 35.8,154.0 L -35.8,154.0 Z"
         },
-        "viewBox": "-82.8 -443.3 165.7 886.4",
-        "aspect": "165.7 / 886.4"
+        "viewBox": "-85.0 -445.1 170.0 890.0",
+        "aspect": "170.0 / 890.0"
       }
     },
     "joinNote": "Two 3 mm slots per dart. A folded clip threads both slots and holds the dart shut — no hardware.",
@@ -4664,7 +4664,7 @@
           "size": 6,
           "fill": "#8898A8",
           "anchor": "middle",
-          "text": "TYRE ⌀35"
+          "text": "TYRE SECTION ⌀35"
         },
         {
           "x": 0,
@@ -4675,7 +4675,7 @@
           "text": "RIM"
         }
       ],
-      "viewBox": "-107.4 -22 214.8 117.7",
+      "viewBox": "-110.0 -22 220.0 120.0",
       "finished": 84.8259746902544
     },
     "tiling": {
@@ -4925,8 +4925,8 @@
         "mudflap": {
           "d": "M -399.9,161.6 L -373.9,191.1 L -354.9,284.0 L -380.9,254.5 Z"
         },
-        "viewBox": "-420.2 -409.4 842.3 797.8",
-        "aspect": "842.3 / 797.8"
+        "viewBox": "-424.1 -410.5 850.0 800.0",
+        "aspect": "850.0 / 800.0"
       },
       "-45": {
         "facetCount": 192,
@@ -4982,8 +4982,8 @@
         "mudflap": {
           "d": "M -28.6,313.2 L 28.6,313.2 L 28.6,399.4 L -28.6,399.4 Z"
         },
-        "viewBox": "-65.9 -454.8 131.9 892.5",
-        "aspect": "131.9 / 892.5"
+        "viewBox": "-70.0 -458.6 140.0 900.0",
+        "aspect": "140.0 / 900.0"
       }
     },
     "joinNote": "Two 4 mm holes at top and bottom of each dart, both sides. Pull the dart closed with a zip tie through each pair and snip the tails flush.",
@@ -5864,7 +5864,7 @@
           "size": 6,
           "fill": "#8898A8",
           "anchor": "middle",
-          "text": "TYRE ⌀35"
+          "text": "TYRE SECTION ⌀35"
         },
         {
           "x": 0,
@@ -5875,7 +5875,7 @@
           "text": "RIM"
         }
       ],
-      "viewBox": "-107.4 -22 214.8 117.7",
+      "viewBox": "-110.0 -22 220.0 120.0",
       "finished": 84.8259746902544
     },
     "tiling": {
@@ -6035,8 +6035,8 @@
         "mudflap": {
           "d": "M -399.9,161.6 L -373.9,191.1 L -354.9,284.0 L -380.9,254.5 Z"
         },
-        "viewBox": "-420.2 -409.4 842.3 797.8",
-        "aspect": "842.3 / 797.8"
+        "viewBox": "-424.1 -410.5 850.0 800.0",
+        "aspect": "850.0 / 800.0"
       },
       "-45": {
         "facetCount": 192,
@@ -6092,8 +6092,8 @@
         "mudflap": {
           "d": "M -28.6,313.2 L 28.6,313.2 L 28.6,399.4 L -28.6,399.4 Z"
         },
-        "viewBox": "-65.9 -454.8 131.9 892.5",
-        "aspect": "131.9 / 892.5"
+        "viewBox": "-70.0 -458.6 140.0 900.0",
+        "aspect": "140.0 / 900.0"
       }
     },
     "joinNote": "Four 3.2 mm holes per dart plus a butt strap bridging the gap — two rivets per side.",
@@ -6598,7 +6598,7 @@
           "size": 6,
           "fill": "#8898A8",
           "anchor": "middle",
-          "text": "TYRE ⌀50"
+          "text": "TYRE SECTION ⌀50"
         },
         {
           "x": 0,
@@ -6609,7 +6609,7 @@
           "text": "RIM"
         }
       ],
-      "viewBox": "-113.2 -22 226.4 141.0",
+      "viewBox": "-115.0 -22 230.0 150.0",
       "finished": 96.41458618106276
     },
     "tiling": {
@@ -6829,8 +6829,8 @@
         "mudflap": {
           "d": "M 87.5,208.6 L 113.3,237.9 L 205.6,180.0 L 179.8,150.7 Z"
         },
-        "viewBox": "-324.8 -315.9 628.8 629.3",
-        "aspect": "628.8 / 629.3"
+        "viewBox": "-325.4 -316.3 630.0 630.0",
+        "aspect": "630.0 / 630.0"
       },
       "-45": {
         "facetCount": 192,
@@ -6886,8 +6886,8 @@
         "mudflap": {
           "d": "M -28.5,187.7 L 28.5,187.7 L 28.5,97.1 L -28.5,97.1 Z"
         },
-        "viewBox": "-73.0 -343.4 146.1 686.8",
-        "aspect": "146.1 / 686.8"
+        "viewBox": "-75.0 -345.1 150.0 690.0",
+        "aspect": "150.0 / 690.0"
       }
     },
     "joinNote": "Two 4 mm holes at top and bottom of each dart, both sides. Pull the dart closed with a zip tie through each pair and snip the tails flush.",

@@ -17,6 +17,14 @@ import type { FenderConfig, Geometry, Label, XsecModel, XsecPath } from './types
  * The `skirt < 12` warning still reads the flat value, which is right — that warning is
  * about material around the fastener holes, which is a flat-pattern concern.
  */
+
+/**
+ * Margin either side of the widest of tyre-envelope/finished, mm. Same value the
+ * design's `xw = finished + 130` already used for label clearance either side — kept
+ * so the envelope fix (below) does not also change how much elbow room labels get.
+ */
+const XSEC_MARGIN = 130;
+
 export function buildCrossSection(s: FenderConfig, g: Geometry = geo(s)): XsecModel {
   const tR = s.tyre / 2;
   const tCy = s.clear + tR;
@@ -106,7 +114,10 @@ export function buildCrossSection(s: FenderConfig, g: Geometry = geo(s)): XsecMo
       size: 6,
       fill: 'var(--draw-label-dim)',
       anchor: 'middle',
-      text: `TYRE ⌀${f0(s.tyre)}`
+      // PLAN §14 — this circle's diameter is the tyre SECTION width, not the wheel
+      // diameter, so 700c → 20" correctly leaves it untouched; only tyre width moves
+      // it. Labelled plainly so it doesn't read as (and get judged like) a wheel.
+      text: `TYRE SECTION ⌀${f0(s.tyre)}`
     },
     {
       x: 0,
@@ -118,8 +129,18 @@ export function buildCrossSection(s: FenderConfig, g: Geometry = geo(s)): XsecMo
     }
   ];
 
-  const xw = finished + 130;
-  const viewBox = `${f1(-xw / 2)} -22 ${f1(xw)} ${f1(dimY + 40)}`;
+  // PLAN §14 — pin the viewBox to the tyre + clearance envelope, not to `finished`.
+  // The old `xw = finished + 130` grew and shrank with crown/skirt alone, so growing
+  // the fender rescaled the whole picture and the wheel appeared to shrink with it —
+  // exactly backwards from what a "does the tyre fit" drawing should show. `wheelSpan`
+  // is a floor derived only from the tyre (never from crown/skirt), so it stays fixed
+  // to be widened only once the fender itself is genuinely bigger than the tyre needs.
+  // Rounding up to the next 10 mm is the hysteresis: small slider moves usually land in
+  // the same 10 mm bucket and draw nothing new at all.
+  const wheelSpan = Math.max(s.tyre, rimW);
+  const xw = Math.ceil((Math.max(wheelSpan, finished) + XSEC_MARGIN) / 10) * 10;
+  const vh = Math.ceil((dimY + 40) / 10) * 10;
+  const viewBox = `${f1(-xw / 2)} -22 ${f1(xw)} ${f1(vh)}`;
 
   return { paths, labels, viewBox, finished };
 }

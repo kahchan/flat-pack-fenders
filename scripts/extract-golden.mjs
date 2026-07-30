@@ -22,6 +22,12 @@ const PW = 267, PH = 180, OV = 12;
 // port's actual behaviour, exactly as §9.4 (nesting) and §9.18 (Sheet B viewBox) added
 // new, sanctioned geometry to this "verbatim transcription" script.
 const BEVEL_L = 20;
+// PLAN §14 — same divergence, this time for the on-screen viewBoxes: the design sizes
+// both `xsec()` and `isometric()` viewBoxes from the fender's own extent, which rescales
+// the wheel drawn inside them as the fender grows. `xsec()`/`isometric()` below pin them
+// to the tyre instead, rounded to the next 10 mm — see the port's `crossSection.ts` /
+// `isometric.ts` for the reasoning. `XSEC_MARGIN` matches the port's own constant.
+const XSEC_MARGIN = 130;
 
 function geo(s) {
   const bsd = WHEELS[s.wheel].bsd;
@@ -247,11 +253,17 @@ function xsec(s, g) {
     { x: 0, y: -7, size: 6, fill: '#8898A8', anchor: 'middle', text: `CROWN ${f0(g.crown0)}` },
     { x: f1(g.crown0 / 2 + g.proj + 6), y: f1(g.drop + 8), size: 6, fill: '#8898A8', anchor: 'start', text: `SKIRT ${f0(g.skirt)} @ ${s.angle}°` },
     { x: 16, y: f1(s.clear / 2 + 2), size: 6, fill: '#D4614E', anchor: 'start', text: `GAP ${f0(s.clear)}` },
-    { x: 0, y: f1(tCy + 2), size: 6, fill: '#8898A8', anchor: 'middle', text: `TYRE ⌀${f0(s.tyre)}` },
+    // PLAN §14 — relabelled TYRE SECTION: the circle's diameter is the tyre section
+    // width, not the wheel diameter, and reads as a wheel unless said plainly.
+    { x: 0, y: f1(tCy + 2), size: 6, fill: '#8898A8', anchor: 'middle', text: `TYRE SECTION ⌀${f0(s.tyre)}` },
     { x: 0, y: f1(tCy + tR * 0.55 + rimH + 8), size: 5.5, fill: '#8898A8', anchor: 'middle', text: 'RIM' }
   ];
-  const xw = finished + 130;
-  const xsecViewBox = `${f1(-xw / 2)} -22 ${f1(xw)} ${f1(dimY + 40)}`;
+  // PLAN §14 — pin to the tyre envelope, floor'd on the tyre alone and rounded to the
+  // next 10 mm, widening past that floor only once `finished` genuinely exceeds it.
+  const wheelSpan = Math.max(s.tyre, rimW);
+  const xw = Math.ceil((Math.max(wheelSpan, finished) + XSEC_MARGIN) / 10) * 10;
+  const vh = Math.ceil((dimY + 40) / 10) * 10;
+  const xsecViewBox = `${f1(-xw / 2)} -22 ${f1(xw)} ${f1(vh)}`;
   return { xsecPaths, xsecLabels, xsecViewBox, finished };
 }
 
@@ -289,10 +301,14 @@ function isometric(s, g, strutFrac, spin) {
   const cap = (aa) => `M ${pf(aa).map((v) => { const q = pt(v, aa); return `${f1(q[0])},${f1(q[1])}`; }).join(' L ')}`;
   const isoEdges = [{ d: rail(1) }, { d: rail(2) }, { d: cap(g.aNose) }, { d: cap(aEnd) }];
   const isoOutline = [{ d: `${rail(0)} L ${railRev(3)} Z` }];
+  // PLAN §14 — `wheelExt` tracks the wheel's own bounding box separately, anchoring the
+  // viewBox floor to `tyreR` instead of to the fender's own (crown/skirt-driven) extent.
+  const wheelExt = { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity };
+  const noteWheel = (p) => { if (p[0] < wheelExt.x0) wheelExt.x0 = p[0]; if (p[0] > wheelExt.x1) wheelExt.x1 = p[0]; if (p[1] < wheelExt.y0) wheelExt.y0 = p[1]; if (p[1] > wheelExt.y1) wheelExt.y1 = p[1]; };
   const isoWheel = [];
   for (const offx of [-s.tyre / 2, s.tyre / 2]) {
     const p = [];
-    for (let i = 0; i <= 84; i++) { const aa = (i / 84) * 2 * Math.PI; const q = P(offx, g.tyreR * Math.sin(aa), g.tyreR * Math.cos(aa)); note(q); p.push(q); }
+    for (let i = 0; i <= 84; i++) { const aa = (i / 84) * 2 * Math.PI; const q = P(offx, g.tyreR * Math.sin(aa), g.tyreR * Math.cos(aa)); note(q); noteWheel(q); p.push(q); }
     isoWheel.push({ d: `M ${p.join(' L ')} Z`.replace(/([\d.-]+),([\d.-]+)/g, (m0, a, b) => `${f1(+a)},${f1(+b)}`) });
   }
 
@@ -361,10 +377,18 @@ function isometric(s, g, strutFrac, spin) {
     q.forEach(note);
     isoMudflap.push({ d: `M ${q.map((p) => `${f1(p[0])},${f1(p[1])}`).join(' L ')} Z` });
   }
+  // PLAN §14 — floor the box on `wheelExt` (anchored on `tyreR`, never on crown/skirt),
+  // centred on the content's own midpoint so extra room lands symmetrically, and
+  // rounded up to the next 10 mm for hysteresis.
   const pad = 14;
-  const bw = Math.max(1, ext.x1 - ext.x0) + pad * 2;
-  const bh = Math.max(1, ext.y1 - ext.y0) + pad * 2;
-  const isoViewBox = `${f1(ext.x0 - pad)} ${f1(ext.y0 - pad)} ${f1(bw)} ${f1(bh)}`;
+  const cx = (ext.x0 + ext.x1) / 2, cy = (ext.y0 + ext.y1) / 2;
+  const contentBw = Math.max(1, ext.x1 - ext.x0) + pad * 2;
+  const contentBh = Math.max(1, ext.y1 - ext.y0) + pad * 2;
+  const wheelBw = Math.max(1, wheelExt.x1 - wheelExt.x0) + pad * 2;
+  const wheelBh = Math.max(1, wheelExt.y1 - wheelExt.y0) + pad * 2;
+  const bw = Math.ceil(Math.max(contentBw, wheelBw) / 10) * 10;
+  const bh = Math.ceil(Math.max(contentBh, wheelBh) / 10) * 10;
+  const isoViewBox = `${f1(cx - bw / 2)} ${f1(cy - bh / 2)} ${f1(bw)} ${f1(bh)}`;
   const isoAspect = `${f1(bw)} / ${f1(bh)}`;
 
   return { isoFacets, isoEdges, isoOutline, isoWheel, isoSeams, isoHoles, isoSlots, isoStruts, isoMudflap, isoViewBox, isoAspect };
