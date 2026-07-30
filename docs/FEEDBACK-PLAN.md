@@ -9,22 +9,26 @@ this round continue that numbering from §9.19.
 
 ---
 
-## Assumptions taken
+## Decisions (settled)
 
-Four questions were asked and not answered, so the plan proceeds on the recommended option for each.
-Each is cheap to reverse **before** the relevant package starts, and expensive after.
+The four open questions are answered. Recorded here because two of them change work already done.
 
-| #   | Assumption                                                                                                                                       | Reverse by                                               |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------- |
-| A1  | Your coverage numbers become the single source of truth: presets, app default, **and** the Front/Rear selector                                   | Saying which of the three should keep its current values |
-| A2  | Strut length stays a free slider; the 3D view is fixed to draw the true length so an over-long strut visibly overshoots                          | Choosing derived-from-geometry instead                   |
-| A3  | Em-dashes and `·` are stripped from **prose**; `·` stays where it delimits data (`700c · 622`, spec lines, drawing labels)                       | Saying "everywhere"                                      |
-| A4  | "Combine pieces at small widths" means packing Sheet A tile rows onto fewer sheets, and letting Sheet B share the last Sheet A page when it fits | Naming a different combination                           |
+| #      | Decision                                               | Consequence                                                                                                                                                                                                             |
+| ------ | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A1** | `COVERAGE` is the source of truth **for presets only** | `DEFAULTS` and the Side selector get their own explicit values, decoupled. Handled in WP16.                                                                                                                             |
+| **A2** | Overshoot is fine                                      | Confirms what WP13 shipped. No change.                                                                                                                                                                                  |
+| **A3** | Strip em-dashes and `·` **everywhere**, no exceptions  | Wider than originally planned: wheel labels, spec lines, drawing annotations and print labels all lose `·`, not just prose. WP17.                                                                                       |
+| **A4** | Fit two fenders to a page when narrow enough           | **Already delivered by WP15.** Verified: at Wd 53 mm the packer puts 2 tiles per page (8 pages → 5), at Wd 34 mm it puts 3 (→ 4). The default's 106 mm correctly does not stack, since 2 × 106 exceeds the 180 mm page. |
 
-A1 has a consequence worth stating: rear at 120/100 is **220°**, exactly the "coverage exceeds
-frame" threshold. The warning fires at `> 220`, so it will not trigger — but it sits on the line. If
-you consider 220° a normal rear fender rather than an edge case, the threshold should move up; say
-so and it is a one-line change.
+**A1 reintroduces a risk worth naming.** PLAN §9.16 exists because `DEFAULTS`, `PRESETS` and the Side
+selector had drifted apart, and WP13 collapsed them into one constant to stop that. Decoupling two of
+them again is a deliberate trade for the freedom to tune the default separately from the presets. The
+decoupling should be commented as such where it happens, so the next person to find three sets of
+coverage numbers knows it is intended rather than the same bug returning.
+
+**A3 has an ordering consequence.** WP16 adds `29″` to the wheel labels and WP17 strips the `·` that
+currently separates them. WP16 should write those labels in their final, dot-free form immediately,
+so WP17 does not have to revisit them.
 
 ---
 
