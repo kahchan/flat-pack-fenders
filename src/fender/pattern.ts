@@ -1,4 +1,6 @@
 import { LAP, PW, TONGUE_L, TONGUE_W, f0, f1 } from './defaults';
+import { buildAssembly } from './assembly';
+import { develop, flatY } from './develop';
 import { crownAt, geo } from './geometry';
 import type { BlankModel, FenderConfig, Geometry, Hole, Label, Path, Slot } from './types';
 
@@ -201,100 +203,62 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
     });
   }
 
-  // ── Dart fastenings (WP23 §23.3/§23.6) ──────────────────────────────────────
-  // The dart is a plain slit now (`g.notch` is always 0) with `g.lap` of shingled
-  // overlap absorbed instead of cut away. `cinch` fastens outside that band, exactly
-  // like the old butt-seam tie, just with real overlap under it. `rivet`/`zip`/`slot`
-  // pass THROUGH the band, so their holes sit on a slanted column (§23.6): the band is
-  // a triangle, `lap` wide at the free edge and converging to zero at the fold, so a
-  // hole placed at a fixed absolute depth from the free edge needs a flat-pattern
-  // offset that varies with that depth for the two layers to land on the same point
-  // once assembled.
-  for (let i = 1; i < g.n; i++) {
-    const xc = i * g.pitch;
+  // ── Dart fastenings (WP29 §29.3, decisions D1/D2) ───────────────────────────
+  // Nothing here decides WHERE a fastener goes. Every dart feature is declared once on
+  // the assembled fender (`assembly.ts`) and unrolled onto each panel it pierces
+  // (`develop.ts`); this loop only draws what comes back. That is the whole correction
+  // from round 4 §9.35 — the flat position and the preview position are now the same
+  // number seen twice, so they cannot disagree the way they did when each was written
+  // out by hand.
+  const flat = develop(g, buildAssembly(s, g));
 
-    if (s.join === 'none') {
-      // Nothing pierced. One tie runs round the girth in a scored channel instead.
+  for (const ff of flat) {
+    if (ff.kind === 'score') {
+      // The girth channel: crosses crown and both skirts in one line, pierces nothing.
+      // Emitted once (the top-side instance) rather than per skirt.
+      if (ff.side !== 0) continue;
       scoreLines.push({
-        d: `M ${f1(xc)},${f1(yFreeT(xc))} L ${f1(xc)},${f1(yFreeB(xc))}`
+        d: `M ${f1(ff.x)},${f1(yFreeT(ff.x))} L ${f1(ff.x)},${f1(yFreeB(ff.x))}`
       });
       continue;
     }
 
-    if (s.join === 'cinch') {
-      // Outside the lap band by design (§23.3) — the tie never passes through the
-      // overlap, so it needs almost no lap at all, just the same clearance the old
-      // butt-seam columns kept off their own centreline.
-      const off = g.lap / 2 + 6;
-      for (const dir of [-1, 1]) {
-        const x = xc + dir * off;
-        dangerXs.push(x);
-        holes.push(
-          { cx: f1(x), cy: f1(yFreeT(x) + g.skirt * 0.5), r: 2 },
-          { cx: f1(x), cy: f1(yFreeB(x) - g.skirt * 0.5), r: 2 }
-        );
-      }
+    if (ff.kind === 'hole') {
+      dangerXs.push(ff.x);
+      holes.push({ cx: f1(ff.x), cy: f1(ff.y), r: ff.r ?? 2 });
       continue;
     }
 
-    if (s.join === 'slot') {
-      // The punched tongue (§23.5, decision C6): a U-shaped release cut in the
-      // upstream panel (segment i, the one already on top per the shingle direction —
-      // "forward panel on top", same rule the panel seams use), freeing a tongue
-      // hinged at its inboard edge, passing through a slot in the downstream panel
-      // (segment i+1) beneath it. One pair per skirt (top, bottom).
-      const tw = 8;
-      const reach = Math.max(2, Math.min(14, g.skirt * 0.45));
-      const d0 = 2;
-      const xTongue = xc - g.lap / 4;
-      const xSlot = xc + g.lap / 4;
-      dangerXs.push(xTongue, xSlot);
+    // Tongue and slot: one assembled feature, so the released tongue on the outer panel
+    // and the slot it passes through on the panel beneath are guaranteed to meet. Both
+    // are cut as trapezoids — the overlap narrows toward the fold, so the near and far
+    // ends genuinely do not share an x (`xFar`).
+    const tw = ff.w ?? 8;
+    const reach = ff.reach ?? 0;
+    const xNear = ff.x;
+    const xFar = ff.xFar ?? ff.x;
+    const yNear = ff.y;
+    const yFar = flatY(g, xFar, ff.depth + reach, ff.side);
+    dangerXs.push(xNear);
 
-      for (const top of [true, false]) {
-        const free = top ? yFreeT : yFreeB;
-        const dirIn = top ? 1 : -1;
-        const yNear = (x: number) => free(x) + dirIn * d0;
-        const yFar = (x: number) => free(x) + dirIn * (d0 + reach);
-
-        const yA = yNear(xTongue);
-        const yB = yFar(xTongue);
-        // A separate release-cut subpath, not part of the dart slit — left open at
-        // the hinge (the fold-ward edge) so the tongue folds flat rather than
-        // detaching.
-        outline +=
-          ` M ${f1(xTongue - tw / 2)},${f1(yA)}` +
-          ` L ${f1(xTongue - tw / 2)},${f1(yB)}` +
-          ` L ${f1(xTongue + tw / 2)},${f1(yB)}` +
-          ` L ${f1(xTongue + tw / 2)},${f1(yA)}`;
-        scoreLines.push({
-          d: `M ${f1(xTongue - tw / 2)},${f1(yA)} L ${f1(xTongue + tw / 2)},${f1(yA)}`
-        });
-
-        const sy0 = yNear(xSlot);
-        const sy1 = yFar(xSlot);
-        slots.push({
-          x: f1(xSlot - tw / 2),
-          y: f1(Math.min(sy0, sy1)),
-          w: tw,
-          h: f1(Math.abs(sy1 - sy0))
-        });
-      }
-      continue;
-    }
-
-    // rivet, zip — through the lap, slanted per §23.6.
-    const depths = s.join === 'zip' ? [3.5, 8.5] : [4.5];
-    const r = s.join === 'zip' ? 2 : 1.6;
-    dangerXs.push(xc - g.lap / 2, xc + g.lap / 2);
-    for (const d of depths) {
-      const t = g.skirt > 0 ? d / g.skirt : 0;
-      for (const dir of [-1, 1]) {
-        const x = xc + dir * t * (g.lap / 2);
-        holes.push(
-          { cx: f1(x), cy: f1(yFreeT(x) + g.skirt * t), r },
-          { cx: f1(x), cy: f1(yFreeB(x) - g.skirt * t), r }
-        );
-      }
+    if (ff.kind === 'tongueCut') {
+      // A separate release-cut subpath, not part of the dart slit — left open at the
+      // hinge (the fold-ward edge) so the tongue folds flat rather than detaching.
+      outline +=
+        ` M ${f1(xNear - tw / 2)},${f1(yNear)}` +
+        ` L ${f1(xFar - tw / 2)},${f1(yFar)}` +
+        ` L ${f1(xFar + tw / 2)},${f1(yFar)}` +
+        ` L ${f1(xNear + tw / 2)},${f1(yNear)}`;
+      scoreLines.push({
+        d: `M ${f1(xNear - tw / 2)},${f1(yNear)} L ${f1(xNear + tw / 2)},${f1(yNear)}`
+      });
+    } else {
+      slots.push({
+        x: f1(Math.min(xNear, xFar) - tw / 2),
+        y: f1(Math.min(yNear, yFar)),
+        w: f1(tw + Math.abs(xFar - xNear)),
+        h: f1(Math.abs(yFar - yNear))
+      });
     }
   }
 

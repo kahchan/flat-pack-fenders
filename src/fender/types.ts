@@ -173,10 +173,26 @@ export interface Geometry {
    * dropped) so pattern.ts's dart-vertex maths still reads as "slit width", not as a
    * silently-vanished field. */
   notch: number;
-  /** WP23 §23.2: the shingled lap at the free edge, mm — `removal/n + t`, maximised
+  /** WP23 §23.2: the shingled lap at the free edge, mm — `removal/n`, maximised
    * (nothing ever narrows it back down; see decision C2). 0 when there are no darts
    * (`n <= 1`). This is the number the join family (§23.3) is measured against. */
   lap: number;
+  /** WP30 §30.2 (decision D3): the shallowest skirt angle, in degrees, that still leaves
+   * a `cinch`-worth of shingle at the current skirt depth and flap count — the angle
+   * slider's derived floor. `null` when no angle can get there (§30.3): `sin` saturates,
+   * so a high flap count on a shallow skirt is simply unreachable and the UI has to name
+   * sections as the lever instead of pinning the slider. */
+  angleMin: number | null;
+  /** The angle the geometry is actually built at: `max(config.angle, angleMin)`. Per
+   * decision D4 the config keeps what the user set, so shallowing the skirt and
+   * deepening it again restores their angle instead of destroying it. */
+  angleEff: number;
+  /** WP32: angular pitch of one facet, radians — `th / n`. The fender creases every
+   * `dA` (WP31 §31.1), so this is the prism's corner spacing, not a drawing detail. */
+  dA: number;
+  /** WP32: whether the fender is a polygon at all. False for a dartless skirt (`n <= 1`),
+   * which has no crease lines and so keeps the true arc for `L`. */
+  faceted: boolean;
 }
 
 // ── Drawing primitives ───────────────────────────────────────────────────────

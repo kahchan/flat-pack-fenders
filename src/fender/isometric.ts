@@ -1,4 +1,6 @@
 import { D2, f1 } from './defaults';
+import { buildAssembly, panelMidAngle } from './assembly';
+import { panelAt, point3 } from './develop';
 import { crownAt, geo, strutMount } from './geometry';
 import { buildBlank } from './pattern';
 import type { BlankModel, FacetPath, FenderConfig, Geometry, Hole, IsoModel, Path } from './types';
@@ -7,11 +9,9 @@ type Vec2 = [number, number];
 type Vec3 = [number, number, number];
 
 /**
- * WP28 §28.1/§28.2 (decision C5): the crown is a genuinely smooth cylinder (a sheet
- * bent round the wheel), so its segment count is a faithful render, not an exemption —
- * this is now the ONLY band that uses a fixed segment count. The skirt used to share
- * it (a flat `NS`-facet sweep regardless of flap count); it now cuts to `g.n` hard
- * edges instead, see the facet loop below.
+ * Segments in the wheel ghost only. Every part of the FENDER is now faceted at `g.n`
+ * (see the facet loop) — the crown's old fixed-`NS` sweep was the last place the preview
+ * drew a shape the fender does not take.
  */
 export const NS = 64;
 
@@ -27,13 +27,20 @@ export const SPIN_DEFAULT = 18;
  * decision C5).
  *
  * `pf(aa)` returns the four rails at arc angle `aa` — 0–1 and 2–3 are skirt, 1–2 is
- * crown. The facet loop below splits along that boundary: skirt bands are `g.n` flat,
- * hard-edged panels (one per section, matching the flat pattern's own darts exactly —
- * WP23's shingled lap replaced the V-notch with a plain slit, so there is exactly one
- * hard edge per pitch, not a smoothed one); the crown band stays the old smooth `NS`
- * sweep. `thick` now renders as a real offset second rail, so the doubled material at
- * each lap reads as a physical step and the free edges/arc ends show an edge face,
- * instead of `thick` only ever driving the bend maths invisibly.
+ * crown. ALL THREE bands are `g.n` flat, hard-edged panels: one per section, creasing at
+ * the flat pattern's own dart lines. WP23's shingled lap replaced the V-notch with a
+ * plain slit, so there is exactly one hard edge per pitch.
+ *
+ * The crown kept a smooth sweep until now, on the argument that a sheet bent round the
+ * wheel is a developable cylinder. That is true of the flat blank and false of the
+ * folded part: once both skirts are turned down the section is a channel, which is far
+ * stiffer about the axle than the flat strip was and creases at whatever relief it is
+ * given rather than curving. The dart slits are that relief. The built fender is a
+ * polygonal prism, and the preview now draws one.
+ *
+ * `thick` renders as a real offset second rail, so the doubled material at each lap
+ * reads as a physical step and the free edges/arc ends show an edge face, instead of
+ * `thick` only ever driving the bend maths invisibly.
  *
  * `spin` (the rotate slider, degrees, default 18, range −80…80) is view state, not a
  * fender parameter — it never touches geometry.ts or FenderConfig — so it is a plain
@@ -60,7 +67,15 @@ export function buildIsometric(
   };
 
   const aEnd = g.aNose + g.th;
-  const xAt = (aa: number) => (aa - g.aNose) * g.R;
+  // WP32: developed position along the fold. On a prism the fold is a chord, so this is
+  // the panel's own start plus `R·tan(Δφ)`, not a plain `angle × R`. Only used to read
+  // the crown taper, but the two differ by the same 0.2-0.4% the perimeter does and there
+  // is no reason for the preview to read the taper at a different place than the blank.
+  const xAt = (aa: number) => {
+    if (!g.faceted) return (aa - g.aNose) * g.R;
+    const p = panelAt(g, aa);
+    return (p + 0.5) * g.pitch + g.R * Math.tan(aa - panelMidAngle(g, p));
+  };
 
   // The four rail points of the developed cross-section at arc angle `aa`: free edge,
   // fold, fold, free edge — same shape as pattern.ts's yFreeT/yFoldT/yFoldB/yFreeB, but
@@ -81,9 +96,17 @@ export function buildIsometric(
   // the actual folded sheet would show.
   const inward = (v: Vec2): Vec2 => [v[0], v[1] - g.t];
 
-  // Lift a cross-section point onto the rolled cylinder at arc angle `aa`.
+  // Lift a cross-section point onto the fender at arc angle `aa`.
+  //
+  // WP32: onto the PRISM, not a cylinder. `R + v[1]` is the perpendicular distance from
+  // the axis to the facet the point sits on; the point's actual distance grows away from
+  // that facet's tangent line as `1/cos(Δφ)`, reaching `/cos(dA/2)` at a vertex. That is
+  // exactly the circumscribed radius `L` is now the perimeter of, so the drawn shape and
+  // the cut length describe the same solid. A dartless skirt has no facets and keeps the
+  // plain cylindrical lift.
   const p3 = (v: Vec2, aa: number): Vec3 => {
-    const r = g.R + v[1];
+    const rq = g.R + v[1];
+    const r = g.faceted ? rq / Math.cos(aa - panelMidAngle(g, panelAt(g, aa))) : rq;
     return [v[0], r * Math.sin(aa), r * Math.cos(aa)];
   };
 
@@ -115,13 +138,20 @@ export function buildIsometric(
   const quad = (q: Vec2[]): string => `M ${q.map((p) => `${f1(p[0])},${f1(p[1])}`).join(' L ')} Z`;
 
   // ── Facets ─────────────────────────────────────────────────────────────────
-  // Skirt bands: `g.n` flat, hard-edged panels — a dartless config (`g.n <= 1`, WP23
+  // Every band is `g.n` flat, hard-edged panels. A dartless config (`g.n <= 1`, WP23
   // §23.2's real branch) is exactly one panel spanning the whole arc, not a division by
-  // zero. Crown band: the old smooth `NS`-segment sweep, unchanged — a sheet bent round
-  // the wheel really is a smooth cylinder (§28.2).
+  // zero.
+  //
+  // The crown used to keep a smooth `NS`-segment sweep on the argument that a sheet bent
+  // round the wheel is a developable cylinder (§28.2). That reasoning was about the FLAT
+  // BLANK, not the folded part. Once both skirts are turned down, the section is a
+  // channel, and a channel bent the hard way does not curve smoothly — it is far stiffer
+  // in that direction than the flat strip was, and it kinks at whatever relief it is
+  // given. The dart slits ARE that relief. So the built fender is a polygonal prism that
+  // creases at every dart line, and the crown facets exactly like the skirt.
   const nSkirt = Math.max(1, g.n);
   const aAtSkirt = (i: number) => g.aNose + (g.th * i) / nSkirt;
-  const aAtCrown = (i: number) => g.aNose + (g.th * i) / NS;
+  const aAtCrown = aAtSkirt;
 
   const facets: FacetPath[] = [];
 
@@ -140,15 +170,15 @@ export function buildIsometric(
     }
   }
 
-  // Crown (rails 1-2): smooth, NS segments.
-  for (let i = 0; i < NS; i++) {
+  // Crown (rails 1-2): `g.n` flat facets, creasing at each dart line like the skirt.
+  for (let i = 0; i < nSkirt; i++) {
     const a0 = aAtCrown(i);
     const a1 = aAtCrown(i + 1);
     const P0 = pf(a0);
     const P1 = pf(a1);
     const q = [pt(P0[1], a0), pt(P0[2], a0), pt(P1[2], a1), pt(P1[1], a1)];
     q.forEach(note);
-    const u = Math.abs((i / NS) * 2 - 1);
+    const u = Math.abs((i / nSkirt) * 2 - 1);
     const shade = 0.88 - 0.52 * u;
     facets.push({ d: quad(q), fill: mix(Math.max(0.1, shade)) });
   }
@@ -196,7 +226,7 @@ export function buildIsometric(
   // ── Rails, caps, outline ────────────────────────────────────────────────────
   const rail = (j: number): string => {
     const p: string[] = [];
-    for (let i = 0; i <= NS; i++) {
+    for (let i = 0; i <= nSkirt; i++) {
       const aa = aAtCrown(i);
       const q = pt(pf(aa)[j], aa);
       p.push(`${f1(q[0])},${f1(q[1])}`);
@@ -205,7 +235,7 @@ export function buildIsometric(
   };
   const railRev = (j: number): string => {
     const p: string[] = [];
-    for (let i = NS; i >= 0; i--) {
+    for (let i = nSkirt; i >= 0; i--) {
       const aa = aAtCrown(i);
       const q = pt(pf(aa)[j], aa);
       p.push(`${f1(q[0])},${f1(q[1])}`);
@@ -247,11 +277,18 @@ export function buildIsometric(
     wheel.push({ d: `M ${p.map((q) => `${f1(q[0])},${f1(q[1])}`).join(' L ')} Z` });
   }
 
-  // ── Dart seams and their fasteners (WP23 §23.3/§23.6) ───────────────────────
+  // ── Dart seams and their fasteners (WP29 §29.3, decisions D1/D2) ────────────
+  //
+  // No fastener position is computed here any more. `assembly.ts` declares each one
+  // once, in assembled coordinates, and `point3` places it — the same function
+  // `develop.ts` inverts to reach the flat pattern. Round 4 §9.36: the old code
+  // transcribed the FLAT offset into an arc angle (`aa ± t·(lap/2)/R`), which drew a
+  // through-lap fastener at two arc positions when the assembled fender has exactly
+  // one, and so reproduced §9.35's inverted slant while looking correct. A fastener
+  // through both layers is one point; it is drawn once, here, from the assembly.
   const seams: Path[] = [];
   const holes: Hole[] = [];
   const slots: Path[] = [];
-  const lerp = (A: Vec2, B: Vec2, t: number): Vec2 => [A[0] + (B[0] - A[0]) * t, A[1] + (B[1] - A[1]) * t];
 
   for (let i = 1; i < g.n; i++) {
     const aa = g.aNose + (g.th * i) / g.n;
@@ -263,89 +300,54 @@ export function buildIsometric(
       const B = pt(fold, aa);
       seams.push({ d: `M ${f1(A[0])},${f1(A[1])} L ${f1(B[0])},${f1(B[1])}` });
     }
-
-    if (s.join === 'none') continue;
-
-    if (s.join === 'cinch') {
-      // Outside the lap band, same clearance the flat pattern uses — see pattern.ts.
-      const off = (g.lap / 2 + 6) / g.R;
-      for (const dir of [-1, 1]) {
-        const ao = aa + dir * off;
-        const pro = pf(ao);
-        for (const side of [0, 3] as const) {
-          const free = pro[side]!;
-          const fold = pro[side === 0 ? 1 : 2]!;
-          const q = pt(lerp(free, fold, 0.5), ao);
-          holes.push({ cx: f1(q[0]), cy: f1(q[1]), r: 2 });
-        }
-      }
-      continue;
-    }
-
-    if (s.join === 'slot') {
-      // The punched tongue (§23.5): a release-cut outline in the upstream panel and a
-      // receiving slot in the downstream one, drawn as real line geometry — same
-      // absolute reach/width pattern.ts cuts, same "forward panel on top" shingle
-      // direction.
-      const tw = 8;
-      const reach = Math.max(2, Math.min(14, g.skirt * 0.45));
-      const d0 = 2;
-      const aTongue = aa - g.lap / 4 / g.R;
-      const aSlot = aa + g.lap / 4 / g.R;
-      const dw = tw / 2 / g.R;
-      for (const side of [0, 3] as const) {
-        const dirIn = side === 0 ? 1 : -1;
-        const near = (v: Vec2): Vec2 => [v[0], v[1] + dirIn * d0];
-        const far = (v: Vec2): Vec2 => [v[0], v[1] + dirIn * (d0 + reach)];
-
-        const freeT = pf(aTongue)[side]!;
-        const t1 = pt(near(freeT), aTongue - dw);
-        const t2 = pt(far(freeT), aTongue - dw);
-        const t3 = pt(far(freeT), aTongue + dw);
-        const t4 = pt(near(freeT), aTongue + dw);
-        slots.push({
-          d: `M ${f1(t1[0])},${f1(t1[1])} L ${f1(t2[0])},${f1(t2[1])} L ${f1(t3[0])},${f1(t3[1])} L ${f1(t4[0])},${f1(t4[1])} Z`
-        });
-
-        const freeS = pf(aSlot)[side]!;
-        const s1 = pt(near(freeS), aSlot - dw);
-        const s2 = pt(far(freeS), aSlot - dw);
-        const s3 = pt(far(freeS), aSlot + dw);
-        const s4 = pt(near(freeS), aSlot + dw);
-        slots.push({
-          d: `M ${f1(s1[0])},${f1(s1[1])} L ${f1(s2[0])},${f1(s2[1])} L ${f1(s3[0])},${f1(s3[1])} L ${f1(s4[0])},${f1(s4[1])} Z`
-        });
-      }
-      continue;
-    }
-
-    // rivet, zip — through the lap, slanted per §23.6, same depths pattern.ts uses.
-    const depths = s.join === 'zip' ? [3.5, 8.5] : [4.5];
-    const r = s.join === 'zip' ? 2 : 1.6;
-    for (const d of depths) {
-      const t = g.skirt > 0 ? d / g.skirt : 0;
-      for (const dir of [-1, 1]) {
-        const ao = aa + (dir * t * (g.lap / 2)) / g.R;
-        const pro = pf(ao);
-        for (const side of [0, 3] as const) {
-          const free = pro[side]!;
-          const fold = pro[side === 0 ? 1 : 2]!;
-          const q = pt(lerp(free, fold, t), ao);
-          holes.push({ cx: f1(q[0]), cy: f1(q[1]), r });
-        }
-      }
-    }
   }
 
-  // Strut fastener holes, at the same arc positions the blank was actually pierced at.
+  /** An assembled 3D point, straight to screen. */
+  const proj3 = (v: Vec3): Vec2 => P(v[0], v[1], v[2]);
+
+  for (const f of buildAssembly(s, g).features) {
+    if (f.kind === 'score') continue;
+
+    // WP32: a point on a prism needs the panel it sits on — the facet it belongs to is
+    // what decides its distance from the axis. A through-lap feature gives the same 3D
+    // point from either of its layers, so the outer one is as good as the other.
+    const panel = f.layers[0] ?? Math.max(0, f.dart - 1);
+
+    if (f.kind === 'hole') {
+      const q = proj3(point3(g, panel, f.aa, f.depth, f.side));
+      note(q);
+      holes.push({ cx: f1(q[0]), cy: f1(q[1]), r: f.r ?? 2 });
+      continue;
+    }
+
+    // The tongue and the slot it passes through are one feature at one place, so the
+    // preview draws one opening — which is what the built fender has.
+    const halfW = (f.w ?? 8) / 2;
+    const reach = f.reach ?? 0;
+    const dw = halfW / g.R;
+    const corners: Vec2[] = [
+      proj3(point3(g, panel, f.aa - dw, f.depth, f.side)),
+      proj3(point3(g, panel, f.aa - dw, f.depth + reach, f.side)),
+      proj3(point3(g, panel, f.aa + dw, f.depth + reach, f.side)),
+      proj3(point3(g, panel, f.aa + dw, f.depth, f.side))
+    ];
+    corners.forEach(note);
+    slots.push({ d: `M ${corners.map((q) => `${f1(q[0])},${f1(q[1])}`).join(' L ')} Z` });
+  }
+
+  // Strut fastener holes, at the same arc positions AND the same depth the blank is
+  // actually pierced at. This used to sit at `lerp(free, fold, 0.2)` — a fraction of the
+  // skirt — while pattern.ts drilled at an absolute `inset` mm below the free edge, so
+  // the two agreed only when the skirt happened to be ~30 mm deep. Same class of drift
+  // as §9.35, found while removing the hand-written fastener maths around it.
+  const strutInset = Math.max(5, Math.min(7, g.skirt * 0.22));
   blank.strutFrac.forEach((fr) => {
     const aa = g.aNose + g.th * fr;
-    const pr = pf(aa);
-    for (const side of [0, 3]) {
-      const free = pr[side]!;
-      const fold = pr[side === 0 ? 1 : 2]!;
+    for (const side of [0, 3] as const) {
       for (const dir of [-1, 1]) {
-        const q = pt(lerp(free, fold, 0.2), aa + (dir * 5) / g.R);
+        const ao = aa + (dir * 5) / g.R;
+        const q = proj3(point3(g, panelAt(g, ao), ao, strutInset, side));
+        note(q);
         holes.push({ cx: f1(q[0]), cy: f1(q[1]), r: 2.5 });
       }
     }

@@ -130,5 +130,17 @@ export function buildWarnings(
     });
   }
 
+  // WP30 §30.2 (decision D4) — new. The angle slider's own floor stops you dragging
+  // below it, but a shared link or a later change to skirt/flaps can still leave the
+  // stored angle under the current floor. The set value is kept rather than overwritten,
+  // so this is the one place that says the fender is being built at a different angle
+  // than the config records, and that the original returns.
+  if (g.angleMin !== null && s.angle < g.angleMin - 1e-9) {
+    warnings.push({
+      id: 'angle-below-shingle-floor',
+      text: `Skirt angle is set to ${f0(s.angle)}° but is being built at ${f0(g.angleEff)}°: below that there is no shingle to fasten at ${g.n} sections. Your ${f0(s.angle)}° comes back if you deepen the skirt or cut sections.`
+    });
+  }
+
   return warnings;
 }
