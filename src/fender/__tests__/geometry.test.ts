@@ -107,10 +107,37 @@ describe('geometry invariants', () => {
     }
   });
 
-  it('developed length is the arc, not the chord', () => {
+  // WP32 §32.1 replaces this invariant. The fender is a polygonal prism (WP31), and the
+  // polygon CIRCUMSCRIBES the clearance circle so that `clear` is the minimum gap to the
+  // tyre rather than the gap at the corners — otherwise a flat facet dips inside its own
+  // design radius by the sagitta, which fouls the tyre outright at low section counts. So
+  // the developed length is the polygon's perimeter, `2n·R·tan(dA/2)`, always slightly
+  // longer than the arc it replaces.
+  it('developed length is the polygon perimeter, and exceeds the arc', () => {
     for (const [name, c] of CASES) {
       const g = geo(c.config);
-      expect(g.L, `${name} L`).toBeCloseTo(g.R * g.th, 9);
+      if (!g.faceted) {
+        // A dartless skirt has no crease lines, so nothing makes it a polygon.
+        expect(g.L, `${name} L`).toBeCloseTo(g.R * g.th, 9);
+        continue;
+      }
+      expect(g.L, `${name} L`).toBeCloseTo(2 * g.n * g.R * Math.tan(g.dA / 2), 9);
+      expect(g.L, `${name} L vs arc`).toBeGreaterThan(g.R * g.th);
+      // Never by much at sane section counts — a few tenths of a percent.
+      expect(g.L / (g.R * g.th), `${name} L ratio`).toBeLessThan(1.05);
+    }
+  });
+
+  // The reason WP32 exists: the facet midpoints sit exactly on the clearance circle, so
+  // the closest approach to the tyre is `clear`, not `clear - sagitta`.
+  it('facet midpoints sit on the clearance circle, vertices outside it', () => {
+    for (const [name, c] of CASES) {
+      const g = geo(c.config);
+      if (!g.faceted) continue;
+      const vertexR = g.R / Math.cos(g.dA / 2);
+      expect(vertexR, `${name} vertex`).toBeGreaterThan(g.R);
+      // Half a facet's chord, squared with R, must land on the vertex radius.
+      expect(Math.hypot(g.R, g.pitch / 2), `${name} chord`).toBeCloseTo(vertexR, 9);
     }
   });
 

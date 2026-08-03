@@ -18,10 +18,21 @@ const GOLDEN_CONFIGS = Object.values(golden as unknown as Record<string, GoldenC
   (c) => c.config
 );
 
-/** Every numeric field a config can drive `buildModel()` into producing. */
+/** Every numeric field a config can drive `buildModel()` into producing.
+ *
+ * `angleMin` is exempt because `null` is one of its real values, not a failure: WP30
+ * §30.3 — when the flap count is high enough against a shallow enough skirt, `sin`
+ * saturates before any angle reaches a fastenable lap, and the floor genuinely does not
+ * exist. Hostile input reaches that state, which is the point of this test. It must
+ * still be `null` and never `NaN`, which is what the extra assertion below pins. */
 function assertFiniteGeometry(config: FenderConfig): void {
   const model = buildModel(config);
+  expect(model.geo.angleMin === null || Number.isFinite(model.geo.angleMin)).toBe(true);
+  expect(typeof model.geo.faceted).toBe('boolean');
   for (const [key, value] of Object.entries(model.geo) as [keyof Geometry, number][]) {
+    // `angleMin` is nullable by design (WP30 §30.3) and `faceted` is a flag, not a
+    // dimension (WP32) — both asserted above on their own terms.
+    if (key === 'angleMin' || key === 'faceted') continue;
     expect(Number.isFinite(value), `geo.${key} = ${value}`).toBe(true);
   }
   for (const h of model.blank.holes) {

@@ -34,7 +34,12 @@ it. Deriving the lap and reporting fit costs nothing and constrains nothing.
 
 ---
 
-## WP23 — The shingled lap skirt
+## WP23 — The shingled lap skirt ⚠️ SHIPPED WITH A DEFECT — see FEEDBACK-4-PLAN.md
+
+> §23.6's hole-slant formula below is **wrong**: it uses `d/skirt` where the overlap triangle
+> requires `(skirt − d)/skirt`, so the two layers' holes cannot coincide when assembled. The build
+> implemented the spec faithfully; the spec was at fault. Round 4 §9.35 has the diagnosis, and WP29
+> replaces the architecture that let it render as correct. Every other decision here stands.
 
 ### 23.1 The skirt darts butt; they have never overlapped (§9.26)
 
@@ -211,7 +216,12 @@ once assembled — except `cinch`, whose holes sit outside the band by design.
 
 ---
 
-## WP28 — The 3D view shows a fender that does not exist
+## WP28 — The 3D view shows a fender that does not exist ⚠️ SUPERSEDED — see FEEDBACK-4-PLAN.md
+
+> Shipped, but on the wrong architecture: `isometric.ts` re-derives geometry from formulas parallel
+> to `pattern.ts`, so it reproduced §9.35's inverted slant and rendered it as though correct. WP29
+> inverts the dependency — the assembled 3D model becomes the source of truth and this file drops to
+> a pure projector. The fidelity goals (C5) stand unchanged.
 
 ### 28.1 The facet mesh ignores the flap count entirely (§9.27)
 

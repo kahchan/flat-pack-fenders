@@ -22,7 +22,7 @@ function facetCount(config: FenderConfig): { skirt: number; crown: number; edges
   const iso = buildIsometric(config, g);
   const nSkirt = Math.max(1, g.n);
   const skirt = 2 * nSkirt;
-  const crown = NS;
+  const crown = nSkirt;
   const edges = g.t > 0 ? 2 * nSkirt : 0;
   const risers = g.lap > 0 && nSkirt > 1 ? 2 * (nSkirt - 1) : 0;
   expect(iso.facets.length).toBe(skirt + crown + edges + risers);
@@ -30,13 +30,18 @@ function facetCount(config: FenderConfig): { skirt: number; crown: number; edges
 }
 
 describe('buildIsometric — skirt facet count (WP28 §28.1/§28.2)', () => {
-  it('skirt facet count equals g.n (2 per section: top + bottom), crown stays fixed at NS', () => {
+  // WP31: the crown facets at `g.n` too. It kept a fixed `NS` sweep on the argument that
+  // a bent sheet is a developable cylinder — true of the flat blank, false of the folded
+  // part, which is a channel and creases at the dart slits rather than curving. Nothing
+  // about the fender is drawn at a fixed segment count now.
+  it('every band facets at g.n — skirt 2 per section, crown 1', () => {
     for (const flaps of [6, 22]) {
       const config = { ...DEFAULTS, flaps };
       const g = geo(config);
       const c = facetCount(config);
       expect(c.skirt).toBe(2 * g.n);
-      expect(c.crown).toBe(NS);
+      expect(c.crown).toBe(g.n);
+      expect(c.crown).not.toBe(NS);
     }
   });
 
@@ -46,12 +51,16 @@ describe('buildIsometric — skirt facet count (WP28 §28.1/§28.2)', () => {
     expect(six.facets.length).not.toBe(twentyTwo.facets.length);
   });
 
-  it('crown facet count never changes with flaps — only the skirt does', () => {
+  // WP31 inverts this: the crown tracks the flap count like everything else. A fender
+  // whose crown looked identical at 6 and 22 sections was drawing a shape it never takes.
+  it('crown facet count tracks flaps, exactly like the skirt', () => {
     const g6 = geo({ ...DEFAULTS, flaps: 6 });
     const g22 = geo({ ...DEFAULTS, flaps: 22 });
     const c6 = facetCount({ ...DEFAULTS, flaps: 6 });
     const c22 = facetCount({ ...DEFAULTS, flaps: 22 });
-    expect(c6.crown).toBe(c22.crown);
+    expect(c6.crown).not.toBe(c22.crown);
+    expect(c6.crown).toBe(g6.n);
+    expect(c22.crown).toBe(g22.n);
     expect(c6.skirt).not.toBe(c22.skirt);
     expect(c6.skirt).toBe(2 * g6.n);
     expect(c22.skirt).toBe(2 * g22.n);
@@ -104,7 +113,7 @@ describe('buildIsometric — real thickness and the lap step (WP28 §28.2)', () 
 describe('buildIsometric — join fastener geometry (WP23 §23.3/§23.6 in 3D)', () => {
   const base = DEFAULTS;
 
-  it('slots (the punched tongue) appear only for the slot join, two quads per side per dart', () => {
+  it('the punched tongue is ONE opening per side per dart, not two (WP29 §29.3)', () => {
     const g = geo(base);
     const darts = g.n - 1;
     const none = buildIsometric({ ...base, join: 'none' });
@@ -117,7 +126,11 @@ describe('buildIsometric — join fastener geometry (WP23 §23.3/§23.6 in 3D)',
     expect(cinch.slots).toEqual([]);
     expect(zip.slots).toEqual([]);
     expect(rivet.slots).toEqual([]);
-    expect(slot.slots.length).toBe(darts * 2 * 2); // tongue + slot, 2 sides, per dart
+    // The tongue passes THROUGH its slot, so on the assembled fender they occupy one
+    // place — one quad per side. Round 3 drew two, at ±lap/4, which is the flat-pattern
+    // pair transcribed into 3D: a tongue that never met its own slot. They separate only
+    // when the two panels are unrolled, and there the blank does carry both.
+    expect(slot.slots.length).toBe(darts * 2);
   });
 
   it('none pierces nothing; cinch/rivet/zip/slot each add real fastener geometry', () => {
@@ -132,8 +145,14 @@ describe('buildIsometric — join fastener geometry (WP23 §23.3/§23.6 in 3D)',
     // only by strut-hole count, so they must be equal to each other.
     expect(slot.holes.length).toBe(none.holes.length);
     expect(cinch.holes.length).toBeGreaterThan(none.holes.length);
-    expect(zip.holes.length).toBeGreaterThan(cinch.holes.length);
     expect(rivet.holes.length).toBeGreaterThan(none.holes.length);
+    // A zip stitch and a cinch tie draw the SAME number of openings in 3D, for different
+    // reasons: zip has two depths each piercing both layers at one point, cinch has one
+    // hole on each of the two panels. Round 3 had zip drawing twice as many, because a
+    // through-lap fastener was placed at two arc positions when the built fender has one
+    // (§9.36) — so `zip > cinch` was an assertion about the bug.
+    expect(zip.holes.length).toBe(cinch.holes.length);
+    expect(zip.holes.length).toBeGreaterThan(none.holes.length);
   });
 
   it('a dart seam line is drawn for every dart regardless of join', () => {

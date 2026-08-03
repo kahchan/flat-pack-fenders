@@ -21,7 +21,12 @@ describe('PRESETS', () => {
     '"%s" produces finite geometry through buildModel()',
     (_id, preset) => {
       const model = buildModel(preset.config);
+      // `angleMin` is nullable by design (WP30 §30.3) and `faceted` is a flag, not a
+      // dimension (WP32); every other field must be a real number.
+      expect(model.geo.angleMin === null || Number.isFinite(model.geo.angleMin)).toBe(true);
+      expect(typeof model.geo.faceted).toBe('boolean');
       for (const [key, value] of Object.entries(model.geo) as [keyof Geometry, number][]) {
+        if (key === 'angleMin' || key === 'faceted') continue;
         expect(Number.isFinite(value), `geo.${key} = ${value}`).toBe(true);
       }
     }

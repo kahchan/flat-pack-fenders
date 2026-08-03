@@ -45,11 +45,12 @@ const ID_ORDER = [
   'sheet-b-too-wide',
   'tyre-too-wide',
   'strut-too-long',
-  'join-lacks-lap'
+  'join-lacks-lap',
+  'angle-below-shingle-floor'
 ];
 
 /** Ids with no fixture counterpart at all — new checks, not source transcriptions. */
-const NEW_IDS = new Set(['sheet-b-too-wide', 'tyre-too-wide', 'strut-too-long', 'join-lacks-lap']);
+const NEW_IDS = new Set(['sheet-b-too-wide', 'tyre-too-wide', 'strut-too-long', 'join-lacks-lap', 'angle-below-shingle-floor']);
 
 // PLAN FEEDBACK WP17 — these three ids' text lost an em-dash each (decision A3), reworded
 // as a colon per the notes.ts scheme (it introduces the reason/consequence, same as

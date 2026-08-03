@@ -40,6 +40,40 @@ const item = (
 };
 
 /**
+ * The skirt-angle slider, whose `min` is derived rather than fixed (WP30 §30.2). Split
+ * out because it is the only slider whose bound depends on other fields, and burying
+ * that in the cluster list would hide it.
+ */
+function angleItem(s: FenderConfig, g: Geometry): SliderItem {
+  // The value shown is the angle actually built at. It differs from `s.angle` only when
+  // the config carries a value below the current floor — from a shared link, or from
+  // shallowing the skirt after setting it — and per decision D4 that set value is kept,
+  // not overwritten, so deepening the skirt again brings it back.
+  const held = Math.abs(g.angleEff - s.angle) > 1e-9;
+  const base = item(
+    'angle',
+    'Skirt angle',
+    `${f0(g.angleEff)}°`,
+    `From the crown plane. Steeper = deeper, narrower, more lap (${f1(g.lap)} mm now)`
+  );
+  if (g.angleMin === null) {
+    return {
+      ...base,
+      hint: `From the crown plane. At ${g.n} sections no angle leaves a fastenable lap — reduce sections or deepen the skirt`
+    };
+  }
+  const floor = Math.ceil(g.angleMin);
+  return {
+    ...base,
+    min: Math.max(base.min, floor),
+    hint: held
+      ? `Held at ${floor}° so there is still a shingle to fasten at ${g.n} sections. Your ${s.angle}° returns if you deepen the skirt`
+      : `From the crown plane. Steeper = deeper, narrower, more lap (${f1(g.lap)} mm now). ` +
+        `Below ${floor}° there is no shingle to fasten at ${g.n} sections`
+  };
+}
+
+/**
  * WP22 §22.2: essentials/fine-tuning split, replacing the five flat groups. Essentials
  * are the four sliders that decide whether the fender fits the bike (side/wheel are
  * selectors, not sliders, and stay in their own rail components) — always visible, no
@@ -83,12 +117,13 @@ export function buildFineTuningClusters(
           `${s.skirt} mm`,
           `Drops ${f0(g.drop)} mm, adds ${f0(g.proj)} mm width each side, ${f1(g.lap)} mm lap`
         ),
-        item(
-          'angle',
-          'Skirt angle',
-          `${s.angle}°`,
-          `From the crown plane. Steeper = deeper, narrower, more lap (${f1(g.lap)} mm now)`
-        ),
+        // WP30 §30.2 (decision D3): the floor is derived, not the fixed 20° in
+        // PARAM_SPECS — below it the fender is flat enough to leave no shingle for any
+        // join to fasten, and where that lands depends on skirt depth and flap count. It
+        // moves when they move, so the hint has to say why rather than leave a minimum
+        // shifting silently. `null` (§30.3) means no angle can get there at this flap
+        // count: the static floor stands and the lever named is sections, not angle.
+        angleItem(s, g),
         item(
           'taper',
           'Tail taper',

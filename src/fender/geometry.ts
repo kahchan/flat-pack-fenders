@@ -21,10 +21,15 @@ import type { FenderConfig, Geometry, JoinKey } from './types';
  *             on a smaller radius than the fold line, so it must be shorter than a plain
  *             butt fit. WP23 §23.2 (decision C1/C2): rather than cutting that surplus away
  *             as a V-notch, the dart is cut as a plain slit (`notch` is always 0) and the
- *             surplus is left in as a shingled overlap instead — `lap`, maximised, plus
- *             one thickness so the two folded edges have room to sit alongside each other.
- *             Nothing narrows `lap` back down; see `joinFits()` for what that overlap can
- *             fasten.
+ *             surplus is left in as a shingled overlap instead. Nothing narrows `lap` back
+ *             down; see `joinFits()` for what that overlap can fasten.
+ *
+ *             WP29: this is `removal / n` exactly. Round 3 shipped `removal / n + t`,
+ *             carrying over the one-thickness allowance the BUTT notch needed so its two
+ *             folded edges had room to sit alongside each other. A lap has no such edges —
+ *             the panels simply stack — so the thickness bought no overlap and the figure
+ *             overstated it by a full `t` (0.8 mm against a 4.9 mm default lap, 16%),
+ *             which fed straight into `joinFits()`.
  */
 export function geo(s: FenderConfig): Geometry {
   const bsd = WHEELS[s.wheel].bsd;
@@ -35,9 +40,47 @@ export function geo(s: FenderConfig): Geometry {
   const cov = s.lead + s.trail;
   const th = cov * D2;
   const aNose = -s.lead * D2;
-  const L = R * th;
 
-  const a = s.angle * D2;
+  // WP32 §32.1: the developed length is the PERIMETER OF THE POLYGON, not the arc.
+  //
+  // WP31 established that the folded fender is a polygonal prism creasing at every dart
+  // (a channel section does not curve smoothly; the dart slits are its relief). A flat
+  // facet therefore sits inside its own design radius by the sagitta `R(1 - cos(dA/2))`
+  // at its midpoint — 1.7 mm at 20 sections but 10.3 mm at 8 and 18.3 mm at 6, where the
+  // fender simply fouls the tyre. `clear` is documented as the gap between tyre and
+  // fender inner face, so that has to be the MINIMUM gap, not the gap at the corners.
+  //
+  // Hence the polygon circumscribes the clearance circle: facet midpoints sit on it and
+  // the fold vertices move out to `R / cos(dA/2)`. The perimeter that needs is
+  // `2n·R·tan(dA/2)`, up 0.2-0.4% on the shipped presets and 3.6% at 6 sections. Every
+  // other term is unchanged in form — `pitch = L/n`, `removal = L·drop/R` and
+  // `lap = removal/n` all still hold, because `lap = pitch·drop/R` either way.
+  //
+  // A dartless skirt has no crease lines, so nothing makes it a polygon: it keeps the
+  // true arc. `dA < π` is the same guard from the other side — `tan` diverges at a
+  // half-turn facet, which is not a fender.
+  const nFlaps = s.flaps;
+  const dA = nFlaps > 0 ? th / nFlaps : th;
+  const faceted = nFlaps > 1 && dA < Math.PI - 1e-6;
+  const L = faceted ? 2 * nFlaps * R * Math.tan(dA / 2) : R * th;
+
+  // WP30 §30.2 (decisions D3/D4): the angle floor is derived, not a fixed 20°. A fender
+  // flat enough to leave no shingle has nothing for any join to fasten, and whether a
+  // given angle leaves any depends entirely on skirt depth and flap count — 20° is below
+  // the real requirement for five of the six shipped presets, and above it for the sixth.
+  //
+  // `lap = L·skirtTrue·sin(a) / (R·n)`, so the floor falls straight out of `asin`, and
+  // `null` when `sin` saturates first (§30.3: a high flap count on a shallow skirt is
+  // simply unreachable — the UI names sections as the lever rather than pinning the
+  // slider). Computed before `a` because it depends only on terms that do not involve
+  // the angle, so there is no circularity.
+  const sinNeeded =
+    nFlaps > 1 && s.skirt > 0 ? (JOIN_LAP_NEEDED.cinch * R * nFlaps) / (L * s.skirt) : NaN;
+  const angleMin =
+    Number.isFinite(sinNeeded) && sinNeeded <= 1 ? (Math.asin(sinNeeded) * 180) / Math.PI : null;
+  const angleEff = angleMin === null ? s.angle : Math.max(s.angle, angleMin);
+
+  const a = angleEff * D2;
   const proj = s.skirt * Math.cos(a);
   const drop = s.skirt * Math.sin(a);
 
@@ -58,11 +101,11 @@ export function geo(s: FenderConfig): Geometry {
   // not an error — `pitch`/`lap` guard against it explicitly rather than trusting `n`
   // to stay positive, since geo() is called directly in tests with configs the UI's own
   // flaps slider (min 4) could never reach.
-  const n = s.flaps;
+  const n = nFlaps;
   const pitch = n > 0 ? L / n : L;
   const removal = (L * drop) / R;
   const notch = 0;
-  const lap = n > 1 ? removal / n + t : 0;
+  const lap = n > 1 ? removal / n : 0;
 
   return {
     bsd,
@@ -93,7 +136,11 @@ export function geo(s: FenderConfig): Geometry {
     pitch,
     removal,
     notch,
-    lap
+    lap,
+    angleMin,
+    angleEff,
+    dA,
+    faceted
   };
 }
 
@@ -136,13 +183,13 @@ export function joinFits(g: Geometry): JoinFit[] {
 
 /**
  * §23.4's remedy, lever one: the largest flap count that still clears `needed` mm of
- * lap, holding skirt/angle fixed — `lap(n) = removal/n + t` falls as `n` grows, so this
- * is a ceiling, not a floor. `null` when the lever doesn't apply: `lap` never drops
- * below `t`, so any flap count clears a `needed` at or under it.
+ * lap, holding skirt/angle fixed — `lap(n) = removal/n` falls as `n` grows, so this is a
+ * ceiling, not a floor. `null` when the lever doesn't apply, i.e. a join that needs no
+ * lap at all, which every flap count already clears.
  */
 export function flapsForLap(g: Geometry, needed: number): number | null {
-  if (needed <= g.t) return null;
-  return Math.max(1, Math.floor(g.removal / (needed - g.t)));
+  if (needed <= 0) return null;
+  return Math.max(1, Math.floor(g.removal / needed));
 }
 
 /**
@@ -155,9 +202,26 @@ export function skirtForLap(g: Geometry, needed: number): number | null {
   if (g.n <= 1) return null;
   const sinA = Math.sin(g.a);
   if (sinA <= 0) return null;
-  const extra = needed - g.t;
-  if (extra <= 0) return 0;
-  return (extra * g.R * g.n) / (g.L * sinA);
+  if (needed <= 0) return 0;
+  return (needed * g.R * g.n) / (g.L * sinA);
+}
+
+/**
+ * WP30 §30.2 (decision D3): the shallowest skirt angle, in degrees, that still yields
+ * `needed` mm of lap at the current skirt depth and flap count — the angle slider's
+ * derived floor.
+ *
+ * `lap = L·skirtTrue·sin(a) / (R·n)`, so the angle falls straight out of `asin`. Returns
+ * `null` when no angle can get there: `sin` saturates at 1, so a high flap count on a
+ * shallow skirt is simply unreachable and the UI has to name sections as the lever
+ * instead of pinning the slider (§30.3).
+ */
+export function angleForLap(g: Geometry, needed: number): number | null {
+  if (g.n <= 1 || g.skirtTrue <= 0) return null;
+  if (needed <= 0) return 0;
+  const sinA = (needed * g.R * g.n) / (g.L * g.skirtTrue);
+  if (sinA > 1) return null;
+  return (Math.asin(sinA) * 180) / Math.PI;
 }
 
 /**

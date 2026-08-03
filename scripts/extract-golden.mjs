@@ -74,8 +74,18 @@ function geo(s) {
   const cov = s.lead + s.trail;
   const th = cov * D2;
   const aNose = -s.lead * D2;
-  const L = R * th;
-  const a = s.angle * D2;
+  // WP32 §32.1 — mirrors src/fender/geometry.ts: the developed length is the perimeter
+  // of the circumscribed polygon, not the arc, so facet midpoints sit ON the clearance
+  // circle and `clear` is the minimum gap rather than the gap at the corners.
+  const nFlaps = s.flaps;
+  const dA = nFlaps > 0 ? th / nFlaps : th;
+  const faceted = nFlaps > 1 && dA < Math.PI - 1e-6;
+  const L = faceted ? 2 * nFlaps * R * Math.tan(dA / 2) : R * th;
+  // WP30 §30.2 — mirrors src/fender/geometry.ts's derived angle floor.
+  const sinNeeded = nFlaps > 1 && s.skirt > 0 ? (JOIN_LAP_NEEDED.cinch * R * nFlaps) / (L * s.skirt) : NaN;
+  const angleMin = Number.isFinite(sinNeeded) && sinNeeded <= 1 ? (Math.asin(sinNeeded) * 180) / Math.PI : null;
+  const angleEff = angleMin === null ? s.angle : Math.max(s.angle, angleMin);
+  const a = angleEff * D2;
   const proj = s.skirt * Math.cos(a);
   const drop = s.skirt * Math.sin(a);
   const t = s.thick;
@@ -91,12 +101,15 @@ function geo(s) {
   // WP23 §23.2 — the dart is a plain slit now (`notch` always 0); the surplus it used
   // to remove is left in as `lap` instead, maximised, never capped. `n <= 1` (a
   // dartless skirt) is a real branch, guarded here rather than left to divide by zero.
-  const n = s.flaps;
+  const n = nFlaps;
   const pitch = n > 0 ? L / n : L;
   const removal = (L * drop) / R;
   const notch = 0;
-  const lap = n > 1 ? removal / n + t : 0;
-  return { bsd, tyreRcalc, tyreR, R, cov, th, aNose, L, a, skirt: skirtFlat, skirtTrue: s.skirt, t, rBend, setback, BA, bendComp, hem, proj, drop, crown0: s.crown, crownTail, knee, Wd, yc: Wd / 2, n, pitch, removal, notch, lap };
+  // WP29 — `removal / n` exactly. Round 3 carried over the one-thickness allowance the
+  // BUTT notch needed for its two folded edges; a lap just stacks, so the `+ t` bought
+  // no overlap and overstated it.
+  const lap = n > 1 ? removal / n : 0;
+  return { bsd, tyreRcalc, tyreR, R, cov, th, aNose, L, a, skirt: skirtFlat, skirtTrue: s.skirt, t, rBend, setback, BA, bendComp, hem, proj, drop, crown0: s.crown, crownTail, knee, Wd, yc: Wd / 2, n, pitch, removal, notch, lap, angleMin, angleEff, dA, faceted };
 }
 
 // WP23 §23.3 — mirrors src/fender/geometry.ts's join-fit table exactly.
@@ -106,9 +119,10 @@ function joinFitsRef(g) {
     join, needed, fits: Math.max(0, needed - g.lap) <= 1e-9, short: Math.max(0, needed - g.lap)
   }));
 }
+// WP29 — `lap(n) = removal/n`, so the `- g.t` the round-3 form carried is gone with it.
 function flapsForLapRef(g, needed) {
-  if (needed <= g.t) return null;
-  return Math.max(1, Math.floor(g.removal / (needed - g.t)));
+  if (needed <= 0) return null;
+  return Math.max(1, Math.floor(g.removal / needed));
 }
 function skirtForLapRef(g, needed) {
   if (g.n <= 1) return null;
@@ -197,18 +211,43 @@ function blank(s) {
     scoreLines.push({ d: `M ${xs.map((x) => `${f1(x)},${f1(hemB(x))}`).join(' L ')}` });
   }
   // WP23 §23.3/§23.6 — mirrors src/fender/pattern.ts's dart-fastening block exactly.
-  for (let i = 1; i < g.n; i++) {
-    const xc = i * g.pitch;
+  // WP29 §29.3 — mirrors src/fender/assembly.ts and src/fender/develop.ts. A dart
+  // feature is declared once in ASSEMBLED coordinates (an arc angle, a depth below the
+  // free edge, and the panels it pierces) and unrolled onto each of those panels; the
+  // flat offset falls out of the panel map rather than being written by hand. Round 4
+  // §9.35: the round-3 form used `d / skirt` where the overlap triangle needs
+  // `(skirt - d) / skirt`, so its two layers could never coincide once assembled.
+  // WP32 — on a prism the fold is a straight chord, so the flat-to-angle map is `tan`,
+  // and panel/dart angles are multiples of `dA` rather than of `pitch / R`.
+  const panelMid = (p) => g.aNose + (p + 0.5) * g.dA;
+  const uAt = (depth) => (g.skirt <= 0 ? 0 : Math.max(0, Math.min(1, (g.skirt - depth) / g.skirt)));
+  const flatXAt = (panel, aa, depth) => {
+    const dphi = aa - panelMid(panel);
+    const rq = g.R - uAt(depth) * g.drop;
+    return (panel + 0.5) * g.pitch + (g.faceted ? rq * Math.tan(dphi) : dphi * rq);
+  };
+  const flatYAt = (x, depth, side) => (side === 0 ? yFreeT(x) + depth : yFreeB(x) - depth);
+
+  for (let k = 1; k < g.n; k++) {
+    const aa = g.aNose + k * g.dA;
     if (s.join === 'none') {
-      scoreLines.push({ d: `M ${f1(xc)},${f1(yFreeT(xc))} L ${f1(xc)},${f1(yFreeB(xc))}` });
+      const x = k * g.pitch;
+      scoreLines.push({ d: `M ${f1(x)},${f1(yFreeT(x))} L ${f1(x)},${f1(yFreeB(x))}` });
       continue;
     }
     if (s.join === 'cinch') {
+      const depth = g.skirt * 0.5;
       const off = g.lap / 2 + 6;
-      for (const dir of [-1, 1]) {
-        const x = xc + dir * off;
-        dangerXs.push(x);
-        holes.push({ cx: f1(x), cy: f1(yFreeT(x) + g.skirt * 0.5), r: 2 }, { cx: f1(x), cy: f1(yFreeB(x) - g.skirt * 0.5), r: 2 });
+      const rMid = g.R - uAt(depth) * g.drop;
+      // `off` is a FLAT clearance, converted through the same chord map.
+      const half = g.faceted ? Math.tan(g.dA / 2) : g.dA / 2;
+      const back = (sign) => (g.faceted ? Math.atan(sign * (half - off / rMid)) : sign * (half - off / rMid));
+      for (const side of [0, 3]) {
+        for (const [ao, panel] of [[panelMid(k - 1) + back(1), k - 1], [panelMid(k) + back(-1), k]]) {
+          const x = flatXAt(panel, ao, depth);
+          dangerXs.push(x);
+          holes.push({ cx: f1(x), cy: f1(flatYAt(x, depth, side)), r: 2 });
+        }
       }
       continue;
     }
@@ -216,30 +255,32 @@ function blank(s) {
       const tw = 8;
       const reach = Math.max(2, Math.min(14, g.skirt * 0.45));
       const d0 = 2;
-      const xTongue = xc - g.lap / 4;
-      const xSlot = xc + g.lap / 4;
-      dangerXs.push(xTongue, xSlot);
-      for (const top of [true, false]) {
-        const free = top ? yFreeT : yFreeB;
-        const dirIn = top ? 1 : -1;
-        const yNear = (x) => free(x) + dirIn * d0;
-        const yFar = (x) => free(x) + dirIn * (d0 + reach);
-        const yA = yNear(xTongue), yB = yFar(xTongue);
-        outline += ` M ${f1(xTongue - tw / 2)},${f1(yA)} L ${f1(xTongue - tw / 2)},${f1(yB)} L ${f1(xTongue + tw / 2)},${f1(yB)} L ${f1(xTongue + tw / 2)},${f1(yA)}`;
-        scoreLines.push({ d: `M ${f1(xTongue - tw / 2)},${f1(yA)} L ${f1(xTongue + tw / 2)},${f1(yA)}` });
-        const sy0 = yNear(xSlot), sy1 = yFar(xSlot);
-        slots.push({ x: f1(xSlot - tw / 2), y: f1(Math.min(sy0, sy1)), w: tw, h: f1(Math.abs(sy1 - sy0)) });
+      for (const side of [0, 3]) {
+        for (const [layerIndex, panel] of [[0, k - 1], [1, k]]) {
+          const xNear = flatXAt(panel, aa, d0);
+          const xFar = flatXAt(panel, aa, d0 + reach);
+          const yNear = flatYAt(xNear, d0, side);
+          const yFar = flatYAt(xFar, d0 + reach, side);
+          dangerXs.push(xNear);
+          if (layerIndex === 0) {
+            outline += ` M ${f1(xNear - tw / 2)},${f1(yNear)} L ${f1(xFar - tw / 2)},${f1(yFar)} L ${f1(xFar + tw / 2)},${f1(yFar)} L ${f1(xNear + tw / 2)},${f1(yNear)}`;
+            scoreLines.push({ d: `M ${f1(xNear - tw / 2)},${f1(yNear)} L ${f1(xNear + tw / 2)},${f1(yNear)}` });
+          } else {
+            slots.push({ x: f1(Math.min(xNear, xFar) - tw / 2), y: f1(Math.min(yNear, yFar)), w: f1(tw + Math.abs(xFar - xNear)), h: f1(Math.abs(yFar - yNear)) });
+          }
+        }
       }
       continue;
     }
     const depths = s.join === 'zip' ? [3.5, 8.5] : [4.5];
     const r = s.join === 'zip' ? 2 : 1.6;
-    dangerXs.push(xc - g.lap / 2, xc + g.lap / 2);
-    for (const d of depths) {
-      const t = g.skirt > 0 ? d / g.skirt : 0;
-      for (const dir of [-1, 1]) {
-        const x = xc + dir * t * (g.lap / 2);
-        holes.push({ cx: f1(x), cy: f1(yFreeT(x) + g.skirt * t), r }, { cx: f1(x), cy: f1(yFreeB(x) - g.skirt * t), r });
+    for (const depth of depths) {
+      for (const side of [0, 3]) {
+        for (const panel of [k - 1, k]) {
+          const x = flatXAt(panel, aa, depth);
+          dangerXs.push(x);
+          holes.push({ cx: f1(x), cy: f1(flatYAt(x, depth, side)), r });
+        }
       }
     }
   }
@@ -409,28 +450,75 @@ function isometric(s, g, strutFrac, spin) {
     return [(xr - yr) * 0.866, (xr + yr) * 0.5 - z];
   };
   const aEnd = g.aNose + g.th;
-  const xAt = (aa) => (aa - g.aNose) * g.R;
+  // WP32 — prism, not cylinder: panel-relative chord maps, mirroring src/fender.
+  const panelMidIso = (p) => g.aNose + (p + 0.5) * g.dA;
+  const panelAtIso = (aa) => (g.n <= 1 || g.dA <= 0 ? 0 : Math.max(0, Math.min(g.n - 1, Math.floor((aa - g.aNose) / g.dA))));
+  const xAt = (aa) => {
+    if (!g.faceted) return (aa - g.aNose) * g.R;
+    const p = panelAtIso(aa);
+    return (p + 0.5) * g.pitch + g.R * Math.tan(aa - panelMidIso(p));
+  };
   const pf = (aa) => { const c = crownAt(g, xAt(aa)) / 2; return [[-c - g.proj, -g.drop], [-c, 0], [c, 0], [c + g.proj, -g.drop]]; };
-  const p3 = (v, aa) => { const r = g.R + v[1]; return [v[0], r * Math.sin(aa), r * Math.cos(aa)]; };
+  const p3 = (v, aa) => {
+    const rq = g.R + v[1];
+    const r = g.faceted ? rq / Math.cos(aa - panelMidIso(panelAtIso(aa))) : rq;
+    return [v[0], r * Math.sin(aa), r * Math.cos(aa)];
+  };
   const pt = (v, aa) => { const q = p3(v, aa); return P(q[0], q[1], q[2]); };
-  const NS = 64;
-  const aAt = (i) => g.aNose + (g.th * i) / NS;
+  // WP28 §28.2 + WP31 — mirrors src/fender/isometric.ts. Every band of the FENDER is
+  // faceted at `g.n`, crown included: once both skirts are folded down the section is a
+  // channel, which creases at the dart slits rather than curving smoothly. This section
+  // had been left on the pre-WP28 three-quads-per-`NS`-segment sweep, which is a shape
+  // the app has not drawn since WP28 and never drew at all after WP31.
+  const nSkirt = Math.max(1, g.n);
+  const aAt = (i) => g.aNose + (g.th * i) / nSkirt;
   const mix = (t) => { const A = [26, 34, 50], B = [244, 240, 232]; return `rgb(${A.map((c, i) => Math.round(c + (B[i] - c) * t)).join(',')})`; };
   const ext = { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity };
   const note = (p) => { if (p[0] < ext.x0) ext.x0 = p[0]; if (p[0] > ext.x1) ext.x1 = p[0]; if (p[1] < ext.y0) ext.y0 = p[1]; if (p[1] > ext.y1) ext.y1 = p[1]; };
+  const inward = (v) => [v[0], v[1] - g.t];
+  const quad = (q) => `M ${q.map((p) => `${f1(p[0])},${f1(p[1])}`).join(' L ')} Z`;
   const isoFacets = [];
-  for (let i = 0; i < NS; i++) {
-    const a0 = aAt(i), a1 = aAt(i + 1), P0 = pf(a0), P1 = pf(a1);
-    for (let j = 0; j < 3; j++) {
+  for (const j of [0, 2]) {
+    for (let i = 0; i < nSkirt; i++) {
+      const a0 = aAt(i), a1 = aAt(i + 1), P0 = pf(a0), P1 = pf(a1);
       const q = [pt(P0[j], a0), pt(P0[j + 1], a0), pt(P1[j + 1], a1), pt(P1[j], a1)];
       q.forEach(note);
-      const u = Math.abs((i / NS) * 2 - 1);
-      const shade = j === 1 ? 0.88 - 0.52 * u : 0.52 - 0.3 * u;
-      isoFacets.push({ d: `M ${q.map((p) => `${f1(p[0])},${f1(p[1])}`).join(' L ')} Z`, fill: mix(Math.max(0.1, shade)) });
+      const u = Math.abs((i / nSkirt) * 2 - 1);
+      isoFacets.push({ d: quad(q), fill: mix(Math.max(0.1, 0.52 - 0.3 * u)) });
     }
   }
-  const rail = (j) => { const p = []; for (let i = 0; i <= NS; i++) { const aa = aAt(i); const q = pt(pf(aa)[j], aa); p.push(`${f1(q[0])},${f1(q[1])}`); } return `M ${p.join(' L ')}`; };
-  const railRev = (j) => { const p = []; for (let i = NS; i >= 0; i--) { const aa = aAt(i); const q = pt(pf(aa)[j], aa); p.push(`${f1(q[0])},${f1(q[1])}`); } return p.join(' L '); };
+  for (let i = 0; i < nSkirt; i++) {
+    const a0 = aAt(i), a1 = aAt(i + 1), P0 = pf(a0), P1 = pf(a1);
+    const q = [pt(P0[1], a0), pt(P0[2], a0), pt(P1[2], a1), pt(P1[1], a1)];
+    q.forEach(note);
+    const u = Math.abs((i / nSkirt) * 2 - 1);
+    isoFacets.push({ d: quad(q), fill: mix(Math.max(0.1, 0.88 - 0.52 * u)) });
+  }
+  if (g.t > 0) {
+    for (const j of [0, 3]) {
+      for (let i = 0; i < nSkirt; i++) {
+        const a0 = aAt(i), a1 = aAt(i + 1);
+        const o0 = pf(a0)[j], o1 = pf(a1)[j];
+        const q = [pt(o0, a0), pt(inward(o0), a0), pt(inward(o1), a1), pt(o1, a1)];
+        q.forEach(note);
+        isoFacets.push({ d: quad(q), fill: mix(0.05) });
+      }
+    }
+  }
+  if (g.lap > 0 && nSkirt > 1) {
+    const dAngle = g.lap / g.R;
+    for (const j of [0, 3]) {
+      for (let i = 1; i < nSkirt; i++) {
+        const a0 = aAt(i), a1 = a0 + dAngle;
+        const o0 = pf(a0)[j], o1 = pf(a1)[j];
+        const q = [pt(o0, a0), pt(inward(o0), a0), pt(inward(o1), a1), pt(o1, a1)];
+        q.forEach(note);
+        isoFacets.push({ d: quad(q), fill: mix(0.05) });
+      }
+    }
+  }
+  const rail = (j) => { const p = []; for (let i = 0; i <= nSkirt; i++) { const aa = aAt(i); const q = pt(pf(aa)[j], aa); p.push(`${f1(q[0])},${f1(q[1])}`); } return `M ${p.join(' L ')}`; };
+  const railRev = (j) => { const p = []; for (let i = nSkirt; i >= 0; i--) { const aa = aAt(i); const q = pt(pf(aa)[j], aa); p.push(`${f1(q[0])},${f1(q[1])}`); } return p.join(' L '); };
   const cap = (aa) => `M ${pf(aa).map((v) => { const q = pt(v, aa); return `${f1(q[0])},${f1(q[1])}`; }).join(' L ')}`;
   const isoEdges = [{ d: rail(1) }, { d: rail(2) }, { d: cap(g.aNose) }, { d: cap(aEnd) }];
   const isoOutline = [{ d: `${rail(0)} L ${railRev(3)} Z` }];
@@ -445,32 +533,85 @@ function isometric(s, g, strutFrac, spin) {
     isoWheel.push({ d: `M ${p.join(' L ')} Z`.replace(/([\d.-]+),([\d.-]+)/g, (m0, a, b) => `${f1(+a)},${f1(+b)}`) });
   }
 
+  // WP29 §29.3 — mirrors src/fender/isometric.ts. Every fastener position now comes from
+  // the assembled model via `point3`, the same function develop.ts inverts to reach the
+  // flat pattern. This section used to carry its own `notch/2 + 6` offsets and fractional
+  // depths, which is round 4 §9.36: a second transcription that could disagree with the
+  // blank, and did.
   const isoSeams = [], isoHoles = [], isoSlots = [];
-  const lerp = (A, B, t) => [A[0] + (B[0] - A[0]) * t, A[1] + (B[1] - A[1]) * t];
+  const uAt3 = (depth) => (g.skirt <= 0 ? 0 : Math.max(0, Math.min(1, (g.skirt - depth) / g.skirt)));
+  const point3 = (panel, aa, depth, side) => {
+    const u = uAt3(depth);
+    const rq = g.R - u * g.drop;
+    const dphi = aa - panelMidIso(panel);
+    const r = g.faceted ? rq / Math.cos(dphi) : rq;
+    // Taper read at the FOLD (radius R), so both layers of a lap agree exactly.
+    const xFold = (panel + 0.5) * g.pitch + (g.faceted ? g.R * Math.tan(dphi) : dphi * g.R);
+    const c = crownAt(g, xFold) / 2;
+    const lateral = (side === 0 ? -1 : 1) * (c + u * g.proj);
+    return P(lateral, r * Math.sin(aa), r * Math.cos(aa));
+  };
+
   for (let i = 1; i < g.n; i++) {
     const aa = g.aNose + (g.th * i) / g.n, pr = pf(aa);
     for (const side of [0, 3]) {
       const free = pr[side], fold = pr[side === 0 ? 1 : 2];
       const A = pt(free, aa), B = pt(fold, aa);
       isoSeams.push({ d: `M ${f1(A[0])},${f1(A[1])} L ${f1(B[0])},${f1(B[1])}` });
-      const ts = s.join === 'zip' ? [0.3, 0.78] : s.join === 'rivet' ? [0.4, 0.78] : [];
-      for (const t of ts) for (const dir of [-1, 1]) {
-        const q = pt(lerp(free, fold, t), aa + (dir * (g.notch / 2 + 6)) / g.R);
-        isoHoles.push({ cx: f1(q[0]), cy: f1(q[1]), r: s.join === 'rivet' ? 1.6 : 2 });
+    }
+  }
+
+  // The assembly feature list, in the same order src/fender/assembly.ts emits it.
+  for (let k = 1; k < g.n; k++) {
+    const aa = g.aNose + k * g.dA;
+    if (s.join === 'none') continue;
+    if (s.join === 'cinch') {
+      const depth = g.skirt * 0.5;
+      const off = g.lap / 2 + 6;
+      const rMid = g.R - uAt3(depth) * g.drop;
+      const half = g.faceted ? Math.tan(g.dA / 2) : g.dA / 2;
+      const back = (sign) => (g.faceted ? Math.atan(sign * (half - off / rMid)) : sign * (half - off / rMid));
+      for (const side of [0, 3]) {
+        for (const [ao, panel] of [[panelMidIso(k - 1) + back(1), k - 1], [panelMidIso(k) + back(-1), k]]) {
+          const q = point3(panel, ao, depth, side);
+          isoHoles.push({ cx: f1(q[0]), cy: f1(q[1]), r: 2 });
+        }
       }
-      if (s.join === 'slot') for (const dir of [-1, 1]) {
-        const ao = aa + (dir * (g.notch / 2 + 6)) / g.R;
-        const q1 = pt(lerp(free, fold, 0.28), ao), q2 = pt(lerp(free, fold, 0.62), ao);
-        isoSlots.push({ d: `M ${f1(q1[0])},${f1(q1[1])} L ${f1(q2[0])},${f1(q2[1])}` });
+      continue;
+    }
+    if (s.join === 'slot') {
+      const tw = 8, d0 = 2;
+      const reach = Math.max(2, Math.min(14, g.skirt * 0.45));
+      const dw = tw / 2 / g.R;
+      for (const side of [0, 3]) {
+        const corners = [
+          point3(k - 1, aa - dw, d0, side),
+          point3(k - 1, aa - dw, d0 + reach, side),
+          point3(k - 1, aa + dw, d0 + reach, side),
+          point3(k - 1, aa + dw, d0, side)
+        ];
+        isoSlots.push({ d: `M ${corners.map((q) => `${f1(q[0])},${f1(q[1])}`).join(' L ')} Z` });
+      }
+      continue;
+    }
+    const depths = s.join === 'zip' ? [3.5, 8.5] : [4.5];
+    const r = s.join === 'zip' ? 2 : 1.6;
+    for (const depth of depths) {
+      for (const side of [0, 3]) {
+        const q = point3(k - 1, aa, depth, side);
+        isoHoles.push({ cx: f1(q[0]), cy: f1(q[1]), r });
       }
     }
   }
+
+  // Same absolute inset the blank is actually pierced at, not a fraction of the skirt.
+  const strutInset = Math.max(5, Math.min(7, g.skirt * 0.22));
   strutFrac.forEach((fr) => {
-    const aa = g.aNose + g.th * fr, pr = pf(aa);
+    const aa = g.aNose + g.th * fr;
     for (const side of [0, 3]) {
-      const free = pr[side], fold = pr[side === 0 ? 1 : 2];
       for (const dir of [-1, 1]) {
-        const q = pt(lerp(free, fold, 0.2), aa + (dir * 5) / g.R);
+        const ao = aa + (dir * 5) / g.R;
+        const q = point3(panelAtIso(ao), ao, strutInset, side);
         isoHoles.push({ cx: f1(q[0]), cy: f1(q[1]), r: 2.5 });
       }
     }
