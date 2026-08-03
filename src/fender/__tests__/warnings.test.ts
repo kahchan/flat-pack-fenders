@@ -190,7 +190,11 @@ describe('warnings invariants', () => {
     const STRUT_TOO_LONG_CASES = new Set([
       'cargo-20in-single',
       'measured-no-taper-nojoin',
-      'nested-cargo-20in'
+      'nested-cargo-20in',
+      // WP21 §21.1/§21.2 — same CARGO20 strutLen/mount geometry as 'cargo-20in-single',
+      // just with a strap frame end; this warning is about strutLen vs. mount distance,
+      // not the strut end's shape, so it fires here for the same reason.
+      'strap-strut-end-cargo'
     ]);
 
     it('fires only for the fixtures whose strutLen genuinely overshoots their mount', () => {

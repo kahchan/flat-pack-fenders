@@ -33,7 +33,12 @@ export function buildPrintLayout(tiling: TilingModel, parts: PartsModel): PrintL
     rects.push({ id: `A${lastRowStart + c}`, w: PW, h: tiling.lastRowH + PRINT_CAPTION_H });
   }
   parts.pages.forEach((page, i) => {
-    const usedH = page.parts.reduce((m, p) => Math.max(m, p.y + p.h), 0);
+    // `part.h` is the pre-rotation LOCAL size (PLAN §12's `PackedPart.h` doc comment) —
+    // a rotated part's real vertical extent on the page is its (pre-rotation) `w`
+    // instead. WP21 §21.1 exposed this: a strap-ended strut's taller paddle can push a
+    // wide, short part like the mudflap into rotating to still fit `PARTS_PH`, and the
+    // unrotated `h` understated the page's real used height enough to overflow `PH`.
+    const usedH = page.parts.reduce((m, p) => Math.max(m, p.y + (p.rotated ? p.w : p.h)), 0);
     rects.push({ id: `B${i}`, w: PW, h: Math.max(1, usedH) + PRINT_CAPTION_H });
   });
 

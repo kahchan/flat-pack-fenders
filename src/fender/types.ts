@@ -16,6 +16,7 @@ export type Side = 'front' | 'rear';
 export type WheelKey = '700c' | '650b' | '26in' | '20in';
 export type JoinKey = 'zip' | 'rivet' | 'slot' | 'none';
 export type StockKey = 'single' | 'a4';
+export type StrutEndKey = 'bolt' | 'strap';
 
 /** The 24 parameters that fully determine a fender. Serialised to the URL in this order. */
 export interface FenderConfig {
@@ -53,7 +54,12 @@ export interface FenderConfig {
   stock: StockKey;
   /** Slotted frame-mount tab at the nose. */
   tongue: boolean;
-  /** Sacrificial (oversize) strut end hole. */
+  /** WP21 §21.2 (decision B3): the sacrificial-fuse strut end is retired outright —
+   * this field is a reserved `CONFIG_ORDER` slot only, always `false` in practice, kept
+   * so an old shared link's field positions don't shift. Nothing reads it any more; the
+   * geometry, the toggle and its note are all gone. A legacy `fuse=1` in an old link
+   * decodes `strutEnd` to `'bolt'`, its default, since the fuse geometry it used to pick
+   * no longer exists. */
   fuse: boolean;
   /** WP20 §20.1 (decision B2): nesting is removed outright — this field is a reserved
    * `CONFIG_ORDER` slot only, always `false` in practice, kept so an old shared link's
@@ -64,6 +70,12 @@ export interface FenderConfig {
   hem: boolean;
   /** Chamfer length at the tongue-to-skirt corner, mm. 0 = square corner (off). */
   bevel: number;
+  /** Frame-end fastening at the far end of each strut (PLAN FEEDBACK WP21 §21.1): a
+   * bolt/zip-tie/rivet through a hole pair, or a 25 mm hook-and-loop strap threaded
+   * through a pair of slots in a flared paddle. Appended after `bevel` (append-only
+   * `CONFIG_ORDER`), replacing `fuse` as the strut-end option — see `fuse`'s own doc
+   * comment for the legacy-decode note. */
+  strutEnd: StrutEndKey;
 }
 
 export type ConfigKey = keyof FenderConfig;
@@ -252,6 +264,9 @@ export interface PackedPart {
   outline: Path;
   folds: Path[];
   holes: Hole[];
+  /** Strap-end slots (PLAN FEEDBACK WP21 §21.1), local to the part like `holes`/`outline` —
+   * empty for a bolt-ended strut and every non-strut part. */
+  slots: Slot[];
   label: Label;
   x: number;
   y: number;

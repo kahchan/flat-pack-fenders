@@ -22,7 +22,7 @@ const CASES = Object.entries(golden as unknown as Record<string, Case>);
  * Node for ANY config, including the true default, because Sheet A/instructions never
  * touch `parts` at all. */
 function withoutSheetB(model: DrawingModel): DrawingModel {
-  return { ...model, parts: { ...model.parts, outlines: [], folds: [], holes: [], pages: [] } };
+  return { ...model, parts: { ...model.parts, outlines: [], folds: [], holes: [], slots: [], pages: [] } };
 }
 
 function curveFreeConfig(base: FenderConfig): FenderConfig {
@@ -217,7 +217,7 @@ describe('SVG/DXF stay byte-identical — this package touches neither', () => {
 
   it.each(CASES)('%s: DXF (blank only, PLAN §9.2) unchanged', (_name, c) => {
     const model = buildModel(c.config);
-    const blankOnly: DrawingModel = { ...model, parts: { ...model.parts, outlines: [], folds: [], holes: [] } };
+    const blankOnly: DrawingModel = { ...model, parts: { ...model.parts, outlines: [], folds: [], holes: [], slots: [] } };
     const golden_ = (golden as Record<string, { dxfBlankOnly: string }>)[_name]!;
     expect(buildDxf(blankOnly)).toBe(golden_.dxfBlankOnly);
   });

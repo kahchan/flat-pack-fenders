@@ -328,14 +328,10 @@ needs a matching update there or the golden fixture will quietly drift.
 
 ---
 
-## WP21 — Strap-mounted strut end 🚧 NOT STARTED
+## WP21 — Strap-mounted strut end ✅ DONE
 
-Not attempted this session — WP22/WP19/WP20 consumed the available budget. Sequencing note for
-whoever picks this up: WP20 is fully landed (`tiling.ts`/`pattern.ts`/golden fixtures all reflect
-nesting's removal), so WP21 can start from a clean base without WP20's changes still in flight.
-`fuse`/`strutEnd` plumbing (21.2) touches `defaults.ts`'s `CONFIG_ORDER` the same way `nest` was
-just handled — append `strutEnd` at the end, leave `fuse` in place as a reserved slot, don't
-reorder anything existing.
+Sequencing note this session confirmed: WP20 was fully landed already, so this started from a
+clean base with no WP20 work still in flight.
 
 ### 21.1 The part has to change shape, not just its holes
 
@@ -362,6 +358,74 @@ cluster as a two-way selector.
 `notes.ts:113` currently reads "the other zip-ties, velcros, or bolts to the stay or eyelet" — three
 possibilities where the config already knows which one. Make it specific per choice, and name the
 strap by size (25 mm), not by brand. The "Sacrificial strut end" note is deleted with the feature.
+
+### Outcome, measured
+
+Implemented as specified, with one geometry decision the plan left open and one bug this WP's
+geometry exposed:
+
+- **Constants** (`defaults.ts`): `STRUT_STRAP_TRANS_L = 20`, `STRUT_STRAP_PADDLE_L = 24`,
+  `STRUT_STRAP_PADDLE_W = 32`, `STRUT_STRAP_SLOT_L = 27`, `STRUT_STRAP_SLOT_W = 3.5`,
+  `STRUT_STRAP_SLOT_GAP = 10`, plus `STRUT_STRAP_W = 25` (the physical strap's own size, used only
+  in copy). The transition + paddle (44 mm total) eat into the strut's existing `strutLen` rather
+  than extending the part — the plan didn't say which, and extending would have made `strutLen`'s
+  slider label ("mm") lie about the cut length.
+- **Geometry** (`parts.ts`): `localStrut()` (packed layout) and `buildParts()`'s continuous strut
+  loop both gained a `strap` branch — outline flares via straight `L` segments from the transition
+  point to the paddle tip, the frame end's hole pair is replaced by two 27×3.5 mm slots, and the
+  far-end fold (still 26 mm from the tip, per §21.1's silence on moving it) now spans the paddle's
+  full local height there instead of the bare `STRUT_W` strip. `LocalPart`/`PackedPart` both gained
+  a `slots: Slot[]` field so the paddle's slots flow through `packParts` into the packed print
+  layout, not just the continuous one exports read.
+- **Real footprint, not just the drawing**: `packParts`/`oversizedParts` already read `local.h`/`p.h`
+  generically, so the paddle's 32 mm height (vs. the strip's 14 mm) participates in packing and the
+  oversize warning without any changes there — confirmed with dedicated tests in `parts.test.ts`
+  rather than eyeballing the golden diff, per the plan's own instruction.
+- **Bug found and fixed**: strap struts stacked in the continuous layout at the OLD fixed
+  `STRUT_W + 9` mm row spacing would have overlapped (paddle height 32 mm > 23 mm spacing), so
+  spacing now reads the actual per-config strut height. Separately, `printLayout.ts`'s Sheet-B
+  page-height calculation read `part.h` (the pre-rotation LOCAL size, per `PackedPart`'s own doc
+  comment) instead of the real placed height for a *rotated* part — pre-existing, but only WP21's
+  taller paddle (pushing the CARGO20 3-strut/mudflap case to actually rotate the mudflap to still
+  fit `PARTS_PH`) made it reachable, overflowing a physical print page by up to 44 mm. Fixed by
+  reading `p.rotated ? p.w : p.h`.
+- **Config plumbing**: `strutEnd: 'bolt' | 'strap'` appended to `CONFIG_ORDER` after `bevel`; `fuse`
+  stays put as an inert reserved slot exactly as `nest` was for WP20. A legacy `fuse=1` link decodes
+  to `strutEnd: 'bolt'` for free — `strutEnd` simply isn't present in an old hash, so it backfills
+  to its own default.
+- **Rail**: `OptionToggles` lost the "Sacrificial strut end" entry; a new `StrutEndSelector.tsx`
+  (mirrors `StockSelector`'s two-way `OptionButton` pattern) joins the "Struts & mudflap" cluster.
+- **Copy** (`notes.ts`): "Bend the struts" now names the actual choice — "bolts or zip-ties to the
+  stay or eyelet" vs. "threads a 25 mm hook-and-loop strap through the pair of slots at the flared
+  tip, round the stay, and back through the second slot" — dropping "velcros" (brand name) and the
+  three-way hedge. The "Sacrificial strut end" note is deleted outright (16 notes → 15).
+- **Exports**: `parts.slots` (previously always empty, per a comment noting the design source never
+  populated it) is now real for a strap config, and `svg.ts`/`dxf.ts`/`pdf.ts` all gained the
+  missing render/write path for it — `blank.slots` already had one, `parts.slots` didn't.
+- **Golden fixtures**: regenerated via `scripts/extract-golden.mjs`, which gained the same strap
+  geometry (mirroring the port, the same way `BEVEL_L`/`LAP` were added there as "new, not in the
+  design source" — precedent in the file's own comments) plus two new cases, `strap-strut-end` and
+  `strap-strut-end-cargo` (the latter exercising 3 struts, to get real packing pressure). Diffed
+  programmatically against the pre-WP21 fixture: all 9 existing cases are byte-identical except the
+  added `strutEnd: 'bolt'` config field — confirmed with a script, not by eyeballing. The
+  "Sacrificial strut end" engineering note is deliberately KEPT in golden.json (historical
+  design-source transcription, same treatment as "Nesting" got from WP20) even though `notes.ts`
+  no longer emits it; `notes.test.ts` filters it out of the fixture before comparing so the two
+  stay index-aligned.
+- **Tests**: `parts.test.ts` gained a "strap-mounted strut end" describe block (slot count/size/gap,
+  bolt-vs-strap hole/slot counts, packed footprint actually widening, no overlap between stacked
+  strap struts, slots staying clear of both the tip and the transition, `oversizedParts` reading the
+  real height). `notes.test.ts` indices shifted down by one throughout (documented inline) and
+  gained a "Bend the struts" wording test. `warnings.test.ts`/`presets.test.ts`/`urlCodec.test.ts`
+  needed small fixture/index updates for the new `CONFIG_ORDER` length and the new golden case name.
+- **Verification**: `npm run test -- --run` → 1342/1342 passing (was 1136 before this WP). `npm run
+  build` (`tsc -b && vite build`) → clean, no errors. No lint script in this repo (confirmed).
+- **Plan discrepancy**: §21.1 says "The paddle changes the part's packed footprint, so it feeds
+  `packParts` and the oversize warning ... find those in `src/fender/pattern.ts`" — the strut PART
+  geometry actually lives in `src/fender/parts.ts`, not `pattern.ts` (`pattern.ts` builds the blank
+  and only reads `strutFrac`, the arc positions). Packing itself is `packer.ts`'s `packRects`,
+  called from `parts.ts`'s `packParts`, as guessed. No functional impact, just a stale file
+  reference in the plan.
 
 ---
 

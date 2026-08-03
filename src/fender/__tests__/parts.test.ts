@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import golden from './golden.json';
 import { buildParts } from '../parts';
-import { PARTS_PH, PW } from '../defaults';
+import {
+  PARTS_PH,
+  PW,
+  STRUT_STRAP_PADDLE_W,
+  STRUT_STRAP_SLOT_GAP,
+  STRUT_STRAP_SLOT_L,
+  STRUT_STRAP_SLOT_W,
+  STRUT_W
+} from '../defaults';
 import type { FenderConfig } from '../types';
 
 type HoleFixture = { cx: number | string; cy: number | string; r: number };
@@ -49,10 +57,11 @@ describe.each(CASES)('buildParts(%s)', (_name, c) => {
     expect(p.holes.map(normHole)).toEqual(g.holes.map(normHole));
   });
 
-  // `slots` is always empty: the source declares `partsSlots` but never pushes into it.
-  it('slots stay empty, faithfully', () => {
-    expect(p.slots).toEqual([]);
-    expect(g.slots).toEqual([]);
+  // `slots` holds strap-end strut slots (PLAN FEEDBACK WP21 §21.1) — empty for every
+  // golden case here, all of which are bolt-ended (or, for the two `strap-strut-end*`
+  // cases, actually populated and checked against the fixture below).
+  it('slots match the fixture (empty for a bolt end, populated for a strap end)', () => {
+    expect(p.slots).toEqual(g.slots);
   });
 
   it('labels match, ignoring the unset fill (source never colours parts labels)', () => {
@@ -159,5 +168,74 @@ describe('parts invariants', () => {
       expect(page.width).toBe(PW);
       expect(page.height).toBe(PARTS_PH);
     }
+  });
+});
+
+// PLAN FEEDBACK WP21 §21.1 — the strap-end paddle genuinely changes the part's packed
+// footprint, so it has to actually feed `packParts`/the oversize warning, not just draw
+// differently. These pin that, rather than eyeballing the golden diff.
+describe('strap-mounted strut end (WP21 §21.1)', () => {
+  const base = CASES[0]![1].config;
+
+  it('every strut gets exactly two slots, 27 × 3.5 mm, 10 mm apart centre to centre', () => {
+    const parts = buildParts({ ...base, strutEnd: 'strap', struts: 2 });
+    expect(parts.slots.length).toBe(2 * 2);
+    parts.slots.forEach((s) => {
+      expect(s.w).toBe(STRUT_STRAP_SLOT_W);
+      expect(s.h).toBe(STRUT_STRAP_SLOT_L);
+    });
+    for (let i = 0; i < 2; i++) {
+      const [a, b] = parts.slots.slice(i * 2, i * 2 + 2);
+      const gap = Number(b!.x) + Number(b!.w) / 2 - (Number(a!.x) + Number(a!.w) / 2);
+      expect(gap).toBeCloseTo(STRUT_STRAP_SLOT_GAP, 5);
+    }
+  });
+
+  it('a bolt end has no slots; a strap end has no frame-end hole pair', () => {
+    const bolt = buildParts({ ...base, strutEnd: 'bolt', struts: 1, mudflap: 0, join: 'zip' });
+    const strap = buildParts({ ...base, strutEnd: 'strap', struts: 1, mudflap: 0, join: 'zip' });
+    expect(bolt.slots.length).toBe(0);
+    expect(bolt.holes.length).toBe(4); // skirt hole + midpoint + 2-hole frame end
+    expect(strap.holes.length).toBe(2); // skirt hole + midpoint only
+    expect(strap.slots.length).toBe(2);
+  });
+
+  it('the paddle widens the packed footprint (feeds packParts, not just the drawing)', () => {
+    const bolt = buildParts({ ...base, strutEnd: 'bolt', struts: 1 });
+    const strap = buildParts({ ...base, strutEnd: 'strap', struts: 1 });
+    const boltPart = bolt.pages[0]!.parts.find((p) => p.label.text.includes('STRUT'))!;
+    const strapPart = strap.pages[0]!.parts.find((p) => p.label.text.includes('STRUT'))!;
+    expect(boltPart.h).toBeLessThan(strapPart.h);
+    expect(strapPart.h).toBeGreaterThanOrEqual(STRUT_STRAP_PADDLE_W);
+  });
+
+  it('two strap-ended struts do not overlap in the continuous layout (label-row spacing scales with the paddle)', () => {
+    const parts = buildParts({ ...base, strutEnd: 'strap', struts: 2 });
+    // The skirt-end hole (cx = 12) is the one hole every strut always has, strap or
+    // bolt, so it uniquely picks out one row per strut.
+    const skirtHoles = parts.holes.filter((h) => Number(h.cx) === 12);
+    const cys = skirtHoles.map((h) => Number(h.cy)).sort((a, b) => a - b);
+    expect(cys.length).toBe(2);
+    expect(cys[1]! - cys[0]!).toBeGreaterThanOrEqual(STRUT_STRAP_PADDLE_W);
+  });
+
+  it("a strap end's slots stay within the paddle, clear of both the tip and the transition", () => {
+    const parts = buildParts({ ...base, strutEnd: 'strap', struts: 1 });
+    for (const s of parts.slots) {
+      const x0 = Number(s.x);
+      const x1 = x0 + Number(s.w);
+      expect(x0).toBeGreaterThan(base.strutLen - 24);
+      expect(x1).toBeLessThan(base.strutLen);
+    }
+  });
+
+  it('oversizedParts still reads the real (taller) strap footprint', () => {
+    const strap = buildParts({ ...base, strutEnd: 'strap', struts: 1 });
+    const bolt = buildParts({ ...base, strutEnd: 'bolt', struts: 1 });
+    expect(strap.oversizedParts).toEqual(bolt.oversizedParts); // both well within PARTS_PH
+    // A strutLen long enough that neither STRUT_W nor STRUT_STRAP_PADDLE_W tips it over
+    // PARTS_PH would need >150 mm of headroom either way — confirm the height read is
+    // the paddle's, not a stale STRUT_W constant, by checking the local part directly.
+    expect(strap.pages[0]!.parts[0]!.h).toBeGreaterThan(STRUT_W + 8);
   });
 });

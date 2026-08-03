@@ -94,6 +94,26 @@ export const STRUT_W = 14;
 export const STRUT_FOLD_INSET = 26;
 
 /**
+ * Strap-mounted strut end (PLAN FEEDBACK WP21 §21.1) — the frame end flares from the
+ * plain `STRUT_W` strip to a paddle wide enough to carry two transverse slots for a
+ * 25 mm hook-and-loop strap, which cannot thread through the strip itself.
+ *
+ * `STRUT_STRAP_TRANS_L` is the flare's own length; `STRUT_STRAP_PADDLE_L` is the flat
+ * paddle length beyond it that actually holds the slots. Both eat into the strut's own
+ * `strutLen`, rather than extending it — the paddle is a reshaping of the existing
+ * frame end, not an added tab.
+ */
+export const STRUT_STRAP_W = 25;
+export const STRUT_STRAP_TRANS_L = 20;
+export const STRUT_STRAP_PADDLE_L = 24;
+export const STRUT_STRAP_PADDLE_W = 32;
+export const STRUT_STRAP_SLOT_L = 27;
+export const STRUT_STRAP_SLOT_W = 3.5;
+/** Centre-to-centre spacing between the two slots — the reason there are two: a strap
+ * anchored through only one slot can still slide along the stay under braking. */
+export const STRUT_STRAP_SLOT_GAP = 10;
+
+/**
  * "Rear commuter 700c".
  *
  * Deliberately NOT the design file's original default, which tripped five warnings on
@@ -142,7 +162,8 @@ export const DEFAULTS: FenderConfig = {
   fuse: false,
   nest: false,
   hem: false,
-  bevel: BEVEL_L
+  bevel: BEVEL_L,
+  strutEnd: 'bolt'
 };
 
 /**
@@ -173,7 +194,8 @@ export const PARAM_SPECS: Record<ConfigKey, ParamSpec> = {
   fuse: { kind: 'boolean' },
   nest: { kind: 'boolean' },
   hem: { kind: 'boolean' },
-  bevel: { kind: 'number', min: 0, max: 40, step: 1, unit: 'mm' }
+  bevel: { kind: 'number', min: 0, max: 40, step: 1, unit: 'mm' },
+  strutEnd: { kind: 'enum', options: ['bolt', 'strap'] }
 };
 
 /** Field order for URL serialisation. Append-only — changing it breaks shared links. */
@@ -201,7 +223,8 @@ export const CONFIG_ORDER: readonly ConfigKey[] = [
   'fuse',
   'nest',
   'hem',
-  'bevel'
+  'bevel',
+  'strutEnd'
 ];
 
 /** One decimal place, always. Matches the design source's f1(). */

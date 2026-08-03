@@ -88,6 +88,19 @@ export function buildDxf(model: DrawingModel): string {
   blank.seams.forEach((f) => pathPolys(f.d).forEach((pts) => poly(pts, 'FOLD', false, 0)));
   blank.holes.forEach((c) => circle(c, 'HOLES', 0));
   parts.outlines.forEach((o) => pathPolys(o.d).forEach((pts) => poly(pts, 'CUT', closed(o.d), dy)));
+  parts.slots.forEach((sl) =>
+    poly(
+      [
+        [+sl.x, +sl.y],
+        [+sl.x + +sl.w, +sl.y],
+        [+sl.x + +sl.w, +sl.y + +sl.h],
+        [+sl.x, +sl.y + +sl.h]
+      ],
+      'CUT',
+      true,
+      dy
+    )
+  );
   parts.folds.forEach((f) => pathPolys(f.d).forEach((pts) => poly(pts, 'FOLD', false, dy)));
   parts.holes.forEach((c) => circle(c, 'HOLES', dy));
 

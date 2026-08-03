@@ -113,7 +113,11 @@ export function buildSteps(
   steps.push({
     n: panelled ? '08' : '07',
     title: 'Bend the struts',
-    body: `Fold each strut 26 mm from both ends. One end takes the pair of holes at the skirt edge; the other zip-ties, velcros, or bolts to the stay or eyelet.${s.fuse ? ' The single oversize hole is deliberate: it is the end you want to fail first.' : ''}`
+    body: `Fold each strut 26 mm from both ends. One end takes the pair of holes at the skirt edge; the other ${
+      s.strutEnd === 'strap'
+        ? 'threads a 25 mm hook-and-loop strap through the pair of slots at the flared tip, round the stay, and back through the second slot'
+        : 'bolts or zip-ties to the stay or eyelet'
+    }.`
   });
 
   if (s.mudflap > 0) {
@@ -134,7 +138,9 @@ export function buildSteps(
 }
 
 /**
- * The 16 engineering notes. Transcribed verbatim from source lines ~1139–1156, with
+ * The 15 engineering notes (16 in the design source — WP21 §21.2/§21.3 drops
+ * "Sacrificial strut end" with the feature it described). Transcribed verbatim from
+ * source lines ~1139–1156, with
  * three corrections:
  *
  * - "Bend allowance, properly" — PLAN §9.9. The source's final sentence claims every
@@ -209,11 +215,6 @@ export function buildNotes(
       title: 'Every hole is a crack initiator',
       body: 'In thin plastic, fatigue cracks start at holes, and the crown is the worst place to put one because that is where water sits. Hence the hole-free option: a scored channel and one zip tie round the girth, nothing pierced. Struts fasten at the skirt edge for the same reason.',
       formula: `strut pairs at ${f0(inset)} mm inset, 10 mm apart, crown unpierced`
-    },
-    {
-      title: 'Sacrificial strut end',
-      body: 'A fender that jams should let go before it stops the wheel. The optional single oversize hole at the frame end is the intended failure point: one fastener in tension, nothing redundant. This is a safety feature, not a tolerance.',
-      formula: s.fuse ? 'single 6.4 mm hole, one fastener' : 'off, both ends fully fastened'
     },
     {
       title: 'Nesting',

@@ -6,6 +6,7 @@ import { OptionToggles } from './OptionToggles';
 import { SideSelector } from './SideSelector';
 import { SliderGroups } from './SliderGroups';
 import { StockSelector } from './StockSelector';
+import { StrutEndSelector } from './StrutEndSelector';
 import { WheelSelector } from './WheelSelector';
 import { buildEssentialSliders, buildFineTuningClusters } from '../../lib/controlText';
 import type { ConfigKey, DrawingModel, FenderConfig } from '../../fender/types';
@@ -77,6 +78,7 @@ export function ControlRail({ model, setField, applyPreset, reset, showHeader = 
         <div className="rail-group">
           <div className="rail-group-label">Struts &amp; mudflap</div>
           <SliderGroups items={clusterItems('Struts & mudflap')} config={config} setField={setField} />
+          <StrutEndSelector config={config} setField={setField} />
         </div>
 
         <OptionToggles config={config} setField={setField} />

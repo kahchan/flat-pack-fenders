@@ -8,21 +8,19 @@ interface OptionTogglesProps {
   setField: <K extends ConfigKey>(key: K, value: FenderConfig[K]) => void;
 }
 
-type ToggleKey = 'tongue' | 'fuse' | 'hem';
+type ToggleKey = 'tongue' | 'hem';
 
 /** Design source lines 330-343. WP20 §20.1 (decision B2): the "Nest a second fender"
  * toggle is gone with the feature — it was a ghost outline for planning stock layout,
  * but the printed tile grid doubled with it on, silently costing six extra sheets at
- * the default. */
+ * the default. WP21 §21.2 (decision B3): the "Sacrificial strut end" toggle is gone the
+ * same way, replaced by `StrutEndSelector`'s bolt/strap choice in the Struts & mudflap
+ * cluster — a two-way selector, not a toggle, since strap isn't an on/off variant of the
+ * bolt end, it's a different part shape. */
 export function OptionToggles({ config, setField }: OptionTogglesProps) {
   const toggles: { k: ToggleKey; label: string; note: string }[] = useMemo(
     () => [
       { k: 'tongue', label: 'Frame-mount tongue', note: 'Slotted tab at the nose: slides to take up tolerance' },
-      {
-        k: 'fuse',
-        label: 'Sacrificial strut end',
-        note: 'Single oversize hole that shears before the wheel locks'
-      },
       { k: 'hem', label: 'Hemmed skirt edge', note: hemHint(config) }
     ],
     [config]

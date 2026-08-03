@@ -328,6 +328,7 @@ function sheetBPageContent(page: PartsPage, pageIndex: number, pageCount: number
     s += ocg('OC1', pathOps(part.outline.d));
     part.folds.forEach((f) => (s += ocg('OC2', pathOps(f.d))));
     part.holes.forEach((h) => (s += ocg('OC3', circleOps(h))));
+    part.slots.forEach((sl) => (s += ocg('OC1', slotOps(sl))));
     s += textOps(part.label, part.rotated ? 'rotated' : 'normal');
     s += 'Q\n';
   }

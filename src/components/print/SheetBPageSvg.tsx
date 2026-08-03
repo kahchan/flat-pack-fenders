@@ -49,6 +49,9 @@ export function SheetBPageSvg({ page, height }: SheetBPageSvgProps) {
           {part.holes.map((h, j) => (
             <circle key={j} cx={h.cx} cy={h.cy} r={h.r} fill="none" stroke="var(--draw-cut)" strokeWidth={PRINT_STROKE.hole} />
           ))}
+          {part.slots.map((sl, j) => (
+            <rect key={j} x={sl.x} y={sl.y} width={sl.w} height={sl.h} rx={1.5} fill="none" stroke="var(--draw-cut)" strokeWidth={PRINT_STROKE.hole} />
+          ))}
           <DrawingLabels labels={[part.label]} fill="var(--draw-label)" />
         </g>
       ))}

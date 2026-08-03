@@ -22,7 +22,7 @@ type Case = { config: FenderConfig; baseName: string; dxfBlankOnly: string };
 const CASES = Object.entries(golden as unknown as Record<string, Case>);
 
 function blankOnly(model: DrawingModel): DrawingModel {
-  return { ...model, parts: { ...model.parts, outlines: [], folds: [], holes: [] } };
+  return { ...model, parts: { ...model.parts, outlines: [], folds: [], holes: [], slots: [] } };
 }
 
 describe.each(CASES)('buildDxf(%s) — blank only', (_name, c) => {

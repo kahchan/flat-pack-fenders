@@ -45,49 +45,57 @@ describe.each(CASES)('buildSteps(%s)', (_name, c) => {
   });
 });
 
-// Index 9 = "Nesting" (PLAN §9.4), index 11 = "Bend allowance, properly" (PLAN §9.9).
-// Both indices are 0-based positions in the 16-note engNotes array.
+// Index 8 = "Nesting" (PLAN §9.4), index 10 = "Bend allowance, properly" (PLAN §9.9).
+// Both indices are 0-based positions in the 15-note engNotes array — one shorter than
+// the design source's 16 since WP21 §21.2/§21.3 deletes "Sacrificial strut end"
+// (formerly index 8) outright with the feature, rather than reworking it in place the
+// way "Nesting" was for WP20. Every index at or after the old index 8 in the sets below
+// is one lower than it would read in golden.json's (unmodified, 16-note) fixture.
 //
 // PLAN FEEDBACK WP17 extends this set with every other note whose body lost an
 // em-dash: 1 "Radius chain", 2 "Taper is local, not global", 4 "Rear mounting", 6 "What
-// a butt strap is", 12 "Darts get wider with thickness", 14 "Export", 15 "Still open".
-// Only 0, 3, 5, 7, 8, 10 and 13 keep their design-source body verbatim.
+// a butt strap is", 11 "Darts get wider with thickness", 13 "Export", 14 "Still open".
+// Only 0, 3, 5, 7, 9 and 12 keep their design-source body verbatim.
 // WP19 §19.1/§19.5 adds 5 ("How the panel seam works" — OV/OVERLAP collapse to LAP,
-// reworded in built terms) and 10 ("Print geometry" — tile overlap is now stock-
+// reworded in built terms) and 9 ("Print geometry" — tile overlap is now stock-
 // dependent) on top of the WP17 set above.
-const CORRECTED_INDICES = new Set([1, 2, 4, 5, 6, 9, 10, 11, 12, 14, 15]);
+const CORRECTED_INDICES = new Set([1, 2, 4, 5, 6, 8, 9, 10, 11, 13, 14]);
 
-// Index 14 = "Export" (PLAN §9.3) — its `formula` line changes ("R12 ASCII" →
+// Index 13 = "Export" (PLAN §9.3) — its `formula` line changes ("R12 ASCII" →
 // "AC1015 (R2000)"); its body is ALSO reworded by WP17 (see CORRECTED_INDICES), unlike
 // when this set was first written.
 //
 // PLAN FEEDBACK WP17 extends this set with every other note whose `formula` lost a `·`
 // separator or used it for multiplication (now `,`/`;`/`×`): 4 "Rear mounting", 5 "How
 // the panel seam works", 6 "What a butt strap is", 7 "Every hole is a crack initiator",
-// 8 "Sacrificial strut end", 11 "Bend allowance, properly", 12 "Darts get wider with
-// thickness", 13 "Hemmed edge".
-// WP20 §20.1 adds 9 ("Nesting" — formula is now always "removed", not conditional on
+// 10 "Bend allowance, properly", 11 "Darts get wider with thickness", 12 "Hemmed edge".
+// WP20 §20.1 adds 8 ("Nesting" — formula is now always "removed", not conditional on
 // `s.nest`, since the feature no longer exists to condition on).
-const CORRECTED_FORMULA_INDICES = new Set([4, 5, 6, 7, 8, 9, 11, 12, 13, 14]);
+const CORRECTED_FORMULA_INDICES = new Set([4, 5, 6, 7, 8, 10, 11, 12, 13]);
 
 describe.each(CASES)('buildNotes(%s)', (_name, c) => {
   const notes = buildNotes(c.config);
+  // WP21 §21.2/§21.3 — golden.json is the unmodified 16-note design-source transcription
+  // (see the module doc comment); "Sacrificial strut end" is filtered out here so the
+  // remaining 15 stay index-aligned with `notes`, the same way the note itself was
+  // deleted from `buildNotes()` rather than reworked in place.
+  const goldenNotes = c.engNotes.filter((n) => n.title !== 'Sacrificial strut end');
 
-  it('same titles, same order, same count as the design source', () => {
-    expect(notes.map((n) => n.title)).toEqual(c.engNotes.map((n) => n.title));
+  it('same titles, same order, one fewer than the design source (Sacrificial strut end retired)', () => {
+    expect(notes.map((n) => n.title)).toEqual(goldenNotes.map((n) => n.title));
   });
 
   it('formula strings match the design source exactly, except the DXF header wording (PLAN §9.3) and the WP17 copy pass', () => {
     notes.forEach((n, i) => {
       if (CORRECTED_FORMULA_INDICES.has(i)) return;
-      expect(n.formula, `note ${i} (${n.title})`).toBe(c.engNotes[i]!.formula);
+      expect(n.formula, `note ${i} (${n.title})`).toBe(goldenNotes[i]!.formula);
     });
   });
 
   it('every body EXCEPT the corrected/reworded notes matches the design source verbatim', () => {
     notes.forEach((n, i) => {
       if (CORRECTED_INDICES.has(i)) return;
-      expect(n.body, `note ${i} (${n.title})`).toBe(c.engNotes[i]!.body);
+      expect(n.body, `note ${i} (${n.title})`).toBe(goldenNotes[i]!.body);
     });
   });
 });
@@ -97,7 +105,7 @@ describe('corrected prose', () => {
   const baseFixture = CASES[0]![1];
 
   it('"Nesting" states the feature is removed — WP20 §20.1', () => {
-    const nesting = buildNotes(base)[9]!;
+    const nesting = buildNotes(base)[8]!;
     expect(nesting.title).toBe('Nesting');
     expect(nesting.body).not.toBe(baseFixture.engNotes[9]!.body);
     expect(nesting.body).toMatch(/^Removed\./);
@@ -105,7 +113,7 @@ describe('corrected prose', () => {
   });
 
   it('"Bend allowance, properly" drops the false zero-thickness claim — PLAN §9.9', () => {
-    const bend = buildNotes(base)[11]!;
+    const bend = buildNotes(base)[10]!;
     expect(bend.title).toBe('Bend allowance, properly');
     expect(bend.body).not.toBe(baseFixture.engNotes[11]!.body);
     expect(bend.body).not.toMatch(/every term collapses to zero/);
@@ -115,7 +123,7 @@ describe('corrected prose', () => {
   });
 
   it('"Export" formula drops the false "R12 ASCII" claim — PLAN §9.3', () => {
-    const exportNote = buildNotes(base)[14]!;
+    const exportNote = buildNotes(base)[13]!;
     expect(exportNote.title).toBe('Export');
     // Body also lost an em-dash in the WP17 copy pass (colon now introduces the
     // "a laser wants..." reason), on top of the §9.3 formula fix below.
@@ -124,6 +132,25 @@ describe('corrected prose', () => {
     expect(exportNote.formula).not.toBe(baseFixture.engNotes[14]!.formula);
     expect(exportNote.formula).not.toMatch(/R12 ASCII/);
     expect(exportNote.formula).toMatch(/AC1015 \(R2000\)/);
+  });
+
+  // WP21 §21.2/§21.3 — "Sacrificial strut end" (golden.json index 8) is deleted with
+  // the fuse feature it described, not reworked in place, so `buildNotes()` output has
+  // one fewer note than the fixture and no note at that title exists any more.
+  it('"Sacrificial strut end" is gone — WP21 §21.2/§21.3', () => {
+    const notes = buildNotes(base);
+    expect(notes.some((n) => n.title === 'Sacrificial strut end')).toBe(false);
+    expect(notes.length).toBe(baseFixture.engNotes.length - 1);
+  });
+
+  it('"Bend the struts" names the actual strutEnd choice, not all three fastenings — WP21 §21.3', () => {
+    const bolt = buildSteps({ ...base, strutEnd: 'bolt' }).find((s) => s.title === 'Bend the struts')!;
+    const strap = buildSteps({ ...base, strutEnd: 'strap' }).find((s) => s.title === 'Bend the struts')!;
+    expect(bolt.body).not.toBe(strap.body);
+    expect(bolt.body).not.toMatch(/velcro/i);
+    expect(strap.body).toMatch(/25 mm/);
+    expect(strap.body).toMatch(/hook-and-loop/);
+    expect(strap.body).not.toMatch(/velcro/i);
   });
 });
 

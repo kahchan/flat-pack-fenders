@@ -31,6 +31,11 @@ export function buildSvg(model: DrawingModel): string {
   blank.slots.forEach((sl) =>
     lines.push(`<rect x="${sl.x}" y="${sl.y}" width="${sl.w}" height="${sl.h}" rx="1.5" fill="none" stroke="#000" stroke-width="0.2"/>`)
   );
+  parts.slots.forEach((sl) =>
+    lines.push(
+      `<g transform="translate(0,${dy})"><rect x="${sl.x}" y="${sl.y}" width="${sl.w}" height="${sl.h}" rx="1.5" fill="none" stroke="#000" stroke-width="0.2"/></g>`
+    )
+  );
   lines.push('</g>');
 
   lines.push('<g id="FOLD" inkscape:label="FOLD" inkscape:groupmode="layer" stroke="#0000ff">');

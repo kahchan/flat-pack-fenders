@@ -259,18 +259,39 @@ function blank(s) {
 function parts(s, g) {
   const partsOutlines = [], partsFolds = [], partsHoles = [], partsSlots = [], partsLabels = [];
   const SWD = 14;
+  const r = SWD / 2;
+  // PLAN FEEDBACK WP21 §21.1 — strap end: the frame end flares from the plain SWD
+  // strip to a paddle wide enough for two transverse slots, over a short transition.
+  // Both eat into the strut's own length rather than extending it.
+  const strap = s.strutEnd === 'strap';
+  const halfPaddle = STRUT_STRAP_PADDLE_W / 2;
+  const offset = strap ? halfPaddle - r : 0;
+  const cy = r + offset;
+  const strutH = strap ? STRUT_STRAP_PADDLE_W : SWD;
+  const xTrans = s.strutLen - STRUT_STRAP_TRANS_L - STRUT_STRAP_PADDLE_L;
+  const xPaddle = s.strutLen - STRUT_STRAP_PADDLE_L;
+  const slotMargin = (STRUT_STRAP_PADDLE_L - STRUT_STRAP_SLOT_GAP) / 2;
   let py = 12;
   for (let i = 0; i < s.struts; i++) {
-    const y = py + i * (SWD + 9);
-    const r = SWD / 2;
-    partsOutlines.push({ d: `M ${r},${f1(y)} h ${f1(s.strutLen - SWD)} a ${r} ${r} 0 0 1 0 ${SWD} h ${f1(-(s.strutLen - SWD))} a ${r} ${r} 0 0 1 0 ${-SWD} Z` });
-    partsFolds.push({ d: `M 26,${f1(y)} v ${SWD} M ${f1(s.strutLen - 26)},${f1(y)} v ${SWD}` });
-    partsHoles.push({ cx: 12, cy: f1(y + r), r: 2.5 }, { cx: f1(s.strutLen / 2), cy: f1(y + r), r: 2 });
-    if (s.fuse) partsHoles.push({ cx: f1(s.strutLen - 12), cy: f1(y + r), r: 3.2 });
-    else partsHoles.push({ cx: f1(s.strutLen - 12), cy: f1(y + r), r: 2.5 }, { cx: f1(s.strutLen - 22), cy: f1(y + r), r: 2.5 });
-    partsLabels.push({ x: f1(s.strutLen + 8), y: f1(y + r + 2), size: 5, text: `STRUT ${i + 1}, ${f0(s.strutLen)} × ${SWD}${s.fuse ? ', FUSE END' : ''}` });
+    const y = py + i * (strutH + 9);
+    partsOutlines.push({
+      d: strap
+        ? `M ${f1(r)},${f1(y + offset)} h ${f1(xTrans - r)} L ${f1(xPaddle)},${f1(y)} L ${f1(s.strutLen)},${f1(y)} L ${f1(s.strutLen)},${f1(y + strutH)} L ${f1(xPaddle)},${f1(y + strutH)} L ${f1(xTrans)},${f1(y + offset + SWD)} h ${f1(-(xTrans - r))} a ${r} ${r} 0 0 1 0 ${f1(-SWD)} Z`
+        : `M ${r},${f1(y)} h ${f1(s.strutLen - SWD)} a ${r} ${r} 0 0 1 0 ${SWD} h ${f1(-(s.strutLen - SWD))} a ${r} ${r} 0 0 1 0 ${-SWD} Z`
+    });
+    partsFolds.push({
+      d: strap
+        ? `M 26,${f1(y + offset)} v ${SWD} M ${f1(s.strutLen - 26)},${f1(y)} v ${f1(strutH)}`
+        : `M 26,${f1(y)} v ${SWD} M ${f1(s.strutLen - 26)},${f1(y)} v ${SWD}`
+    });
+    partsHoles.push({ cx: 12, cy: f1(y + cy), r: 2.5 }, { cx: f1(s.strutLen / 2), cy: f1(y + cy), r: 2 });
+    if (!strap) partsHoles.push({ cx: f1(s.strutLen - 12), cy: f1(y + cy), r: 2.5 }, { cx: f1(s.strutLen - 22), cy: f1(y + cy), r: 2.5 });
+    else for (const scx of [xPaddle + slotMargin, xPaddle + slotMargin + STRUT_STRAP_SLOT_GAP]) {
+      partsSlots.push({ x: f1(scx - STRUT_STRAP_SLOT_W / 2), y: f1(y + cy - STRUT_STRAP_SLOT_L / 2), w: STRUT_STRAP_SLOT_W, h: STRUT_STRAP_SLOT_L });
+    }
+    partsLabels.push({ x: f1(s.strutLen + 8), y: f1(y + cy + 2), size: 5, text: `STRUT ${i + 1}, ${f0(s.strutLen)} × ${SWD}${strap ? ', STRAP END' : ''}` });
   }
-  py += s.struts * (SWD + 9) + 14;
+  py += s.struts * (strutH + 9) + 14;
   if (s.mudflap > 0) {
     const w = g.crownTail, h = s.mudflap, rr = Math.min(18, w / 3);
     partsOutlines.push({ d: `M 0,${f1(py)} h ${f1(w)} v ${f1(h - rr)} q 0,${f1(rr)} ${f1(-rr)},${f1(rr)} h ${f1(-(w - 2 * rr))} q ${f1(-rr)},0 ${f1(-rr)},${f1(-rr)} Z` });
@@ -519,13 +540,27 @@ const LABEL_ROW_H = 8;
 const STRUT_W = 14;
 const PRINT_CAPTION_H = 6;
 
+// PLAN FEEDBACK WP21 §21.1 — strap-mounted strut end is new, not in the design source
+// (which only ever had the plain hole/fuse frame end). Added here the same way BEVEL_L
+// was (see its own comment above), so the golden fixture pins the port's own geometry.
+const STRUT_STRAP_TRANS_L = 20;
+const STRUT_STRAP_PADDLE_L = 24;
+const STRUT_STRAP_PADDLE_W = 32;
+const STRUT_STRAP_SLOT_L = 27;
+const STRUT_STRAP_SLOT_W = 3.5;
+const STRUT_STRAP_SLOT_GAP = 10;
+
 // Mirrors src/fender/parts.ts's `packParts` rect list (struts, mudflap, hardware),
 // packed at PW × PARTS_PH, then src/fender/printLayout.ts's own combining of the last
 // Sheet-A tile row with these Sheet-B pages — enough to get a real `pageCount`, not the
 // rows×cols+2 estimate `TilingModel.sheetCount` used to report (§20.2).
 function pageCountRef(s, g, rows, cols, lastRowH) {
   const partRects = [];
-  for (let i = 0; i < s.struts; i++) partRects.push({ id: `strut-${i}`, w: s.strutLen, h: STRUT_W + LABEL_ROW_H });
+  // PLAN FEEDBACK WP21 §21.1 — a strap-ended strut's paddle is taller than the plain
+  // STRUT_W strip, so its packed footprint (and therefore the page count) must reflect
+  // that, the same way the port's `packParts` reads `local.h` rather than a constant.
+  const strutH = s.strutEnd === 'strap' ? STRUT_STRAP_PADDLE_W : STRUT_W;
+  for (let i = 0; i < s.struts; i++) partRects.push({ id: `strut-${i}`, w: s.strutLen, h: strutH + LABEL_ROW_H });
   if (s.mudflap > 0) partRects.push({ id: 'mudflap', w: g.crownTail, h: s.mudflap + LABEL_ROW_H });
   const extraN = s.join === 'rivet' || s.join === 'slot' ? g.n - 1 : 0;
   for (let i = 0; i < extraN; i++) partRects.push({ id: `extra-${i}`, w: 34, h: 14 + LABEL_ROW_H });
@@ -639,6 +674,7 @@ function buildSvgRef(v, g, s, name) {
   L.push(p(v.blankOutline, 0.2));
   v.partsOutlines.forEach((o) => L.push(`<g transform="translate(0,${(g.Wd + gap).toFixed(1)})">${p(o.d, 0.2)}</g>`));
   v.slots.forEach((sl) => L.push(`<rect x="${sl.x}" y="${sl.y}" width="${sl.w}" height="${sl.h}" rx="1.5" fill="none" stroke="#000" stroke-width="0.2"/>`));
+  (v.partsSlots || []).forEach((sl) => L.push(`<g transform="translate(0,${(g.Wd + gap).toFixed(1)})"><rect x="${sl.x}" y="${sl.y}" width="${sl.w}" height="${sl.h}" rx="1.5" fill="none" stroke="#000" stroke-width="0.2"/></g>`));
   L.push('</g>');
   L.push(`<g id="FOLD" inkscape:label="FOLD" inkscape:groupmode="layer" stroke="#0000ff">`);
   v.foldLines.concat(v.scoreLines).forEach((f) => L.push(`<path d="${f.d}" fill="none" stroke="#00f" stroke-width="0.2"/>`));
@@ -785,13 +821,13 @@ const DEFAULTS = {
   side: 'rear', wheel: '700c', tyre: 35, measuredR: 0, clear: 14, crown: 55, skirt: 26, angle: 55,
   thick: 0.8, lead: 120, trail: 100, taper: 15, taperAt: 70, flaps: 20, struts: 2, strutLen: 160,
   mudflap: 100, join: 'zip', stock: 'a4', tongue: true, fuse: false, nest: false, hem: false,
-  bevel: BEVEL_L
+  bevel: BEVEL_L, strutEnd: 'bolt'
 };
 const CARGO20 = {
   side: 'rear', wheel: '20in', tyre: 50, measuredR: 0, clear: 16, crown: 62, skirt: 30, angle: 55,
   thick: 0.8, lead: 60, trail: 200, taper: 25, taperAt: 70, flaps: 16, struts: 3, strutLen: 220,
   mudflap: 90, join: 'zip', stock: 'single', tongue: true, fuse: false, nest: false, hem: false,
-  bevel: BEVEL_L
+  bevel: BEVEL_L, strutEnd: 'bolt'
 };
 
 const CASES = {
@@ -803,7 +839,12 @@ const CASES = {
   'mtb-26in-slot-thick': { ...CARGO20, wheel: '26in', tyre: 55, crown: 78, thick: 2.0, join: 'slot', flaps: 12 },
   'nested-pair': { ...DEFAULTS, nest: true },
   'rivet-join': { ...DEFAULTS, join: 'rivet' },
-  'nested-cargo-20in': { ...CARGO20, nest: true }
+  'nested-cargo-20in': { ...CARGO20, nest: true },
+  // PLAN FEEDBACK WP21 §21.1/§21.2 — strap-mounted strut end, both alone and combined
+  // with multiple struts (CARGO20 has 3), so the fixture pins a case where the taller
+  // paddle footprint actually changes packing.
+  'strap-strut-end': { ...DEFAULTS, strutEnd: 'strap' },
+  'strap-strut-end-cargo': { ...CARGO20, strutEnd: 'strap' }
 };
 
 const GEO_KEYS = ['bsd','tyreRcalc','tyreR','R','cov','th','aNose','L','a','skirt','skirtTrue','t','rBend','setback','BA','bendComp','hem','proj','drop','crown0','crownTail','knee','Wd','yc','n','pitch','removal','notch'];
@@ -938,6 +979,7 @@ for (const [name, cfg] of Object.entries(CASES)) {
     partsOutlines: p.partsOutlines,
     partsFolds: p.partsFolds,
     partsHoles: p.partsHoles,
+    partsSlots: p.partsSlots,
     partsViewBox: p.partsViewBox
   };
   const vBlankOnly = { ...vFull, partsOutlines: [], partsFolds: [], partsHoles: [] };

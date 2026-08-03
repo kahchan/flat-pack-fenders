@@ -69,17 +69,18 @@ describe('encodeConfig / decodeConfig — round trip', () => {
   });
 
   it('a change to the LAST field cannot be trimmed and round-trips in full', () => {
-    // `bevel` (PLAN §13.3) is now the last CONFIG_ORDER field, appended after `hem`.
-    const config: FenderConfig = { ...DEFAULTS, bevel: 0 };
+    // `strutEnd` (PLAN FEEDBACK WP21 §21.2) is now the last CONFIG_ORDER field, appended
+    // after `bevel`.
+    const config: FenderConfig = { ...DEFAULTS, strutEnd: 'strap' };
     const encoded = encodeConfig(config);
     expect(encoded.split('.').length).toBe(CONFIG_ORDER.length + 1);
     expect(decodeConfig(encoded)).toEqual(config);
   });
 
-  it('a change to the second-to-last field alone still trims the new last field (bevel)', () => {
-    const config: FenderConfig = { ...DEFAULTS, hem: true };
+  it('a change to the second-to-last field alone still trims the new last field (strutEnd)', () => {
+    const config: FenderConfig = { ...DEFAULTS, bevel: 0 };
     const encoded = encodeConfig(config);
-    expect(encoded.split('.').length).toBe(CONFIG_ORDER.length); // trailing `bevel` dropped
+    expect(encoded.split('.').length).toBe(CONFIG_ORDER.length); // trailing `strutEnd` dropped
     expect(decodeConfig(encoded)).toEqual(config);
   });
 

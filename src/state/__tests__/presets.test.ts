@@ -81,7 +81,8 @@ describe('PRESETS', () => {
       fuse: false,
       nest: false,
       hem: false,
-      bevel: BEVEL_L
+      bevel: BEVEL_L,
+      strutEnd: 'bolt'
     });
   });
 });
