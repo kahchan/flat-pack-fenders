@@ -4,30 +4,34 @@ import { geo } from '../../fender/geometry';
 import { buildCrossSection } from '../../fender/crossSection';
 import { buildParts } from '../../fender/parts';
 import {
-  buildSliderGroups,
+  buildEssentialSliders,
+  buildFineTuningClusters,
   hemHint,
   partsFitNote,
   partsSizeLabel,
   stockNotes
 } from '../controlText';
 
-describe('buildSliderGroups', () => {
+describe('buildEssentialSliders / buildFineTuningClusters', () => {
   const g = geo(DEFAULTS);
   const xsec = buildCrossSection(DEFAULTS, g);
-  const groups = buildSliderGroups(DEFAULTS, g, xsec.finished);
+  const essentials = buildEssentialSliders(DEFAULTS, g);
+  const clusters = buildFineTuningClusters(DEFAULTS, g, xsec.finished);
 
-  it('has the five design groups in order', () => {
-    expect(groups.map((gr) => gr.title)).toEqual([
-      'Tyre & clearance',
-      'Fender',
+  it('has the four fine-tuning clusters in order (§22.2)', () => {
+    expect(clusters.map((c) => c.title)).toEqual([
+      'Shape',
       'Coverage',
-      'Flaps',
+      'Construction',
       'Struts & mudflap'
     ]);
   });
 
-  it('covers all 15 slider-bound config fields exactly once', () => {
-    const keys = groups.flatMap((gr) => gr.items.map((i) => i.key));
+  it('covers all 15 slider-bound config fields exactly once across essentials + clusters', () => {
+    const keys = [
+      ...essentials.map((i) => i.key),
+      ...clusters.flatMap((c) => c.items.map((i) => i.key))
+    ];
     expect(keys).toEqual([
       'tyre',
       'measuredR',
@@ -35,12 +39,12 @@ describe('buildSliderGroups', () => {
       'crown',
       'skirt',
       'angle',
-      'thick',
-      'lead',
-      'trail',
       'taper',
       'taperAt',
+      'lead',
+      'trail',
       'flaps',
+      'thick',
       'struts',
       'strutLen',
       'mudflap'
@@ -48,24 +52,26 @@ describe('buildSliderGroups', () => {
   });
 
   it('reads "estimate" for measuredR at zero, and mm once set', () => {
-    expect(groups[0]!.items[1]!.display).toBe('estimate');
+    expect(essentials[1]!.display).toBe('estimate');
     const g2 = geo({ ...DEFAULTS, measuredR: 300 });
-    const groups2 = buildSliderGroups({ ...DEFAULTS, measuredR: 300 }, g2, xsec.finished);
-    expect(groups2[0]!.items[1]!.display).toBe('300 mm');
+    const essentials2 = buildEssentialSliders({ ...DEFAULTS, measuredR: 300 }, g2);
+    expect(essentials2[1]!.display).toBe('300 mm');
   });
 
   it('reads "none" for mudflap at zero', () => {
     const g2 = geo({ ...DEFAULTS, mudflap: 0 });
-    const groups2 = buildSliderGroups({ ...DEFAULTS, mudflap: 0 }, g2, xsec.finished);
-    expect(groups2[4]!.items[2]!.display).toBe('none');
+    const clusters2 = buildFineTuningClusters({ ...DEFAULTS, mudflap: 0 }, g2, xsec.finished);
+    expect(clusters2[3]!.items[2]!.display).toBe('none');
   });
 
   it('bend allowance hint carries an explicit sign', () => {
-    expect(groups[1]!.items[3]!.hint).toContain(`${g.bendComp >= 0 ? '+' : ''}`);
+    const construction = clusters.find((c) => c.title === 'Construction')!;
+    const thickItem = construction.items.find((i) => i.key === 'thick')!;
+    expect(thickItem.hint).toContain(`${g.bendComp >= 0 ? '+' : ''}`);
   });
 
   it('pulls slider bounds from PARAM_SPECS', () => {
-    const tyreItem = groups[0]!.items[0]!;
+    const tyreItem = essentials[0]!;
     expect(tyreItem).toMatchObject({ min: 20, max: 90, step: 1 });
   });
 });

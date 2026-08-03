@@ -3,18 +3,13 @@ import type { BlankModel, PrintTile } from '../../fender/types';
 interface PrintTilesProps {
   tiles: PrintTile[];
   blank: BlankModel;
-  tileCountLabel: string;
 }
 
-/** Print tile previews for the Assembly tab. Design source lines 204-240. */
-export function PrintTiles({ tiles, blank, tileCountLabel }: PrintTilesProps) {
+/** Print tile previews, WP22 §22.3's "Print pages" section — the heading (with sheet
+ * count) now lives in the `DrawingSection` accordion header that wraps this. */
+export function PrintTiles({ tiles, blank }: PrintTilesProps) {
   return (
     <section>
-      <div className="section-heading">
-        <h2>Print sheets, A4 landscape, 1:1</h2>
-        <span className="meta">{tileCountLabel}</span>
-        <span className="meta meta--faint">15 mm safe margin</span>
-      </div>
       <div className="print-tiles-list">
         {tiles.map((t, i) => (
           <div key={i} className="print-tile-card">

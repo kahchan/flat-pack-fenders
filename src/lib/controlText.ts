@@ -1,4 +1,4 @@
-import { OVERLAP, PANEL_L, PARAM_SPECS, f0, f1 } from '../fender/defaults';
+import { LAP, PARAM_SPECS, PW, f0, f1 } from '../fender/defaults';
 import type { ConfigKey, FenderConfig, Geometry, NumericSpec, PartsModel } from '../fender/types';
 
 /**
@@ -39,28 +39,37 @@ const item = (
   return { key, label, display, hint, min, max, step };
 };
 
-/** The five slider groups, verbatim from fender.html:1046-1070. */
-export function buildSliderGroups(
+/**
+ * WP22 §22.2: essentials/fine-tuning split, replacing the five flat groups. Essentials
+ * are the four sliders that decide whether the fender fits the bike (side/wheel are
+ * selectors, not sliders, and stay in their own rail components) — always visible, no
+ * disclosure. Everything else lives behind one "Fine tuning" disclosure, grouped into
+ * labelled clusters that are headings, not a second layer of collapsibles.
+ */
+export function buildEssentialSliders(s: FenderConfig, g: Geometry): SliderItem[] {
+  return [
+    item('tyre', 'Tyre width', `${s.tyre} mm`, `Estimated tyre radius ${f0(g.tyreRcalc)} mm`),
+    item(
+      'measuredR',
+      'Measured tyre radius',
+      s.measuredR > 0 ? `${s.measuredR} mm` : 'estimate',
+      'Overrides the BSD estimate. 0 = use the estimate'
+    ),
+    item('clear', 'Clearance from tyre', `${s.clear} mm`, 'Gap between tyre and fender inner face')
+  ];
+}
+
+/** Fine-tuning slider clusters (§22.2's table, sliders only — Construction and Struts &
+ * mudflap also carry selector/toggle components that ControlRail composes alongside
+ * these, and Options has no sliders at all so it isn't represented here). */
+export function buildFineTuningClusters(
   s: FenderConfig,
   g: Geometry,
   finished: number
 ): SliderGroup[] {
   return [
     {
-      title: 'Tyre & clearance',
-      items: [
-        item('tyre', 'Tyre width', `${s.tyre} mm`, `Estimated tyre radius ${f0(g.tyreRcalc)} mm`),
-        item(
-          'measuredR',
-          'Measured tyre radius',
-          s.measuredR > 0 ? `${s.measuredR} mm` : 'estimate',
-          'Overrides the BSD estimate. 0 = use the estimate'
-        ),
-        item('clear', 'Clearance from tyre', `${s.clear} mm`, 'Gap between tyre and fender inner face')
-      ]
-    },
-    {
-      title: 'Fender',
+      title: 'Shape',
       items: [
         item(
           'crown',
@@ -76,24 +85,6 @@ export function buildSliderGroups(
         ),
         item('angle', 'Skirt angle', `${s.angle}°`, 'From the crown plane. Steeper = deeper, narrower'),
         item(
-          'thick',
-          'Material thickness',
-          `${f1(s.thick)} mm`,
-          `Bend allowance ${g.bendComp >= 0 ? '+' : ''}${f1(g.bendComp)} mm per fold, darts widened by ${f1(s.thick)} mm`
-        )
-      ]
-    },
-    {
-      title: 'Coverage',
-      items: [
-        item('lead', 'Lead (ahead of the axle)', `${s.lead}°`, 'Front fenders want more here'),
-        item(
-          'trail',
-          'Trail (behind the axle)',
-          `${s.trail}°`,
-          `Total ${f0(g.cov)}°, ${f0(g.L)} mm of arc`
-        ),
-        item(
           'taper',
           'Tail taper',
           `${s.taper}%`,
@@ -108,13 +99,31 @@ export function buildSliderGroups(
       ]
     },
     {
-      title: 'Flaps',
+      title: 'Coverage',
+      items: [
+        item('lead', 'Lead (ahead of the axle)', `${s.lead}°`, 'Front fenders want more here'),
+        item(
+          'trail',
+          'Trail (behind the axle)',
+          `${s.trail}°`,
+          `Total ${f0(g.cov)}°, ${f0(g.L)} mm of arc`
+        )
+      ]
+    },
+    {
+      title: 'Construction',
       items: [
         item(
           'flaps',
           'Flap count',
           `× ${s.flaps}`,
           `${f0(g.pitch)} mm pitch, ${f1(g.notch)} mm dart. More flaps = smoother curve, more fastening.`
+        ),
+        item(
+          'thick',
+          'Material thickness',
+          `${f1(s.thick)} mm`,
+          `Bend allowance ${g.bendComp >= 0 ? '+' : ''}${f1(g.bendComp)} mm per fold, darts widened by ${f1(s.thick)} mm`
         )
       ]
     },
@@ -146,11 +155,13 @@ export function hemHint(s: FenderConfig): string {
     : 'Set a material thickness first';
 }
 
-/** The two Stock option notes. Source lines 1027-1029. */
+/** The two Stock option notes. Source lines 1027-1029. WP19 §19.1: `PANEL_L`/`OVERLAP`
+ * collapse into `LAP` — one printed tile is one panel, so the panel count is the same
+ * `PW - LAP` tile-window arithmetic `tiling.ts` uses. */
 export function stockNotes(g: Geometry): { single: string; a4: string } {
   return {
     single: `${f0(g.L)} × ${f0(g.Wd)} mm in one piece`,
-    a4: `${Math.max(1, Math.ceil(g.L / PANEL_L))} panels, ${OVERLAP} mm laps`
+    a4: `${Math.max(1, Math.ceil(g.L / (PW - LAP)))} panels, ${LAP} mm laps`
   };
 }
 

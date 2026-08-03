@@ -55,7 +55,10 @@ export interface FenderConfig {
   tongue: boolean;
   /** Sacrificial (oversize) strut end hole. */
   fuse: boolean;
-  /** Nest a second fender tail-to-nose. */
+  /** WP20 §20.1 (decision B2): nesting is removed outright — this field is a reserved
+   * `CONFIG_ORDER` slot only, always `false` in practice, kept so an old shared link's
+   * field positions don't shift and get silently reinterpreted. Nothing reads it any
+   * more; the toggle, the drawn ghost, and the doubled tile grid are all gone. */
   nest: boolean;
   /** Fold the skirt edge back on itself. */
   hem: boolean;
@@ -233,7 +236,7 @@ export interface BlankModel {
   /** Arc positions of the struts, as fractions of L. Consumed by the isometric view. */
   strutFrac: number[];
   viewBox: string;
-  /** Bounding box of the drawn area including tongue and, when nesting, the pair. */
+  /** Bounding box of the drawn area, including the tongue. */
   bboxW: number;
   bboxH: number;
 }
@@ -320,19 +323,12 @@ export interface XsecModel {
 export interface TilingModel {
   cols: number;
   rows: number;
-  /** rows × cols + Sheet B + instructions — a nominal tile/piece count (how many
-   * distinct windows into the blank you'll trim and tape), not the number of physical
-   * sheets of paper a print job actually consumes; see `PrintLayout.pageCount` for
-   * that. */
-  sheetCount: number;
   /** Real content height of the LAST tile row, mm — at most `PH`, often much less
    * (every earlier row is necessarily full). Drives `buildPrintLayout`'s packing
    * (PLAN FEEDBACK WP15 §15.3). */
   lastRowH: number;
   rects: TileRect[];
   tiles: PrintTile[];
-  /** Transform placing the nested second blank, or null when nesting is off. */
-  nestTransform: string | null;
 }
 
 // ── Print pagination (PLAN FEEDBACK WP15 §15.3) ─────────────────────────────
@@ -362,8 +358,8 @@ export interface PrintLayout {
   /** Physical pages combining the last Sheet-A row with Sheet B's pages. */
   pages: PrintPage[];
   /** Real number of physical sheets the print job needs: full tiles + combined pages +
-   * the instructions page. This is the number that drops under WP15 §15.3, unlike
-   * `TilingModel.sheetCount`. */
+   * the instructions page. The single source of "how many sheets to print" (WP20 §20.2)
+   * — nothing else on `DrawingModel` reports a page count any more. */
   pageCount: number;
 }
 

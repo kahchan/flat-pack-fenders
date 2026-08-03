@@ -3,7 +3,6 @@ import { CanvasPane } from './components/canvas/CanvasPane';
 import { PrintOutput } from './components/print/PrintOutput';
 import { BottomSheet } from './components/rail/BottomSheet';
 import { ControlRail } from './components/rail/ControlRail';
-import { PresetChipStrip } from './components/rail/PresetChipStrip';
 import { RailDrawer } from './components/rail/RailDrawer';
 import { RailPill } from './components/rail/RailPill';
 import { useBreakpoint } from './components/responsive/useBreakpoint';
@@ -18,14 +17,11 @@ import { useFenderConfig } from './state/useFenderConfig';
  * - **Tablet (760-1099px):** canvas full width; `ControlRail` moves into `RailDrawer`, an
  *   overlay opened by the floating `RailPill`.
  * - **Phone (<760px):** canvas full width, single column; `ControlRail` moves into
- *   `BottomSheet`, with a compact `PresetChipStrip` in its peek header standing in for
- *   the full-size preset cards (suppressed via `showPresets={false}`).
- *
- * `useBreakpoint` mounts exactly one of the three, so there's never more than one copy
- * of the interactive controls in the DOM.
+ *   `BottomSheet`, whose peek is the shared `ControlHeader` (WP22 B4) standing in for the
+ *   rail's own header (suppressed via `showHeader={false}`).
  */
 export function App() {
-  const { config, setField, applyPreset, reset, spin, setSpin, tab, setTab } = useFenderConfig();
+  const { config, setField, applyPreset, reset, spin, setSpin } = useFenderConfig();
   const model = useMemo(() => buildModel(config, spin), [config, spin]);
   const breakpoint = useBreakpoint();
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -33,7 +29,7 @@ export function App() {
   return (
     <>
       <div className="app-shell screen-only" data-theme="light">
-        <CanvasPane model={model} spin={spin} onSpinChange={setSpin} tab={tab} onTabChange={setTab} />
+        <CanvasPane model={model} spin={spin} onSpinChange={setSpin} />
 
         {breakpoint === 'desk' && (
           <ControlRail model={model} setField={setField} applyPreset={applyPreset} reset={reset} />
@@ -49,16 +45,13 @@ export function App() {
         )}
 
         {breakpoint === 'phone' && (
-          <BottomSheet
-            specLine={model.assembledLabel}
-            presetSlot={<PresetChipStrip config={config} onApply={applyPreset} />}
-          >
+          <BottomSheet config={config} applyPreset={applyPreset}>
             <ControlRail
               model={model}
               setField={setField}
               applyPreset={applyPreset}
               reset={reset}
-              showPresets={false}
+              showHeader={false}
             />
           </BottomSheet>
         )}

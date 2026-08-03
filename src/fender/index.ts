@@ -32,7 +32,7 @@ export function buildModel(config: FenderConfig, spin: number = SPIN_DEFAULT): D
   const warnings = buildWarnings(config, g, parts, blank);
   const notes = buildNotes(config, g, blank);
   const steps = buildSteps(config, g, blank, tiling);
-  const specs = buildSpecs(config, g, blank, xsec, tiling);
+  const specs = buildSpecs(config, g, blank, xsec, tiling, printLayout);
 
   return {
     config,

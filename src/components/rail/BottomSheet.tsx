@@ -1,9 +1,11 @@
 import type { ReactNode } from 'react';
+import { ControlHeader } from './ControlHeader';
 import { useBottomSheet } from './useBottomSheet';
+import type { FenderConfig } from '../../fender/types';
 
 interface BottomSheetProps {
-  specLine: string;
-  presetSlot: ReactNode;
+  config: FenderConfig;
+  applyPreset: (id: string) => void;
   children: ReactNode;
 }
 
@@ -12,27 +14,25 @@ interface BottomSheetProps {
  * full 92vh), momentum-aware drag, interruptible mid-flight, `prefers-reduced-motion`
  * snaps instantly — all handled by `useBottomSheet`. Only the drag handle region moves
  * the sheet; the body scrolls its own content once past peek.
+ *
+ * WP22 B4: the peek is the shared `ControlHeader`, not a bespoke handle/specline/preset
+ * row — the preset choice sits in `ControlHeader` as the one dropdown (B5), and the peek
+ * line is the preset name, not the assembled spec (that already sits under the 3D view).
  */
-export function BottomSheet({ specLine, presetSlot, children }: BottomSheetProps) {
+export function BottomSheet({ config, applyPreset, children }: BottomSheetProps) {
   const { height, onPointerDown, onPointerMove, onPointerUp, onPointerCancel } = useBottomSheet();
 
   return (
     <div className="bottom-sheet screen-only" style={{ height }}>
-      {/* Only the handle + spec line are the drag surface — the preset chips below need
-          their own taps/scrolls, and a drag starting on a chip must not also fire its
-          click (apple-design's gesture-disambiguation point: recognize gestures from
-          dedicated surfaces rather than fighting over one). */}
-      <div
-        className="bottom-sheet__grab"
+      <ControlHeader
+        variant="peek"
+        config={config}
+        applyPreset={applyPreset}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerCancel}
-      >
-        <div className="bottom-sheet__handle" />
-        <div className="bottom-sheet__specline mono">{specLine}</div>
-      </div>
-      <div className="bottom-sheet__presets">{presetSlot}</div>
+      />
       <div className="bottom-sheet__body">{children}</div>
     </div>
   );

@@ -21,10 +21,8 @@ type Case = {
     rows: number;
     rowsSource: number;
     rowsFixed: number;
-    sheetCount: number;
     rects: RectFixture[];
     tiles: TileFixture[];
-    nestTransform: string | null;
   };
 };
 
@@ -34,27 +32,17 @@ describe.each(CASES)('buildTiling(%s)', (_name, c) => {
   const t = buildTiling(c.config);
   const g = c.tiling;
 
-  it('cols matches (unaffected by the §9.4 divergence)', () => {
+  it('cols matches', () => {
     expect(t.cols).toBe(g.cols);
   });
 
-  // PLAN §9.4: the design source computes `rows` from `g.Wd` alone (rowsSource) — with
-  // nesting on, the on-screen bbox is twice as tall, so the nested pair never reached the
-  // printed sheets. This port computes `rows` from `bboxH` instead (rowsFixed) so the
-  // printed tiles cover both nested fenders. Assert against rowsFixed, not rowsSource.
-  it('rows matches the FIXED behaviour (bboxH), not the source (g.Wd)', () => {
+  // WP20 §20.1 removed nesting, which is the only thing that used to make `rowsFixed`
+  // (from `bboxH`) diverge from `rowsSource` (from `g.Wd` alone) — `bboxH` is always
+  // `g.Wd` now, so the two are the same figure by construction; both are still emitted
+  // in the fixture as a record of that.
+  it('rows matches', () => {
     expect(t.rows).toBe(g.rowsFixed);
-    if (c.config.nest) {
-      // The divergence only bites when nesting is on — that's the whole bug.
-      expect(g.rowsFixed).toBeGreaterThan(g.rowsSource);
-    } else {
-      expect(g.rowsFixed).toBe(g.rowsSource);
-    }
-  });
-
-  it('sheetCount matches rows × cols + Sheet B + instructions', () => {
-    expect(t.sheetCount).toBe(g.sheetCount);
-    expect(t.sheetCount).toBe(t.rows * t.cols + 2);
+    expect(g.rowsFixed).toBe(g.rowsSource);
   });
 
   it('tile rects match exactly, in order', () => {
@@ -72,27 +60,10 @@ describe.each(CASES)('buildTiling(%s)', (_name, c) => {
     expect(t.lastRowH).toBeGreaterThan(0);
     expect(t.lastRowH).toBeLessThanOrEqual(PH);
   });
-
-  it('nestTransform matches (null when nest is off, transform string when on)', () => {
-    expect(t.nestTransform).toBe(g.nestTransform);
-    if (c.config.nest) {
-      expect(t.nestTransform).toMatch(/^translate\(-?[\d.]+, -?[\d.]+\) rotate\(180\)$/);
-    } else {
-      expect(t.nestTransform).toBeNull();
-    }
-  });
 });
 
 describe('tiling invariants', () => {
   const base = CASES[0]![1].config;
-
-  it('nesting doubles the printed rows for the default config', () => {
-    const flat = buildTiling({ ...base, nest: false });
-    const nested = buildTiling({ ...base, nest: true });
-    expect(nested.rows).toBe(flat.rows * 2);
-    expect(nested.cols).toBe(flat.cols);
-    expect(nested.sheetCount).toBe(flat.cols * nested.rows + 2);
-  });
 
   it('every tile is a real A4 (267 × 180 mm) rect', () => {
     const t = buildTiling(base);
@@ -103,20 +74,12 @@ describe('tiling invariants', () => {
   });
 
   it('lastRowH tracks real content height, well under PH for a config with room to spare', () => {
-    const flat = buildTiling({ ...base, nest: false });
-    expect(flat.rows).toBe(1);
+    const t = buildTiling(base);
+    expect(t.rows).toBe(1);
     // Even a single-row Sheet A can be much shorter than a full page — this is exactly
-    // the "one tile row gets its own page no matter how little of it is used" case, not
-    // only a multi-row one.
-    expect(flat.lastRowH).toBeLessThan(PH);
-    expect(flat.lastRowH).toBeGreaterThan(0);
-  });
-
-  it('nesting shrinks the SECOND row further once it forces rows from 1 to 2', () => {
-    const flat = buildTiling({ ...base, nest: false });
-    const nested = buildTiling({ ...base, nest: true });
-    expect(nested.rows).toBe(flat.rows + 1);
-    expect(nested.lastRowH).toBeLessThan(PH);
+    // the "one tile row gets its own page no matter how little of it is used" case.
+    expect(t.lastRowH).toBeLessThan(PH);
+    expect(t.lastRowH).toBeGreaterThan(0);
   });
 
   it('croppedTile shortens the viewBox/frame/ruler to the given height without moving x or the top edge', () => {
@@ -132,11 +95,11 @@ describe('tiling invariants', () => {
     expect(shrunk.label).toBe(tile.label); // same tile, just a shorter window
   });
 
-  it('a config that benefits from §15.3 packing has real content well under PH on its last row', () => {
-    // The motivating case: nesting pushes rows from 1 to 2, but the second row is only
-    // the tail end of the nested pair — a sliver of content, not another full page.
-    const t = buildTiling({ ...base, nest: true });
-    expect(t.rows).toBeGreaterThan(1);
-    expect(t.lastRowH).toBeLessThan(PH * 0.5);
+  // WP19 §19.1: `a4` stock's tile step is `LAP` (247 mm), `single`'s is the plain
+  // registration `OV` (255 mm) — the two stock choices tile at different steps now.
+  it('a4 stock tiles at a shorter step than single stock, for the same blank width', () => {
+    const single = buildTiling({ ...base, stock: 'single' });
+    const a4 = buildTiling({ ...base, stock: 'a4' });
+    expect(a4.cols).toBeGreaterThanOrEqual(single.cols);
   });
 });

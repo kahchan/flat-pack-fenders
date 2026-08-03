@@ -1,6 +1,6 @@
 import { PRINT_STROKE, RULER_CAPTION } from '../../lib/printStrokes';
 import { DrawingLabels } from '../canvas/DrawingLabels';
-import type { BlankModel, FenderConfig, PrintTile } from '../../fender/types';
+import type { BlankModel, PrintTile } from '../../fender/types';
 
 interface SheetATileSvgProps {
   tile: PrintTile;
@@ -9,9 +9,7 @@ interface SheetATileSvgProps {
    * the last tile row draws a SHORTER window, never a shrunk one). */
   width: string;
   height: string;
-  config: FenderConfig;
   blank: BlankModel;
-  nestTransform: string | null;
 }
 
 /**
@@ -19,12 +17,8 @@ interface SheetATileSvgProps {
  * the full-height tiles (`PrintTilePage`) and the shrunk last-row tiles packed onto a
  * combined page (`PrintCombinedPage`), which differ only in how much of the tile's
  * nominal PH height is actually visible. Design source lines 377-405.
- *
- * PLAN §9.4: when nesting is on, the second blank is drawn as real cut geometry
- * (outline, folds, scores, holes, slots under `nestTransform`), appended after the
- * primary drawing — not the dashed screen-only ghost from `SheetA.tsx`.
  */
-export function SheetATileSvg({ tile, width, height, config, blank, nestTransform }: SheetATileSvgProps) {
+export function SheetATileSvg({ tile, width, height, blank }: SheetATileSvgProps) {
   return (
     <svg width={width} height={height} viewBox={tile.viewBox} style={{ display: 'block' }}>
       <path d={tile.frame} fill="none" stroke="var(--draw-frame)" strokeWidth={PRINT_STROKE.frame} strokeDasharray="4 3" />
@@ -55,23 +49,6 @@ export function SheetATileSvg({ tile, width, height, config, blank, nestTransfor
         <rect key={i} x={s.x} y={s.y} width={s.w} height={s.h} rx={1.5} fill="none" stroke="var(--draw-cut)" strokeWidth={PRINT_STROKE.slot} />
       ))}
       <DrawingLabels labels={blank.labels} />
-      {config.nest && nestTransform && (
-        <g transform={nestTransform}>
-          <path d={blank.outline} fill="none" stroke="var(--draw-cut)" strokeWidth={PRINT_STROKE.outline} strokeLinejoin="round" />
-          {blank.foldLines.map((f, i) => (
-            <path key={i} d={f.d} fill="none" stroke="var(--draw-fold-print)" strokeWidth={PRINT_STROKE.fold} strokeDasharray="8 4" />
-          ))}
-          {blank.scoreLines.map((c, i) => (
-            <path key={i} d={c.d} fill="none" stroke="var(--draw-fold-print)" strokeWidth={PRINT_STROKE.score} strokeDasharray="3 2" />
-          ))}
-          {blank.holes.map((h, i) => (
-            <circle key={i} cx={h.cx} cy={h.cy} r={h.r} fill="none" stroke="var(--draw-cut)" strokeWidth={PRINT_STROKE.hole} />
-          ))}
-          {blank.slots.map((s, i) => (
-            <rect key={i} x={s.x} y={s.y} width={s.w} height={s.h} rx={1.5} fill="none" stroke="var(--draw-cut)" strokeWidth={PRINT_STROKE.slot} />
-          ))}
-        </g>
-      )}
     </svg>
   );
 }

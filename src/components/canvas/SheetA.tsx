@@ -1,18 +1,20 @@
 import { f0 } from '../../fender/defaults';
 import { DrawingLabels } from './DrawingLabels';
-import type { BlankModel, FenderConfig, Geometry, TilingModel } from '../../fender/types';
+import type { BlankModel, Geometry, PrintLayout, TilingModel } from '../../fender/types';
 
 interface SheetAProps {
-  config: FenderConfig;
   g: Geometry;
   blank: BlankModel;
   tiling: TilingModel;
+  printLayout: PrintLayout;
 }
 
 /** Sheet A — the fender blank. Design source lines 103-146. */
-export function SheetA({ config, g, blank, tiling }: SheetAProps) {
+export function SheetA({ g, blank, tiling, printLayout }: SheetAProps) {
   const blankSizeLabel = `${f0(g.L)} × ${f0(g.Wd)} mm developed`;
-  const tileCountLabel = `${tiling.sheetCount} sheets A4 landscape`;
+  // WP20 §20.2 — `printLayout.pageCount` is the single source for "how many sheets to
+  // print" everywhere; `TilingModel` no longer carries its own (wrong) count.
+  const tileCountLabel = `${printLayout.pageCount} sheets A4 landscape`;
 
   return (
     <section>
@@ -41,18 +43,6 @@ export function SheetA({ config, g, blank, tiling }: SheetAProps) {
               opacity={0.45}
             />
           ))}
-          {config.nest && (
-            <g transform={tiling.nestTransform ?? undefined}>
-              <path
-                d={blank.outline}
-                fill="none"
-                stroke="var(--draw-ghost)"
-                strokeWidth={1}
-                strokeDasharray="5 4"
-                strokeLinejoin="round"
-              />
-            </g>
-          )}
           <path d={blank.outline} fill="var(--draw-blank-fill)" stroke="var(--draw-cut)" strokeWidth={1.2} strokeLinejoin="round" />
           {blank.foldLines.map((f, i) => (
             <path key={i} d={f.d} fill="none" stroke="var(--draw-fold)" strokeWidth={0.9} strokeDasharray="11 6" />
@@ -82,7 +72,6 @@ export function SheetA({ config, g, blank, tiling }: SheetAProps) {
         <span>—— cut line</span>
         <span className="legend--fold">– – fold / score (don&rsquo;t cut)</span>
         <span className="legend--seam">– – A4 tile edge, panel seam</span>
-        <span className="legend--ghost">– – nested second fender</span>
         <span className="legend--seam">· · · panel lap edge</span>
       </div>
     </section>

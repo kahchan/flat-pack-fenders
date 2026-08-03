@@ -4,21 +4,11 @@ interface AssemblyStepsProps {
   steps: AssemblyStep[];
 }
 
-/** Design source lines 242-252. */
+/** Design source lines 242-252. Heading now lives in the `DrawingSection` accordion
+ * header that wraps this (WP22 §22.3). */
 export function AssemblySteps({ steps }: AssemblyStepsProps) {
   return (
     <section>
-      <h2
-        style={{
-          fontSize: 'var(--text-label-size)',
-          letterSpacing: 'var(--text-label-track)',
-          textTransform: 'uppercase',
-          margin: '0 0 16px',
-          fontWeight: 'var(--text-label-weight)'
-        }}
-      >
-        Assembly
-      </h2>
       <ol className="assembly-steps">
         {steps.map((s) => (
           <li key={s.n}>

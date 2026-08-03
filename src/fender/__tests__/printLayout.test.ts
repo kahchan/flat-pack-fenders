@@ -65,19 +65,22 @@ describe('buildPrintLayout invariants', () => {
   const base = CASES[0]![1].config;
 
   it('drops the page count for a config whose last Sheet-A row is much shorter than a full page', () => {
-    // Nesting is the motivating case from PLAN FEEDBACK WP15 §15.3: it forces a second
-    // tile row that is mostly empty (just the tail of the nested pair), which the old
+    // WP20 §20.1 retired nesting, which used to be the motivating case here (it forced
+    // a mostly-empty second tile row). A wide enough blank (big crown/skirt/thickness)
+    // forces the same shape without it: a second row that's mostly empty, which the old
     // one-page-per-row behaviour printed as a whole extra page per column.
-    const tiling = buildTiling({ ...base, nest: true });
-    const parts = buildParts({ ...base, nest: true });
+    const wide: FenderConfig = { ...base, crown: 100, skirt: 45, thick: 1 };
+    const tiling = buildTiling(wide);
+    const parts = buildParts(wide);
     const layout = buildPrintLayout(tiling, parts);
     const oldPageCount = tiling.tiles.length + parts.pages.length + 1;
+    expect(tiling.rows).toBeGreaterThan(1); // sanity: this only proves the point with 2+ rows
     expect(layout.pageCount).toBeLessThan(oldPageCount);
   });
 
   it('a page holding only one slot has no wasted stacking logic — it just fills the page', () => {
-    const tiling = buildTiling({ ...base, nest: false, stock: 'single' });
-    const parts = buildParts({ ...base, nest: false, struts: 1, mudflap: 0, join: 'none' });
+    const tiling = buildTiling({ ...base, stock: 'single' });
+    const parts = buildParts({ ...base, struts: 1, mudflap: 0, join: 'none' });
     const layout = buildPrintLayout(tiling, parts);
     for (const p of layout.pages) expect(p.slots.length).toBeGreaterThan(0);
   });

@@ -1,4 +1,4 @@
-import { OV, OVERLAP, PH, PW, f0, f1 } from './defaults';
+import { LAP, OV, PH, PW, f0, f1 } from './defaults';
 import { geo } from './geometry';
 import { buildBlank } from './pattern';
 import { buildTiling } from './tiling';
@@ -75,7 +75,10 @@ export function buildSteps(
     {
       n: '02',
       title: 'Tape the tiles',
-      body: `Trim each tile on the grey dashed frame and overlap the next by ${OV} mm, matching the cut line where it crosses. ${tiling.cols * tiling.rows} tiles for the blank.`
+      body:
+        s.stock === 'a4'
+          ? `Trim each tile on the grey dashed frame — that trim line is the panel seam, so cutting it is step 3 and 7 at once. ${tiling.cols * tiling.rows} tiles for the blank.`
+          : `Trim each tile on the grey dashed frame and overlap the next by ${OV} mm, matching the cut line where it crosses. ${tiling.cols * tiling.rows} tiles for the blank.`
     },
     {
       n: '03',
@@ -103,7 +106,7 @@ export function buildSteps(
     steps.push({
       n: '07',
       title: 'Lap the panels',
-      body: `Cut ${blank.panelCount} panels. Each panel except the last is cut ${OVERLAP} mm past its seam line. That tail is the lap: it goes UNDERNEATH the panel in front so water runs across the joint, not into it. Slide the panels together until the fastener row sits in the middle of the lap, then fasten through both layers: one ${s.join === 'rivet' ? 'rivet' : s.join === 'slot' ? 'clip' : 'zip tie'} per hole, across the full width. The lapped joint ends up stiffer than the sheet around it.`
+      body: `Cut ${blank.panelCount} panels: each is one printed tile, and each except the last is cut ${LAP} mm past its seam line. That tail is the lap: it sits on the wheel side of the joint once assembled, so water crossing the seam runs over it rather than into it. Slide the panels together until the fastener row sits in the middle of the lap, then fasten through both layers: one ${s.join === 'rivet' ? 'rivet' : s.join === 'slot' ? 'clip' : 'zip tie'} per hole, across the full width. The lapped joint ends up stiffer than the sheet around it.`
     });
   }
 
@@ -191,10 +194,10 @@ export function buildNotes(
     },
     {
       title: 'How the panel seam works',
-      body: `Butting two panels edge to edge has nothing to fasten. Instead each panel is cut ${OVERLAP} mm past its seam and laps under the next, so a single row of fasteners passes through both layers in the middle of the lap. Lap direction matters more than fastener choice: forward panel on top, always.`,
+      body: `Butting two panels edge to edge has nothing to fasten. Instead each panel is cut ${LAP} mm past its seam and laps under the next — the same band the printed tiles overlap by, since one tile is one panel. A single row of fasteners passes through both layers in the middle of the lap. Lap direction matters more than fastener choice: the upstream panel sits on the wheel side, always.`,
       formula:
         panelCount > 1
-          ? `${panelCount} panels, ${OVERLAP} mm lap, fastener row at lap centre`
+          ? `${panelCount} panels, ${LAP} mm lap, fastener row at lap centre`
           : 'single sheet, no seams'
     },
     {
@@ -214,16 +217,20 @@ export function buildNotes(
     },
     {
       title: 'Nesting',
-      // PLAN §9.4 — the source said "cut the shared edge once", but the transform
-      // (translate(L, Wd·2+10) rotate(180)) leaves a 10 mm gap between the two blanks.
-      // There is no shared edge. Reworded to match; the maths is unchanged.
-      // PLAN FEEDBACK WP17 — dropped the trailing em-dash on top of the §9.4 reword.
-      body: 'A tapered blank nests tail-to-nose with a second one, so a front and rear pair costs less than twice one fender in stock width. The pair is drawn and cut as two separate blanks, 10 mm apart, with no shared edge, so cut each one.',
-      formula: s.nest ? `pair stock ≈ ${f0(g.L)} × ${f0(g.Wd * 2 + 10)} mm` : 'off'
+      // WP20 §20.1 (decision B2) — nesting removed outright. It was a ghost outline for
+      // planning stock layout, not a second printed fender: tiling derived its page
+      // count from the doubled bounding box, so turning it on silently added six sheets
+      // of a 180°-rotated duplicate of the pattern already in hand. Removed rather than
+      // fixed; see docs/FEEDBACK-2-PLAN.md WP20 §20.1.
+      body: 'Removed. A tapered blank nests tail-to-nose with a second one on paper, but drawing that ghost as real print tiles meant turning it on roughly doubled the sheet count for no cuttable benefit — the ghost was only ever a cutting-layout suggestion, not a second fender to print.',
+      formula: 'removed'
     },
     {
       title: 'Print geometry',
-      body: `Each tile draws into ${PW} × ${PH} mm inside a 15 mm safe margin, which clears the unprintable edge on essentially every consumer inkjet and laser. Tiles overlap ${OV} mm so the cut line crosses both sheets and can be aligned by eye.`,
+      body:
+        s.stock === 'a4'
+          ? `Each tile draws into ${PW} × ${PH} mm inside a 15 mm safe margin, which clears the unprintable edge on essentially every consumer inkjet and laser. Tiles overlap ${LAP} mm — the same band as the panel lap, since one tile is one panel.`
+          : `Each tile draws into ${PW} × ${PH} mm inside a 15 mm safe margin, which clears the unprintable edge on essentially every consumer inkjet and laser. Tiles overlap ${OV} mm so the cut line crosses both sheets and can be aligned by eye.`,
       formula: `A4 landscape 297 × 210 − 2 × 15 mm = ${PW} × ${PH} mm live`
     },
     {

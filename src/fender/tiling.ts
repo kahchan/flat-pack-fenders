@@ -1,16 +1,12 @@
-import { OV, PH, PW, TONGUE_L, WHEELS, f0, f1 } from './defaults';
+import { LAP, OV, PH, PW, TONGUE_L, WHEELS, f0, f1 } from './defaults';
 import { geo } from './geometry';
 import { buildBlank } from './pattern';
 import type { BlankModel, FenderConfig, Geometry, PrintTile, TileRect, TilingModel } from './types';
 
 /**
- * A4 print tiling for Sheet A.
- *
- * PLAN §9.4 — the design computes `rows` from `g.Wd` alone, but the on-screen viewBox
- * (and this port's `BlankModel.bboxH`) uses `nest ? Wd*2+10 : Wd`. With nesting on, the
- * nested second fender never reached the printed sheets. Fixed here: `rows` comes from
- * `blank.bboxH`, not `g.Wd`. Everything else — cols, tile placement, ruler — is
- * unchanged from the source.
+ * A4 print tiling for Sheet A. `rows` comes from `blank.bboxH` (which, before WP20
+ * removed nesting outright, could differ from `g.Wd` when a second fender was nested
+ * onto the same sheet — see PLAN §9.4's original fix, now moot).
  */
 export function buildTiling(
   s: FenderConfig,
@@ -18,9 +14,13 @@ export function buildTiling(
   blank: BlankModel = buildBlank(s, g)
 ): TilingModel {
   const { bboxW, bboxH } = blank;
-  const stepX = PW - OV;
+  // WP19 §19.1: for `a4` stock the tile step IS the panel step (`LAP`, not the plain
+  // registration `OV`) — one printed tile is one material panel. `single` stock has no
+  // panels, so its tiles keep the smaller registration-only overlap.
+  const overlapX = s.stock === 'a4' ? LAP : OV;
+  const stepX = PW - overlapX;
   const stepY = PH - OV;
-  const cols = Math.max(1, Math.ceil((bboxW + 12 - OV) / stepX));
+  const cols = Math.max(1, Math.ceil((bboxW + 12 - overlapX) / stepX));
   const rows = Math.max(1, Math.ceil((bboxH + 12 - OV) / stepY));
   const x0 = (s.tongue ? -TONGUE_L : 0) - 6;
 
@@ -55,10 +55,7 @@ export function buildTiling(
     }
   }
 
-  const sheetCount = rows * cols + 2; // + Sheet B + instructions
-  const nestTransform = s.nest ? `translate(${f1(g.L)}, ${f1(g.Wd * 2 + 10)}) rotate(180)` : null;
-
-  return { cols, rows, sheetCount, lastRowH, rects, tiles, nestTransform };
+  return { cols, rows, lastRowH, rects, tiles };
 }
 
 /**

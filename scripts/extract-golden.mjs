@@ -17,19 +17,48 @@ const WHEELS = {
 const D2 = Math.PI / 180;
 const f1 = (n) => (Math.round(n * 10) / 10).toFixed(1);
 const f0 = (n) => String(Math.round(n));
-const TONGUE_L = 34, TONGUE_W = 24, OVERLAP = 20;
+const TONGUE_L = 34, TONGUE_W = 24;
 const PW = 267, PH = 180, OV = 12;
 // PLAN §13.3 — BEVEL_L is new, not in the design source (which has no `bevel` field and
 // no chamfer at all). Added here, and to `blank()` below, so the golden fixture pins the
 // port's actual behaviour, exactly as §9.4 (nesting) and §9.18 (Sheet B viewBox) added
 // new, sanctioned geometry to this "verbatim transcription" script.
 const BEVEL_L = 20;
-// PLAN FEEDBACK WP15 §15.1 — PANEL_SAFETY/PANEL_L are new, not in the design source
-// (which just divided by a bare ~250 mm literal). Mirrors src/fender/defaults.ts's
-// derivation exactly: the longest a panel can be while still leaving PANEL_SAFETY mm of
-// margin for its own OVERLAP lap inside PW, so panelL + OVERLAP ≤ PW always.
-const PANEL_SAFETY = 4;
-const PANEL_L = PW - 2 * PANEL_SAFETY - OVERLAP;
+// WP19 §19.1 (decision B1) — OV (tile overlap) and the old OVERLAP (panel lap) collapse
+// into this one constant for `a4` stock: one printed tile is one material panel now, so
+// mirrors src/fender/defaults.ts's LAP exactly.
+const LAP = 20;
+const SEAM_CLEAR = 6;
+
+// WP19 §19.3/§19.4 — mirrors src/fender/pattern.ts's `placeSeams` exactly: place each
+// seam left to right, dodging dart/strut/mount columns, capped so neither an individual
+// panel nor the last panel can ever exceed PW (see that function's doc comment for why).
+function placeSeams(panelCount, stepX, startX, totalW, dangerXs) {
+  const PER_SEAM_SLACK = 40;
+  let budget = PW + (panelCount - 1) * stepX - totalW;
+  const seams = [];
+  let prevBoundary = startX;
+  for (let i = 1; i < panelCount; i++) {
+    const ceiling = prevBoundary + stepX;
+    const floor = ceiling - Math.min(PER_SEAM_SLACK, budget);
+    const TARGET = SEAM_CLEAR + 5;
+    let best = ceiling;
+    let bestClearance = -Infinity;
+    for (let x = ceiling; x >= floor; x -= 0.5) {
+      const xm = x + LAP / 2;
+      const clearance = dangerXs.reduce((worst, d) => Math.min(worst, Math.abs(xm - d)), Infinity);
+      if (clearance > bestClearance) {
+        bestClearance = clearance;
+        best = x;
+      }
+      if (bestClearance >= TARGET) break;
+    }
+    seams.push(best);
+    budget -= ceiling - best;
+    prevBoundary = best;
+  }
+  return seams;
+}
 // PLAN §14 — same divergence, this time for the on-screen viewBoxes: the design sizes
 // both `xsec()` and `isometric()` viewBoxes from the fender's own extent, which rescales
 // the wheel drawn inside them as the fender grows. `xsec()`/`isometric()` below pin them
@@ -127,6 +156,7 @@ function blank(s) {
   ];
 
   const holes = [], slots = [], scoreLines = [], lapLines = [], lapArrows = [];
+  const dangerXs = [];
   if (g.hem > 0) {
     const hemT = (x) => yFreeT(x) + g.hem, hemB = (x) => yFreeB(x) - g.hem;
     const xs = g.knee > 0 && g.knee < g.L ? [0, g.knee, g.L] : [0, g.L];
@@ -142,6 +172,7 @@ function blank(s) {
     }
     for (const dir of [-1, 1]) {
       const x = xc + dir * off;
+      dangerXs.push(x);
       const tT = (t) => yFreeT(x) + g.skirt * t;
       const tB = (t) => yFreeB(x) - g.skirt * t;
       if (s.join === 'zip') {
@@ -159,7 +190,10 @@ function blank(s) {
   const mounts = s.side === 'front'
     ? [{ x: xTDC, label: 'FORK CROWN' }]
     : [{ x: Math.min(xTDC * 0.4, g.L - 40), label: 'CHAINSTAY BRIDGE' }, { x: xTDC, label: 'SEATSTAY BRIDGE' }];
-  mounts.forEach((m) => { slots.push({ x: f1(m.x - 8), y: f1(g.yc - 2.5), w: 16, h: 5 }); });
+  mounts.forEach((m) => {
+    dangerXs.push(m.x - 8, m.x + 8);
+    slots.push({ x: f1(m.x - 8), y: f1(g.yc - 2.5), w: 16, h: 5 });
+  });
 
   const strutFrac = [];
   const inset = Math.max(5, Math.min(7, g.skirt * 0.22));
@@ -168,10 +202,12 @@ function blank(s) {
     const fr = s.struts === 1 ? (sSpan[0] + sSpan[1]) / 2 : sSpan[0] + ((sSpan[1] - sSpan[0]) * i) / (s.struts - 1);
     strutFrac.push(fr);
     const x = g.L * fr;
+    dangerXs.push(x - 5, x + 5);
     holes.push({ cx: f1(x - 5), cy: f1(yFreeT(x) + inset), r: 2.5 }, { cx: f1(x + 5), cy: f1(yFreeT(x) + inset), r: 2.5 });
     holes.push({ cx: f1(x - 5), cy: f1(yFreeB(x) - inset), r: 2.5 }, { cx: f1(x + 5), cy: f1(yFreeB(x) - inset), r: 2.5 });
   }
   if (s.mudflap > 0) {
+    dangerXs.push(g.L - 10);
     for (const k of [-0.3, 0, 0.3]) holes.push({ cx: f1(g.L - 10), cy: f1(g.yc + g.crownTail * k), r: 2 });
   }
   if (s.tongue) slots.push({ x: f1(-TONGUE_L + 6), y: f1(g.yc - 2.5), w: 16, h: 5 });
@@ -179,13 +215,17 @@ function blank(s) {
   const seams = [];
   let panelCount = 1;
   if (s.stock === 'a4') {
-    panelCount = Math.max(1, Math.ceil(g.L / PANEL_L));
-    const panelL = g.L / panelCount;
+    const stepX = PW - LAP;
+    const totalW = g.L + (s.tongue ? TONGUE_L : 0);
+    panelCount = totalW <= PW ? 1 : 1 + Math.ceil((totalW - PW) / stepX);
+    const tongueOff = s.tongue ? TONGUE_L : 0;
+    const placed = placeSeams(panelCount, stepX, -tongueOff, totalW, dangerXs);
+
     for (let i = 1; i < panelCount; i++) {
-      const x = i * panelL;
+      const x = placed[i - 1];
       seams.push({ d: `M ${f1(x)},${f1(yFreeT(x) - 5)} L ${f1(x)},${f1(yFreeB(x) + 5)}` });
-      lapLines.push({ d: `M ${f1(x + OVERLAP)},${f1(yFreeT(x + OVERLAP) - 5)} L ${f1(x + OVERLAP)},${f1(yFreeB(x + OVERLAP) + 5)}` });
-      const xm = x + OVERLAP / 2;
+      lapLines.push({ d: `M ${f1(x + LAP)},${f1(yFreeT(x + LAP) - 5)} L ${f1(x + LAP)},${f1(yFreeB(x + LAP) + 5)}` });
+      const xm = x + LAP / 2;
       const rowN = Math.max(3, Math.floor(g.Wd / 30));
       for (let j = 0; j <= rowN; j++) {
         const y = yFreeT(xm) + 7 + ((yFreeB(xm) - yFreeT(xm) - 14) * j) / rowN;
@@ -208,7 +248,8 @@ function blank(s) {
 
   const M = 22;
   const bboxW = g.L + (s.tongue ? TONGUE_L : 0);
-  const bboxH = s.nest ? g.Wd * 2 + 10 : g.Wd;
+  // WP20 §20.1 — nesting removed outright; bboxH is always g.Wd now.
+  const bboxH = g.Wd;
   const x0 = (s.tongue ? -TONGUE_L : 0) - 6;
   const viewBox = `${f1(x0 - M)} ${f1(-M)} ${f1(bboxW + M * 2 + 12)} ${f1(bboxH + M * 2)}`;
 
@@ -417,9 +458,100 @@ function isometric(s, g, strutFrac, spin) {
 // (rowsSource); the on-screen viewBox uses bboxH (nest ? Wd*2+10 : Wd), so the port
 // computes `rows` from bboxH instead (rowsFixed). Both are emitted so the fixture makes
 // the divergence explicit.
+// WP20 §20.2 — mirrors src/fender/packer.ts's `packRects` exactly, so the "Sheets to
+// print" spec row (now `printLayout.pageCount`, not the old rows×cols+2 estimate) can be
+// computed here too.
+function packRectsRef(rects, pageW, pageH) {
+  const order = [...rects].sort((a, b) => Math.max(b.w, b.h) - Math.max(a.w, a.h));
+  const shelves = [];
+  const pageUsedHeight = [0];
+  const placed = [];
+  for (const rect of order) {
+    const natural = { w: rect.w, h: rect.h, rotated: false };
+    const rotated = { w: rect.h, h: rect.w, rotated: true };
+    const orientations = [natural, rotated];
+    let onShelf = false;
+    for (const shelf of shelves) {
+      for (const o of orientations) {
+        if (o.w <= pageW - shelf.usedWidth && o.h <= shelf.height) {
+          placed.push({ id: rect.id, page: shelf.page, x: shelf.usedWidth, y: shelf.y, w: o.w, h: o.h, rotated: o.rotated, overflow: false });
+          shelf.usedWidth += o.w;
+          onShelf = true;
+          break;
+        }
+      }
+      if (onShelf) break;
+    }
+    if (onShelf) continue;
+    const fitsAnyPage = (o) => o.w <= pageW && o.h <= pageH;
+    const candidates = orientations.filter(fitsAnyPage);
+    if (candidates.length === 0) {
+      const currentPage = pageUsedHeight.length - 1;
+      const page = pageUsedHeight[currentPage] === 0 ? currentPage : pageUsedHeight.length;
+      if (page === pageUsedHeight.length) pageUsedHeight.push(natural.h);
+      else pageUsedHeight[page] = Math.max(pageUsedHeight[page], natural.h);
+      placed.push({ id: rect.id, page, x: 0, y: 0, w: natural.w, h: natural.h, rotated: false, overflow: true });
+      continue;
+    }
+    const currentPage = pageUsedHeight.length - 1;
+    const remaining = pageH - pageUsedHeight[currentPage];
+    const fitsRemaining = (o) => o.h <= remaining;
+    const chosen =
+      candidates.find((o) => !o.rotated && fitsRemaining(o)) ??
+      candidates.find((o) => fitsRemaining(o)) ??
+      candidates.find((o) => !o.rotated) ??
+      candidates[0];
+    let page = currentPage;
+    if (!fitsRemaining(chosen)) {
+      page += 1;
+      pageUsedHeight.push(0);
+    }
+    const y = pageUsedHeight[page];
+    shelves.push({ page, y, height: chosen.h, usedWidth: chosen.w });
+    pageUsedHeight[page] = y + chosen.h;
+    placed.push({ id: rect.id, page, x: 0, y, w: chosen.w, h: chosen.h, rotated: chosen.rotated, overflow: false });
+  }
+  return placed;
+}
+
+const PARTS_PH = 172;
+const LABEL_ROW_H = 8;
+const STRUT_W = 14;
+const PRINT_CAPTION_H = 6;
+
+// Mirrors src/fender/parts.ts's `packParts` rect list (struts, mudflap, hardware),
+// packed at PW × PARTS_PH, then src/fender/printLayout.ts's own combining of the last
+// Sheet-A tile row with these Sheet-B pages — enough to get a real `pageCount`, not the
+// rows×cols+2 estimate `TilingModel.sheetCount` used to report (§20.2).
+function pageCountRef(s, g, rows, cols, lastRowH) {
+  const partRects = [];
+  for (let i = 0; i < s.struts; i++) partRects.push({ id: `strut-${i}`, w: s.strutLen, h: STRUT_W + LABEL_ROW_H });
+  if (s.mudflap > 0) partRects.push({ id: 'mudflap', w: g.crownTail, h: s.mudflap + LABEL_ROW_H });
+  const extraN = s.join === 'rivet' || s.join === 'slot' ? g.n - 1 : 0;
+  for (let i = 0; i < extraN; i++) partRects.push({ id: `extra-${i}`, w: 34, h: 14 + LABEL_ROW_H });
+
+  const partsPlaced = packRectsRef(partRects, PW, PARTS_PH);
+  const partsPageCount = partsPlaced.reduce((m, p) => Math.max(m, p.page + 1), 0);
+  const partsPageUsedH = new Array(partsPageCount).fill(0);
+  for (const p of partsPlaced) partsPageUsedH[p.page] = Math.max(partsPageUsedH[p.page], p.y + p.h);
+
+  const lastRowStart = (rows - 1) * cols;
+  const combineRects = [];
+  for (let c = 0; c < cols; c++) combineRects.push({ id: `A${lastRowStart + c}`, w: PW, h: lastRowH + PRINT_CAPTION_H });
+  for (let i = 0; i < partsPageCount; i++) combineRects.push({ id: `B${i}`, w: PW, h: Math.max(1, partsPageUsedH[i]) + PRINT_CAPTION_H });
+
+  const combinePlaced = packRectsRef(combineRects, PW, PH);
+  const combinedPageCount = combinePlaced.reduce((m, p) => Math.max(m, p.page + 1), 0);
+
+  return lastRowStart + combinedPageCount + 1; // full tile rows + combined pages + instructions
+}
+
 function tiling(s, g, bboxW, bboxH) {
-  const stepX = PW - OV, stepY = PH - OV;
-  const cols = Math.max(1, Math.ceil((bboxW + 12 - OV) / stepX));
+  // WP19 §19.1 — `a4` stock's tile step is now `LAP`, since one tile is one panel;
+  // `single` stock keeps the plain registration `OV`. Mirrors src/fender/tiling.ts.
+  const overlapX = s.stock === 'a4' ? LAP : OV;
+  const stepX = PW - overlapX, stepY = PH - OV;
+  const cols = Math.max(1, Math.ceil((bboxW + 12 - overlapX) / stepX));
   const rowsSource = Math.max(1, Math.ceil((g.Wd + 12 - OV) / stepY));
   const rowsFixed = Math.max(1, Math.ceil((bboxH + 12 - OV) / stepY));
   const rows = rowsFixed;
@@ -440,9 +572,8 @@ function tiling(s, g, bboxW, bboxH) {
       });
     }
   }
-  const sheetCount = rows * cols + 2; // + Sheet B + instructions
-  const nestTransform = s.nest ? `translate(${f1(g.L)}, ${f1(g.Wd * 2 + 10)}) rotate(180)` : null;
-  return { cols, rows, rowsSource, rowsFixed, sheetCount, tileRects, printTiles, nestTransform };
+  const lastRowH = Math.max(1, Math.min(PH, bboxH + 12 - (rows - 1) * stepY));
+  return { cols, rows, rowsSource, rowsFixed, tileRects, printTiles, lastRowH };
 }
 
 // ---- export: buildSvg, buildDxf, and a straight-line-only pathPolys (verbatim
@@ -494,49 +625,29 @@ function pathPolysStraightOnly(d) {
   return polys;
 }
 
-// PLAN §9.4: nesting was never wired into the exports (only the on-screen ghost). This
-// is new, sanctioned behaviour (`src/export/svg.ts`/`dxf.ts`), not a source
-// transcription — see §9.15's precedent for the DXF header. When `s.nest` is set, a
-// second blank (outline, fold/score lines, holes, slots — no seams/laps, no parts) is
-// appended after the primary content on each layer, `nestTransform` applied.
-function buildSvgRef(v, g, s, name, nestTransform) {
+// WP20 §20.1 — nesting is removed outright, so the second-blank branch this used to
+// carry (PLAN §9.4) is gone. Mirrors src/export/svg.ts exactly.
+function buildSvgRef(v, g, s, name) {
   const x0 = s.tongue ? -40 : -6;
   const w = g.L + (s.tongue ? 40 : 0) + 12;
   const gap = 30;
   const pw = v.partsViewBox.split(' ').map(Number);
   const H = g.Wd + gap + pw[3] + 12;
   const p = (d, sw) => `<path d="${d}" fill="none" stroke="#000" stroke-width="${sw}"/>`;
-  const nest = s.nest ? nestTransform : null;
   const L = [];
   L.push(`<g id="CUT" inkscape:label="CUT" inkscape:groupmode="layer" stroke="#000">`);
   L.push(p(v.blankOutline, 0.2));
   v.partsOutlines.forEach((o) => L.push(`<g transform="translate(0,${(g.Wd + gap).toFixed(1)})">${p(o.d, 0.2)}</g>`));
   v.slots.forEach((sl) => L.push(`<rect x="${sl.x}" y="${sl.y}" width="${sl.w}" height="${sl.h}" rx="1.5" fill="none" stroke="#000" stroke-width="0.2"/>`));
-  if (nest) {
-    L.push(`<g transform="${nest}">`);
-    L.push(p(v.blankOutline, 0.2));
-    v.slots.forEach((sl) => L.push(`<rect x="${sl.x}" y="${sl.y}" width="${sl.w}" height="${sl.h}" rx="1.5" fill="none" stroke="#000" stroke-width="0.2"/>`));
-    L.push('</g>');
-  }
   L.push('</g>');
   L.push(`<g id="FOLD" inkscape:label="FOLD" inkscape:groupmode="layer" stroke="#0000ff">`);
   v.foldLines.concat(v.scoreLines).forEach((f) => L.push(`<path d="${f.d}" fill="none" stroke="#00f" stroke-width="0.2"/>`));
   v.seams.forEach((f) => L.push(`<path d="${f.d}" fill="none" stroke="#00f" stroke-width="0.2" stroke-dasharray="4 2"/>`));
   v.partsFolds.forEach((f) => L.push(`<g transform="translate(0,${(g.Wd + gap).toFixed(1)})"><path d="${f.d}" fill="none" stroke="#00f" stroke-width="0.2"/></g>`));
-  if (nest) {
-    L.push(`<g transform="${nest}">`);
-    v.foldLines.concat(v.scoreLines).forEach((f) => L.push(`<path d="${f.d}" fill="none" stroke="#00f" stroke-width="0.2"/>`));
-    L.push('</g>');
-  }
   L.push('</g>');
   L.push(`<g id="HOLES" inkscape:label="HOLES" inkscape:groupmode="layer" stroke="#ff0000">`);
   v.holes.forEach((c) => L.push(`<circle cx="${c.cx}" cy="${c.cy}" r="${c.r}" fill="none" stroke="#f00" stroke-width="0.2"/>`));
   v.partsHoles.forEach((c) => L.push(`<g transform="translate(0,${(g.Wd + gap).toFixed(1)})"><circle cx="${c.cx}" cy="${c.cy}" r="${c.r}" fill="none" stroke="#f00" stroke-width="0.2"/></g>`));
-  if (nest) {
-    L.push(`<g transform="${nest}">`);
-    v.holes.forEach((c) => L.push(`<circle cx="${c.cx}" cy="${c.cy}" r="${c.r}" fill="none" stroke="#f00" stroke-width="0.2"/>`));
-    L.push('</g>');
-  }
   L.push('</g>');
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="${w.toFixed(1)}mm" height="${H.toFixed(1)}mm" viewBox="${x0} -6 ${w.toFixed(1)} ${H.toFixed(1)}">
@@ -545,21 +656,12 @@ ${L.join('\n')}
 </svg>`;
 }
 
-// Numeric mirror of src/export/nestTransform.ts's `nestPoint` — rotate(180) about the
-// origin (negate both axes), then translate(L, Wd*2+10). Same math, plain JS.
-function nestPointRef([x, y], L, Wd) {
-  return [L - x, Wd * 2 + 10 - y];
-}
-
 // PLAN §9.3 — the HEADER/TABLES sections are new (source emitted only ENTITIES);
 // entity geometry below this point is byte-identical to the source's buildDxf().
 //
-// PLAN §9.4 — when `nest` is set, a second blank (outline, fold/score lines, holes —
-// no seams/laps, no parts) is appended after every existing entity, each point mapped
-// through `nestPointRef` before it reaches the same `poly`/`circle` writers. This is
-// new, sanctioned behaviour, not a source transcription — see the note on
-// `buildSvgRef`.
-function buildDxfRef(v, g, pathPolysFn, nest) {
+// WP20 §20.1 — nesting is removed outright, so the second-blank branch this used to
+// carry (PLAN §9.4) is gone. Mirrors src/export/dxf.ts exactly.
+function buildDxfRef(v, g, pathPolysFn) {
   const dy = g.Wd + 30;
   const out = [
     '0', 'SECTION', '2', 'HEADER',
@@ -588,18 +690,6 @@ function buildDxfRef(v, g, pathPolysFn, nest) {
   v.partsOutlines.forEach((o) => pathPolysFn(o.d).forEach((pts) => poly(pts, 'CUT', closed(o.d), dy)));
   v.partsFolds.forEach((f) => pathPolysFn(f.d).forEach((pts) => poly(pts, 'FOLD', false, dy)));
   v.partsHoles.forEach((c) => circle(c, 'HOLES', dy));
-  if (nest) {
-    const nestPt = (pt) => nestPointRef(pt, g.L, g.Wd);
-    pathPolysFn(v.blankOutline).forEach((pts) => poly(pts.map(nestPt), 'CUT', true, 0));
-    v.slots.forEach((s) =>
-      poly([[+s.x, +s.y], [+s.x + +s.w, +s.y], [+s.x + +s.w, +s.y + +s.h], [+s.x, +s.y + +s.h]].map(nestPt), 'CUT', true, 0)
-    );
-    v.foldLines.concat(v.scoreLines).forEach((f) => pathPolysFn(f.d).forEach((pts) => poly(pts.map(nestPt), 'FOLD', false, 0)));
-    v.holes.forEach((c) => {
-      const [nx, ny] = nestPt([+c.cx, +c.cy]);
-      circle({ cx: String(nx), cy: String(ny), r: c.r }, 'HOLES', 0);
-    });
-  }
   out.push('0', 'ENDSEC', '0', 'EOF');
   return out.join('\n');
 }
@@ -635,7 +725,7 @@ function steps(s, g, panelCount, cols, rows) {
     { n: '04', title: 'Score, don’t slice', body: 'Score the fold lines about a third of the way through, on the outside face, with a blunt point or the back of a blade. Cut deeper than half and the fold becomes a hinge that will crack. Warm material folds cleaner than cold.' },
     { n: '05', title: 'Fold the skirts', body: `Bend both skirts down to ${s.angle}° over a straight edge. Work along the fold in stages rather than creasing it all at once.` },
     { n: '06', title: 'Close the darts', body: joinNote(s.join) },
-    ...(panelCount > 1 ? [{ n: '07', title: 'Lap the panels', body: `Cut ${panelCount} panels. Each panel except the last is cut ${OVERLAP} mm past its seam line — that tail is the lap, and it goes UNDERNEATH the panel in front so water runs across the joint, not into it. Slide the panels together until the fastener row sits in the middle of the lap, then fasten through both layers: one ${s.join === 'rivet' ? 'rivet' : s.join === 'slot' ? 'clip' : 'zip tie'} per hole, across the full width. The lapped joint ends up stiffer than the sheet around it.` }] : []),
+    ...(panelCount > 1 ? [{ n: '07', title: 'Lap the panels', body: `Cut ${panelCount} panels. Each panel except the last is cut ${LAP} mm past its seam line — that tail is the lap, and it goes UNDERNEATH the panel in front so water runs across the joint, not into it. Slide the panels together until the fastener row sits in the middle of the lap, then fasten through both layers: one ${s.join === 'rivet' ? 'rivet' : s.join === 'slot' ? 'clip' : 'zip tie'} per hole, across the full width. The lapped joint ends up stiffer than the sheet around it.` }] : []),
     { n: panelCount > 1 ? '08' : '07', title: 'Bend the struts', body: `Fold each strut 26 mm from both ends. One end takes the pair of holes at the skirt edge; the other zip-ties, velcros, or bolts to the stay or eyelet.${s.fuse ? ' The single oversize hole is deliberate — it is the end you want to fail first.' : ''}` },
     ...(s.mudflap > 0 ? [{ n: panelCount > 1 ? '09' : '08', title: 'Add the mudflap', body: `Lap the ${f0(g.crownTail)} × ${f0(s.mudflap)} mm flap 16 mm under the tail, holes aligned, and fasten through the three crown holes. It is a separate part on purpose — it is the bit that gets destroyed.` }] : []),
     { n: 'LAST', title: 'Fit to the bike', body: `${s.side === 'front' ? 'Bolt the fork-crown slot first and slide it until the fender sits central, then ' : 'Bolt the chainstay-bridge slot, then the seastay bridge, then '}set the ${s.struts} struts so the gap to the tyre stays even at ${s.clear} mm all the way round. Spin the wheel and listen before you ride.` }
@@ -650,7 +740,7 @@ function engNotes(s, g, panelCount, inset, mounts) {
     { title: 'Taper is local, not global', body: 'Crown width is held constant until the taper knee, then interpolated linearly to the tail. Because every dart is computed from the local crown width, the pattern edge follows the taper automatically — dart positions do not move, the edge they sit on does. Taper exists so the tail can pass a chainstay bridge or fork crown, not for looks.', formula: `crown ${f0(g.crown0)} mm until ${f0(g.knee)} mm, then → ${f0(g.crownTail)} mm at ${f0(g.L)} mm` },
     { title: 'Asymmetric coverage', body: 'Lead and trail are separate because a front fender wants material ahead of the axle (that is where the spray at your feet comes from) and a rear wants a long tail. Zero lead gives you a rear-only fender that starts at the top of the wheel.', formula: `lead ${s.lead}° + trail ${s.trail}° = ${f0(g.cov)}°` },
     { title: s.side === 'front' ? 'Front mounting' : 'Rear mounting', body: s.side === 'front' ? 'A front fender hangs from one bolt through the fork crown at top dead centre, with the struts running to the blade eyelets. Everything behind that bolt is cantilevered, so the struts sit on the trailing half of the arc where they actually resist flutter. The crown slot runs along the length so the fender can slide fore and aft to centre it.' : 'A rear fender takes two frame bolts — the chainstay bridge low at the front and the seatstay bridge higher up — with the struts running back to the dropouts. Two mounts on different radii is what stops a long rear fender from oscillating. Both are slots, not holes, because no two frames put those bridges the same distance apart.', formula: mounts.map((m) => `${m.label} at ${f0(m.x)} mm`).join(' · ') },
-    { title: 'How the panel seam works', body: `Butting two panels edge to edge has nothing to fasten. Instead each panel is cut ${OVERLAP} mm past its seam and laps under the next, so a single row of fasteners passes through both layers in the middle of the lap. Lap direction matters more than fastener choice: forward panel on top, always.`, formula: panelCount > 1 ? `${panelCount} panels · ${OVERLAP} mm lap · fastener row at lap centre` : 'single sheet — no seams' },
+    { title: 'How the panel seam works', body: `Butting two panels edge to edge has nothing to fasten. Instead each panel is cut ${LAP} mm past its seam and laps under the next, so a single row of fasteners passes through both layers in the middle of the lap. Lap direction matters more than fastener choice: forward panel on top, always.`, formula: panelCount > 1 ? `${panelCount} panels · ${LAP} mm lap · fastener row at lap centre` : 'single sheet — no seams' },
     { title: 'What a butt strap is', body: 'A rivet cannot pull a V-shaped gap closed the way a zip tie can — it needs two layers to squeeze. The butt strap is a small separate rectangle that sits behind the dart and bridges it: two rivets into the left flap, two into the right. The dart stays open by design; the strap carries the load. Zip ties and clips need no strap because they pull through both sides at once.', formula: 'strap 34 × 14 mm · 4 × 3.2 mm holes · one per dart' },
     { title: 'Every hole is a crack initiator', body: 'In thin plastic, fatigue cracks start at holes, and the crown is the worst place to put one because that is where water sits. Hence the hole-free option: a scored channel and one zip tie round the girth, nothing pierced. Struts fasten at the skirt edge for the same reason.', formula: `strut pairs at ${f0(inset)} mm inset, 10 mm apart · crown unpierced` },
     { title: 'Sacrificial strut end', body: 'A fender that jams should let go before it stops the wheel. The optional single oversize hole at the frame end is the intended failure point: one fastener in tension, nothing redundant. This is a safety feature, not a tolerance.', formula: s.fuse ? 'single 6.4 mm hole, one fastener' : 'off — both ends fully fastened' },
@@ -664,7 +754,7 @@ function engNotes(s, g, panelCount, inset, mounts) {
   ];
 }
 
-function specs(s, g, finished, panelCount, cols, rows) {
+function specs(s, g, finished, panelCount, cols, rows, lastRowH) {
   return [
     { label: 'Fender radius', value: `${f0(g.R)} mm`, note: s.measuredR > 0 ? 'measured tyre radius + clearance' : 'estimated tyre radius + clearance' },
     { label: 'Developed length', value: `${f0(g.L)} mm`, note: `R × ${f0(g.cov)}° in radians` },
@@ -674,9 +764,14 @@ function specs(s, g, finished, panelCount, cols, rows) {
     { label: 'Dart width', value: `${f1(g.notch)} mm`, note: s.thick > 0 ? `incl. ${f1(s.thick)} mm thickness clearance` : 'at the free edge, tapering to 0 at the fold' },
     { label: 'Bend allowance', value: `${g.bendComp >= 0 ? '+' : ''}${f1(g.bendComp)} mm`, note: s.thick > 0 ? `per fold, setback ${f1(g.setback)}, arc ${f1(g.BA)}` : 'zero-thickness model' },
     { label: 'Total take-up', value: `${f1(g.removal)} mm`, note: 'removed by all darts, one side' },
-    { label: 'Blank area', value: `${f1((g.L * g.Wd) / 1e6)} m²`, note: s.nest ? 'each, nested pair shares the stock width' : 'before darts are cut' },
-    { label: 'Material panels', value: panelCount === 1 ? 'one sheet' : `× ${panelCount}`, note: panelCount === 1 ? `needs ${f0(g.L)} mm of stock` : `each ≈ ${f0(g.L / panelCount + OVERLAP)} × ${f0(g.Wd)} mm incl. lap` },
-    { label: 'Sheets to print', value: `${rows * cols + 2}`, note: `${cols} × ${rows} tiles + parts + instructions` }
+    // WP20 §20.1 — nesting removed outright, so the nested-pair branch goes with it.
+    { label: 'Blank area', value: `${f1((g.L * g.Wd) / 1e6)} m²`, note: 'before darts are cut' },
+    // WP19 §19.1 — every panel is one PW-wide tile window (only the last is shorter),
+    // so the note states the window size directly rather than an averaged panelL + LAP.
+    { label: 'Material panels', value: panelCount === 1 ? 'one sheet' : `× ${panelCount}`, note: panelCount === 1 ? `needs ${f0(g.L)} mm of stock` : `each up to ${PW} × ${f0(g.Wd)} mm incl. lap` },
+    // WP20 §20.2 — `printLayout.pageCount` (via `pageCountRef`) is the single source,
+    // not the old rows×cols+2 estimate.
+    { label: 'Sheets to print', value: `${pageCountRef(s, g, rows, cols, lastRowH)}`, note: `${cols} × ${rows} tiles + parts + instructions` }
   ];
 }
 
@@ -764,7 +859,7 @@ for (const [name, cfg] of Object.entries(CASES)) {
   const w = warnings(cfg, r.g, p.partsFits, p.partsW);
   const st = steps(cfg, r.g, r.panelCount, t.cols, t.rows);
   const en = engNotes(cfg, r.g, r.panelCount, r.inset, r.mounts);
-  const sp = specs(cfg, r.g, x.finished, r.panelCount, t.cols, t.rows);
+  const sp = specs(cfg, r.g, x.finished, r.panelCount, t.cols, t.rows, t.lastRowH);
   const jn = joinNote(cfg.join);
   const assembledLabel = `${cfg.side === 'front' ? 'Front' : 'Rear'}, ${WHEELS[cfg.wheel].label}, ${f0(r.g.cov)}° (${cfg.lead}/${cfg.trail}), ${f0(x.finished)} mm wide, ${r.g.n} flaps, ${cfg.struts} struts${cfg.mudflap > 0 ? `, ${f0(cfg.mudflap)} mm flap` : ''}`;
   const printSpecLine = `${WHEELS[cfg.wheel].label}, tyre ${cfg.tyre} (R ${f0(r.g.tyreR)}), crown ${cfg.crown} → ${f0(r.g.crownTail)}, skirt ${cfg.skirt} @ ${cfg.angle}°, clearance ${cfg.clear}, ${cfg.lead}°/${cfg.trail}°, ${r.g.n} flaps, ${cfg.struts} struts, mudflap ${cfg.mudflap}`;
@@ -814,10 +909,8 @@ for (const [name, cfg] of Object.entries(CASES)) {
       rows: t.rows,
       rowsSource: t.rowsSource,
       rowsFixed: t.rowsFixed,
-      sheetCount: t.sheetCount,
       rects: t.tileRects,
-      tiles: t.printTiles,
-      nestTransform: t.nestTransform
+      tiles: t.printTiles
     },
     iso,
     joinNote: jn,
@@ -851,8 +944,8 @@ for (const [name, cfg] of Object.entries(CASES)) {
   exportOut[name] = {
     config: cfg,
     baseName: name_,
-    svgFull: buildSvgRef(vFull, r.g, cfg, name_, t.nestTransform),
-    dxfBlankOnly: buildDxfRef(vBlankOnly, r.g, pathPolysStraightOnly, cfg.nest)
+    svgFull: buildSvgRef(vFull, r.g, cfg, name_),
+    dxfBlankOnly: buildDxfRef(vBlankOnly, r.g, pathPolysStraightOnly)
   };
 }
 

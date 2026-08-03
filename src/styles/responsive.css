@@ -160,8 +160,8 @@
     padding: 12px 14px 8px;
   }
 
-  /* Tabs become a segmented control. */
-  .tab-bar {
+  /* Section nav becomes a segmented control. */
+  .section-nav {
     border-bottom: none;
     background: var(--color-bg-alt);
     border-radius: var(--radius-pill);
@@ -170,20 +170,13 @@
     margin: 20px 0 16px;
   }
 
-  .tab-btn {
+  .section-nav__btn {
     flex: 1;
     text-align: center;
     margin: 0;
     padding: 9px 6px;
     border-radius: var(--radius-pill);
     border-bottom: none;
-  }
-
-  .tab-btn--active {
-    background: var(--draw-paper);
-    color: var(--color-fg);
-    box-shadow: var(--shadow-1);
-    border-bottom-color: transparent;
   }
 }
 
@@ -202,19 +195,21 @@
   overscroll-behavior: contain;
 }
 
-.bottom-sheet__grab {
+/* WP22 B4: the peek is `ControlHeader`'s `--peek` variant, not a bespoke handle/specline
+   row — the drag surface is the whole header, and the preset row is its `PresetSelect`. */
+.control-header--peek {
   flex-shrink: 0;
   touch-action: none;
   cursor: grab;
-  padding: var(--space-2) var(--space-4);
+  padding: var(--space-2) var(--space-4) var(--space-3);
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.bottom-sheet__presets {
-  flex-shrink: 0;
-  padding: 0 var(--space-4) var(--space-3);
+.control-header__row {
+  display: flex;
+  justify-content: center;
 }
 
 .bottom-sheet__handle {
@@ -225,79 +220,11 @@
   margin: 0 auto;
 }
 
-.bottom-sheet__specline {
-  /* Caption, not mono-sm: this line lives inside the fixed 96px peek budget
-     (`PEEK_HEIGHT`, sheetPhysics.ts) alongside the grab handle and the preset row, and
-     that constant is out of scope here — mono-sm's 16px would push the peek state past
-     its own height. */
-  font-size: var(--text-caption-size);
-  color: var(--color-fg-muted);
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .bottom-sheet__body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   padding: 0 var(--space-4) 40px;
-}
-
-/* Front/rear grouping (PLAN FEEDBACK WP16 §16.3) stays one row here, unlike the desk
-   rail's stacked groups — the 96px peek budget has no room for a second heading row,
-   so `PresetChipStrip` renders the group as an inline `__label` divider inside the
-   same scroller instead. Position/`::after` fade is the same pinned-mask technique as
-   `.panel::after` above. */
-.preset-chip-strip {
-  position: relative;
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-}
-
-.preset-chip-strip::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 2px;
-  width: 28px;
-  background: linear-gradient(to right, transparent, var(--color-bg-alt));
-  pointer-events: none;
-}
-
-.preset-chip-strip__group {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex: 0 0 auto;
-}
-
-.preset-chip-strip__label {
-  flex: 0 0 auto;
-  font-size: var(--text-caption-size);
-  color: var(--color-fg-faint);
-}
-
-.preset-chip {
-  flex: 0 0 auto;
-  border: 1px solid var(--color-border);
-  background: var(--draw-paper);
-  color: var(--color-fg);
-  border-radius: var(--radius-pill);
-  padding: 6px 12px;
-  font-size: var(--text-caption-size);
-  font-weight: 600;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.preset-chip--selected {
-  background: var(--color-accent-pale);
-  border-color: var(--color-accent);
 }
 
 /* `.bottom-sheet` and `.rail-drawer`/`.rail-pill` are screen-only overlays, hidden under

@@ -1,6 +1,6 @@
 import { RULER_CAPTION } from '../lib/printStrokes';
 import { pathPolys } from './pathPolys';
-import type { AssemblyStep, DrawingModel, FenderConfig, Geometry, Hole, Label, BlankModel, PartsPage, PrintTile, Slot } from '../fender/types';
+import type { AssemblyStep, DrawingModel, Hole, Label, BlankModel, PartsPage, PrintTile, Slot } from '../fender/types';
 
 /**
  * Hand-written PDF export — the print tree (`src/components/print/`), rendered without
@@ -196,16 +196,9 @@ function translateMat(tx: number, ty: number): Mat {
 }
 
 /** `rotate(-90)` then `translate(tx,ty)`, PDF-matrix form of `packedPartTransform`'s
- * `translate(x,y+w) rotate(-90)` (SVG transform lists apply right-to-left to a point —
- * see `nestTransform.ts`'s comment for the same point about the nest transform). */
+ * `translate(x,y+w) rotate(-90)` (SVG transform lists apply right-to-left to a point). */
 function rotateNeg90TranslateMat(tx: number, ty: number): Mat {
   return [0, -1, 1, 0, tx, ty];
-}
-
-/** `rotate(180)` then `translate(tx,ty)` — the nested second blank, matching
- * `nestTransform.ts`'s `nestPoint`. */
-function rotate180TranslateMat(tx: number, ty: number): Mat {
-  return [-1, 0, 0, -1, tx, ty];
 }
 
 function cmOp(m: Mat): string {
@@ -289,7 +282,7 @@ function ocg(tag: 'OC1' | 'OC2' | 'OC3', body: string): string {
 
 // ── Per-page content streams ─────────────────────────────────────────────────
 
-function tilePageContent(g: Geometry, config: FenderConfig, blank: BlankModel, tile: PrintTile, nestTransform: string | null): string {
+function tilePageContent(blank: BlankModel, tile: PrintTile): string {
   const [oxs, oys] = tile.viewBox.split(' ');
   const ox = Number(oxs);
   const oy = Number(oys);
@@ -308,16 +301,6 @@ function tilePageContent(g: Geometry, config: FenderConfig, blank: BlankModel, t
   blank.holes.forEach((h) => (s += ocg('OC3', circleOps(h))));
   blank.slots.forEach((sl) => (s += ocg('OC1', slotOps(sl))));
   blank.labels.forEach((l) => (s += textOps(l, 'normal')));
-
-  if (config.nest && nestTransform) {
-    s += 'q\n' + cmOp(rotate180TranslateMat(g.L, g.Wd * 2 + 10));
-    s += ocg('OC1', pathOps(blank.outline));
-    blank.foldLines.forEach((f) => (s += ocg('OC2', pathOps(f.d))));
-    blank.scoreLines.forEach((c) => (s += ocg('OC2', pathOps(c.d))));
-    blank.holes.forEach((h) => (s += ocg('OC3', circleOps(h))));
-    blank.slots.forEach((sl) => (s += ocg('OC1', slotOps(sl))));
-    s += 'Q\n';
-  }
 
   s += 'Q\n';
   return s;
@@ -416,10 +399,10 @@ function instructionsContent(printSpecLine: string, steps: AssemblyStep[]): stri
  * plain JS string handed to `Blob` directly.
  */
 export function buildPdf(model: DrawingModel): Uint8Array<ArrayBuffer> {
-  const { config, geo: g, blank, parts, tiling, steps, printSpecLine } = model;
+  const { blank, parts, tiling, steps, printSpecLine } = model;
 
   const pageContents: string[] = [];
-  tiling.tiles.forEach((tile) => pageContents.push(tilePageContent(g, config, blank, tile, tiling.nestTransform)));
+  tiling.tiles.forEach((tile) => pageContents.push(tilePageContent(blank, tile)));
   parts.pages.forEach((page, i) => pageContents.push(sheetBPageContent(page, i, parts.pages.length)));
   pageContents.push(instructionsContent(printSpecLine, steps));
 

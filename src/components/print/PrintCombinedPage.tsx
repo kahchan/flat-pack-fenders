@@ -2,13 +2,12 @@ import { PRINT_CAPTION_H, PW } from '../../fender/defaults';
 import { croppedTile } from '../../fender/tiling';
 import { SheetATileSvg } from './SheetATileSvg';
 import { SheetBPageSvg } from './SheetBPageSvg';
-import type { BlankModel, FenderConfig, PartsModel, PrintPage, TilingModel } from '../../fender/types';
+import type { BlankModel, PartsModel, PrintPage, TilingModel } from '../../fender/types';
 
 interface PrintCombinedPageProps {
   page: PrintPage;
   tiling: TilingModel;
   parts: PartsModel;
-  config: FenderConfig;
   blank: BlankModel;
   pageIndex: number;
   pageCount: number;
@@ -21,7 +20,7 @@ interface PrintCombinedPageProps {
  * matter how little of it is used. Every slot still draws at true 1:1 — stacking only
  * changes WHERE on the physical sheet a slot's content sits, never how big it is.
  */
-export function PrintCombinedPage({ page, tiling, parts, config, blank, pageIndex, pageCount }: PrintCombinedPageProps) {
+export function PrintCombinedPage({ page, tiling, parts, blank, pageIndex, pageCount }: PrintCombinedPageProps) {
   return (
     <div className="print-page print-page--combined">
       <div className="print-page__meta">
@@ -36,14 +35,7 @@ export function PrintCombinedPage({ page, tiling, parts, config, blank, pageInde
               <div className="print-slot__caption" style={{ top: captionTop }}>
                 {tile.label}
               </div>
-              <SheetATileSvg
-                tile={tile}
-                width={`${PW}mm`}
-                height={`${slot.h}mm`}
-                config={config}
-                blank={blank}
-                nestTransform={tiling.nestTransform}
-              />
+              <SheetATileSvg tile={tile} width={`${PW}mm`} height={`${slot.h}mm`} blank={blank} />
             </div>
           );
         }

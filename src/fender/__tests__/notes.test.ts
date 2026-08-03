@@ -24,7 +24,9 @@ const CASES = Object.entries(golden as unknown as Record<string, Case>);
 // joinNote() (rivet/slot variants), which also lost one each. None of this changes
 // numbering or count, only wording, so it stays out of the golden fixture (kept as
 // the historical verbatim source) and is excluded here instead.
-const CORRECTED_STEP_INDICES = new Set([0, 2, 5, 6, 7, 8]);
+// WP19 §19.1/§19.5 adds index 1 ("Tape the tiles" — a4 stock's trim line is now the
+// panel seam, so the step text says so) on top of the WP17 set above.
+const CORRECTED_STEP_INDICES = new Set([0, 1, 2, 5, 6, 7, 8]);
 
 describe.each(CASES)('buildSteps(%s)', (_name, c) => {
   it('matches the design source exactly, except the WP17 copy-pass steps (see CORRECTED_STEP_INDICES)', () => {
@@ -50,7 +52,10 @@ describe.each(CASES)('buildSteps(%s)', (_name, c) => {
 // em-dash: 1 "Radius chain", 2 "Taper is local, not global", 4 "Rear mounting", 6 "What
 // a butt strap is", 12 "Darts get wider with thickness", 14 "Export", 15 "Still open".
 // Only 0, 3, 5, 7, 8, 10 and 13 keep their design-source body verbatim.
-const CORRECTED_INDICES = new Set([1, 2, 4, 6, 9, 11, 12, 14, 15]);
+// WP19 §19.1/§19.5 adds 5 ("How the panel seam works" — OV/OVERLAP collapse to LAP,
+// reworded in built terms) and 10 ("Print geometry" — tile overlap is now stock-
+// dependent) on top of the WP17 set above.
+const CORRECTED_INDICES = new Set([1, 2, 4, 5, 6, 9, 10, 11, 12, 14, 15]);
 
 // Index 14 = "Export" (PLAN §9.3) — its `formula` line changes ("R12 ASCII" →
 // "AC1015 (R2000)"); its body is ALSO reworded by WP17 (see CORRECTED_INDICES), unlike
@@ -61,7 +66,9 @@ const CORRECTED_INDICES = new Set([1, 2, 4, 6, 9, 11, 12, 14, 15]);
 // the panel seam works", 6 "What a butt strap is", 7 "Every hole is a crack initiator",
 // 8 "Sacrificial strut end", 11 "Bend allowance, properly", 12 "Darts get wider with
 // thickness", 13 "Hemmed edge".
-const CORRECTED_FORMULA_INDICES = new Set([4, 5, 6, 7, 8, 11, 12, 13, 14]);
+// WP20 §20.1 adds 9 ("Nesting" — formula is now always "removed", not conditional on
+// `s.nest`, since the feature no longer exists to condition on).
+const CORRECTED_FORMULA_INDICES = new Set([4, 5, 6, 7, 8, 9, 11, 12, 13, 14]);
 
 describe.each(CASES)('buildNotes(%s)', (_name, c) => {
   const notes = buildNotes(c.config);
@@ -89,14 +96,12 @@ describe('corrected prose', () => {
   const base = CASES[0]![1].config;
   const baseFixture = CASES[0]![1];
 
-  it('"Nesting" drops the false "shared edge" claim — PLAN §9.4', () => {
+  it('"Nesting" states the feature is removed — WP20 §20.1', () => {
     const nesting = buildNotes(base)[9]!;
     expect(nesting.title).toBe('Nesting');
-    // The source's claim, which the geometry (translate(L, Wd·2+10) rotate(180)) does
-    // not support — there's a 10 mm gap, not a shared edge.
     expect(nesting.body).not.toBe(baseFixture.engNotes[9]!.body);
-    expect(nesting.body).not.toMatch(/cut the shared edge once/i);
-    expect(nesting.body).toMatch(/10 mm/);
+    expect(nesting.body).toMatch(/^Removed\./);
+    expect(nesting.formula).toBe('removed');
   });
 
   it('"Bend allowance, properly" drops the false zero-thickness claim — PLAN §9.9', () => {

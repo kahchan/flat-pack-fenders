@@ -12,7 +12,7 @@ interface SheetsViewProps {
 export function SheetsView({ model }: SheetsViewProps) {
   return (
     <div className="sheets-stack">
-      <SheetA config={model.config} g={model.geo} blank={model.blank} tiling={model.tiling} />
+      <SheetA g={model.geo} blank={model.blank} tiling={model.tiling} printLayout={model.printLayout} />
       <SheetB config={model.config} parts={model.parts} />
       <CrossSectionView xsec={model.xsec} />
       <EngineeringNotes notes={model.notes} />

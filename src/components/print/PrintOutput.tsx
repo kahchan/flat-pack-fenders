@@ -15,11 +15,11 @@ interface PrintOutputProps {
  * source lines 375-434.
  */
 export function PrintOutput({ model }: PrintOutputProps) {
-  const { config, blank, parts, tiling, printLayout, steps, printSpecLine } = model;
+  const { blank, parts, tiling, printLayout, steps, printSpecLine } = model;
   return (
     <div className="print-only">
       {printLayout.fullTileIndices.map((i) => (
-        <PrintTilePage key={`tile-${i}`} tile={tiling.tiles[i]!} config={config} blank={blank} nestTransform={tiling.nestTransform} />
+        <PrintTilePage key={`tile-${i}`} tile={tiling.tiles[i]!} blank={blank} />
       ))}
       {printLayout.pages.map((page, i) => (
         <PrintCombinedPage
@@ -27,7 +27,6 @@ export function PrintOutput({ model }: PrintOutputProps) {
           page={page}
           tiling={tiling}
           parts={parts}
-          config={config}
           blank={blank}
           pageIndex={i}
           pageCount={printLayout.pages.length}

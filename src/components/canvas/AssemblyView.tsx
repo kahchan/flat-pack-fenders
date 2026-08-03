@@ -1,19 +1,16 @@
 import { AssemblySteps } from './AssemblySteps';
-import { PrintTiles } from './PrintTiles';
-import type { DrawingModel } from '../../fender/types';
+import type { AssemblyStep } from '../../fender/types';
 
 interface AssemblyViewProps {
-  model: DrawingModel;
+  steps: AssemblyStep[];
 }
 
-/** "Assembly & print pages" tab. Design source lines 200-255. */
-export function AssemblyView({ model }: AssemblyViewProps) {
-  const tileCountLabel = `${model.tiling.sheetCount} sheets A4 landscape`;
-
+/** "Instructions" section (WP22 §22.3) — print pages split out into their own section
+ * (`PrintTiles`, rendered directly by `CanvasPane` now that `SheetTabs` is gone). */
+export function AssemblyView({ steps }: AssemblyViewProps) {
   return (
     <div className="assembly-stack">
-      <PrintTiles tiles={model.tiling.tiles} blank={model.blank} tileCountLabel={tileCountLabel} />
-      <AssemblySteps steps={model.steps} />
+      <AssemblySteps steps={steps} />
     </div>
   );
 }

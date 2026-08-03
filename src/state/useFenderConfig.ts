@@ -5,9 +5,6 @@ import { PRESETS } from './presets';
 import { decodeConfig, encodeConfig } from './urlCodec';
 import type { ConfigKey, FenderConfig } from '../fender/types';
 
-/** The two bits of view state PLAN §6 says are NOT config — never persisted. */
-export type Tab = 'sheets' | 'assembly';
-
 const STORAGE_KEY = 'flat-pack-fenders:config';
 const HASH_DEBOUNCE_MS = 250;
 
@@ -152,21 +149,18 @@ export interface UseFenderConfig {
   /** Isometric camera rotation, degrees. A view angle, not a fender — never persisted. */
   spin: number;
   setSpin: (spin: number) => void;
-  tab: Tab;
-  setTab: (tab: Tab) => void;
 }
 
 /**
  * `useReducer` over `FenderConfig`, synced to `location.hash` (debounced, replaceState
- * only) and localStorage. `spin` and `tab` are plain `useState` — PLAN §6 scopes the
- * URL/storage contract to config alone, so the persistence effect below never reads
- * them. SSR/test-safe: every `window`/`localStorage` touch is behind the guards above,
- * so importing this module outside a browser never throws.
+ * only) and localStorage. `spin` is plain `useState` — PLAN §6 scopes the URL/storage
+ * contract to config alone, so the persistence effect below never reads it. SSR/test-safe:
+ * every `window`/`localStorage` touch is behind the guards above, so importing this
+ * module outside a browser never throws.
  */
 export function useFenderConfig(): UseFenderConfig {
   const [config, dispatch] = useReducer(reducer, undefined, initialConfig);
   const [spin, setSpin] = useState(SPIN_DEFAULT);
-  const [tab, setTab] = useState<Tab>('sheets');
 
   useEffect(() => {
     const encoded = configForPersistence(config);
@@ -193,5 +187,5 @@ export function useFenderConfig(): UseFenderConfig {
 
   const reset = useCallback(() => dispatch({ type: 'reset' }), []);
 
-  return { config, setField, applyPreset, reset, spin, setSpin, tab, setTab };
+  return { config, setField, applyPreset, reset, spin, setSpin };
 }

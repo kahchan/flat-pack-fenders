@@ -47,27 +47,31 @@ export const COVERAGE: Record<Side, { lead: number; trail: number }> = {
   rear: { lead: 120, trail: 100 }
 };
 
-/** How far a panel is cut past its seam line to lap under the next one. */
-export const OVERLAP = 20;
-
-/** A4 landscape live area inside a 15 mm safe margin, and the tile overlap. */
+/** A4 landscape live area inside a 15 mm safe margin. */
 export const PW = 267;
 export const PH = 180;
-export const OV = 12;
 
 /**
- * Panel length, derived from the page rather than a bare literal (PLAN FEEDBACK WP15
- * §15.1). Panels were cut to a magic ~250 mm, then each cut a further `OVERLAP` mm past
- * its seam to form the lap — so a panel plus its lap could reach 270 mm against PW's
- * 267 mm of printable width. The lap could push a panel off the sheet.
+ * WP19 §19.1 / decision B1: one printed tile IS one material panel for `stock: 'a4'`, so
+ * the tile's own overlap and the panel's fastening lap are the same physical band, not
+ * two numbers that happen to overlap on the drawing. `OV` (tile registration overlap)
+ * and the old `OVERLAP` (panel fastening lap) collapse into this one constant.
  *
- * `PANEL_SAFETY` keeps the lap clear of the trim edge; `PANEL_L` is the longest a panel
- * can be while still leaving room for its own lap inside that safe width, so
- * `PANEL_L + OVERLAP ≤ PW` always holds by construction — see pattern.test.ts's
- * invariant test.
+ * Tile/panel step is `PW - LAP` (247 mm): each tile is `PW` wide, the next tile starts
+ * `LAP` mm before the previous one ends, and that shared band is both where the paper
+ * registers AND where the panel below laps under the one above. A panel (including
+ * panel 1's tongue) can never exceed `PW`, because that's the width of the window it's
+ * cut from — see `buildBlank`'s panel/seam derivation and pattern.test.ts's invariant.
  */
-export const PANEL_SAFETY = 4;
-export const PANEL_L = PW - 2 * PANEL_SAFETY - OVERLAP;
+export const LAP = 20;
+
+/**
+ * `stock: 'single'` has no panels — the fender is one piece, however many A4 tiles it
+ * takes to print. Those tiles still need a plain registration overlap so taped paper
+ * lines up, but there's no fastening lap to make it do double duty, so it keeps its own
+ * smaller number rather than inheriting `LAP`'s panel-sized band.
+ */
+export const OV = 12;
 
 /**
  * Vertical room reserved above each slot on a combined print page (PLAN FEEDBACK WP15

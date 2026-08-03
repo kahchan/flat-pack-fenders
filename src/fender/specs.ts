@@ -1,9 +1,11 @@
-import { OVERLAP, WHEELS, f0, f1 } from './defaults';
+import { PW, WHEELS, f0, f1 } from './defaults';
 import { buildCrossSection } from './crossSection';
 import { geo } from './geometry';
+import { buildParts } from './parts';
 import { buildBlank } from './pattern';
+import { buildPrintLayout } from './printLayout';
 import { buildTiling } from './tiling';
-import type { BlankModel, FenderConfig, Geometry, SpecRow, TilingModel, XsecModel } from './types';
+import type { BlankModel, FenderConfig, Geometry, PrintLayout, SpecRow, TilingModel, XsecModel } from './types';
 
 /**
  * The 11-row spec table, plus the two summary one-liners (`assembledLabel`,
@@ -20,7 +22,8 @@ export function buildSpecs(
   g: Geometry = geo(s),
   blank: BlankModel = buildBlank(s, g),
   xsec: XsecModel = buildCrossSection(s, g),
-  tiling: TilingModel = buildTiling(s, g, blank)
+  tiling: TilingModel = buildTiling(s, g, blank),
+  printLayout: PrintLayout = buildPrintLayout(tiling, buildParts(s, g))
 ): SpecRow[] {
   const { panelCount } = blank;
 
@@ -65,10 +68,12 @@ export function buildSpecs(
       value: `${f1(g.removal)} mm`,
       note: 'removed by all darts, one side'
     },
+    // WP20 §20.1 (decision B2) — nesting is removed outright, so the nested-pair branch
+    // this note used to carry goes with it.
     {
       label: 'Blank area',
       value: `${f1((g.L * g.Wd) / 1e6)} m²`,
-      note: s.nest ? 'each, nested pair shares the stock width' : 'before darts are cut'
+      note: 'before darts are cut'
     },
     {
       label: 'Material panels',
@@ -76,11 +81,16 @@ export function buildSpecs(
       note:
         panelCount === 1
           ? `needs ${f0(g.L)} mm of stock`
-          : `each ≈ ${f0(g.L / panelCount + OVERLAP)} × ${f0(g.Wd)} mm incl. lap`
+          : // WP19 §19.1: every panel is one PW-wide tile window (only the last is
+            // shorter, since it only runs to the end of the blank).
+            `each up to ${PW} × ${f0(g.Wd)} mm incl. lap`
     },
+    // WP20 §20.2 — `printLayout.pageCount` is the single source for "how many sheets to
+    // print"; `TilingModel.sheetCount` (rows × cols + 2, a nominal tile/piece count that
+    // could disagree with the real print job) is gone.
     {
       label: 'Sheets to print',
-      value: `${tiling.sheetCount}`,
+      value: `${printLayout.pageCount}`,
       note: `${tiling.cols} × ${tiling.rows} tiles + parts + instructions`
     }
   ];
