@@ -269,7 +269,7 @@ reason this is its own package rather than a WP23 footnote.
 
 ---
 
-## WP27 — The panel seam is not where the page is
+## WP27 — The panel seam is not where the page is ➡️ MOVED to FEEDBACK-5-PLAN.md
 
 ### 27.1 Two grids that were supposed to be one (§9.28)
 
@@ -336,7 +336,7 @@ Page 1 of the round-3 output shows two defects not visible from the code:
 
 ---
 
-## WP24 — Numbers you can type, and radius as a real state
+## WP24 — Numbers you can type, and radius as a real state ➡️ MOVED to FEEDBACK-5-PLAN.md
 
 ### 24.1 The radius slider reaches physically impossible values (§9.29)
 
@@ -358,7 +358,7 @@ Escape reverts. Clamped to the slider's own min/max on commit.
 
 ---
 
-## WP25 — Rail and canvas layout defects
+## WP25 — Rail and canvas layout defects ➡️ MOVED to FEEDBACK-5-PLAN.md
 
 ### 25.1 Content scrolls into the gap above the title (§9.30)
 
@@ -394,7 +394,7 @@ own its background. Check the phone and tablet breakpoints in `responsive.css:16
 
 ---
 
-## WP26 — Preset parity
+## WP26 — Preset parity ➡️ MOVED to FEEDBACK-5-PLAN.md
 
 Today: 2 front, 4 rear, 1 side-agnostic. Per **C9**, add two front presets for 4/4:
 
@@ -409,6 +409,11 @@ join at its current count with headroom. Both new presets must ship warning-free
 from WP18, which now includes a join that fits.
 
 ---
+
+> **Rounds 3 and 4 delivered WP23, WP28, WP29, WP30, WP31 and WP32.** The four packages above
+> were never built; they are re-measured against the current codebase in `docs/FEEDBACK-5-PLAN.md`
+> and continue there. Read that one, not this one, for their numbers — several of the figures
+> below are stale after `L` became the polygon perimeter.
 
 ## Sequencing
 
