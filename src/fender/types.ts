@@ -14,7 +14,14 @@
 
 export type Side = 'front' | 'rear';
 export type WheelKey = '700c' | '650b' | '26in' | '20in';
-export type JoinKey = 'zip' | 'rivet' | 'slot' | 'none';
+/**
+ * WP23 §23.3: five styles ordered by the lap each needs (0 / ≥3 / ≥7 / ≥11 / ≥11 mm).
+ * `'slot'` is kept as the wire value for the fifth (PLAN FEEDBACK WP23 §23.7) but its
+ * construction changes: it used to be two slots either side of a butt seam with
+ * nothing passing between them, and is now the integral punched-tongue tab (§23.5) —
+ * an old shared link decodes the same value to the new construction.
+ */
+export type JoinKey = 'none' | 'cinch' | 'rivet' | 'zip' | 'slot';
 export type StockKey = 'single' | 'a4';
 export type StrutEndKey = 'bolt' | 'strap';
 
@@ -161,8 +168,15 @@ export interface Geometry {
   pitch: number;
   /** Total material removed by all darts, one side, mm. */
   removal: number;
-  /** Width of one dart at the free edge, mm. */
+  /** WP23 §23.2: always 0 now — the dart is cut as a plain slit, not a V. The surplus
+   * it used to remove is left in as overlap instead; see `lap`. Kept (rather than
+   * dropped) so pattern.ts's dart-vertex maths still reads as "slit width", not as a
+   * silently-vanished field. */
   notch: number;
+  /** WP23 §23.2: the shingled lap at the free edge, mm — `removal/n + t`, maximised
+   * (nothing ever narrows it back down; see decision C2). 0 when there are no darts
+   * (`n <= 1`). This is the number the join family (§23.3) is measured against. */
+  lap: number;
 }
 
 // ── Drawing primitives ───────────────────────────────────────────────────────

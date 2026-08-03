@@ -136,7 +136,8 @@ export const PRESETS: Preset[] = [
       struts: 3,
       strutLen: 200,
       mudflap: 90,
-      join: 'zip',
+      // WP23 §23.3 — cinch clears every preset's shipped flap count with headroom.
+      join: 'cinch',
       stock: 'a4',
       tongue: true,
       fuse: false,

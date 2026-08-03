@@ -156,7 +156,11 @@ export const DEFAULTS: FenderConfig = {
   struts: 2,
   strutLen: 160,
   mudflap: 100,
-  join: 'zip',
+  // WP23 §23.3 — every preset clears `cinch` at its shipped flap count with headroom
+  // (the table in §23.3), but none clears `zip`/`slot` (both need 11 mm of lap; the
+  // default has ~4.9 mm). `cinch` is the join the redesign is built around: real
+  // overlap under a butt-seam-style tie, so it costs nothing to make the default fit.
+  join: 'cinch',
   stock: 'a4',
   tongue: true,
   fuse: false,
@@ -188,7 +192,7 @@ export const PARAM_SPECS: Record<ConfigKey, ParamSpec> = {
   struts: { kind: 'number', min: 1, max: 6, step: 1 },
   strutLen: { kind: 'number', min: 80, max: 420, step: 10, unit: 'mm' },
   mudflap: { kind: 'number', min: 0, max: 220, step: 5, unit: 'mm' },
-  join: { kind: 'enum', options: ['zip', 'rivet', 'slot', 'none'] },
+  join: { kind: 'enum', options: ['none', 'cinch', 'rivet', 'zip', 'slot'] },
   stock: { kind: 'enum', options: ['single', 'a4'] },
   tongue: { kind: 'boolean' },
   fuse: { kind: 'boolean' },

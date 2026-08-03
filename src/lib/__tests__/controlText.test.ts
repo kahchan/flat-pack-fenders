@@ -104,11 +104,14 @@ describe('partsSizeLabel / partsFitNote', () => {
     expect(partsSizeLabel(DEFAULTS, parts)).toBe('2 struts, 1 mudflap');
   });
 
-  it('adds hardware count for rivet/slot joins', () => {
+  // WP23 §23.3: no join needs a separate hardware piece any more — a rivet goes
+  // straight through the lap, and the tab (`slot`) is integral to the blank.
+  it('adds no hardware count for any join', () => {
     const config = { ...DEFAULTS, join: 'rivet' as const, mudflap: 0 };
     const g = geo(config);
     const parts = buildParts(config, g);
-    expect(partsSizeLabel(config, parts)).toContain('butt strap');
+    expect(partsSizeLabel(config, parts)).not.toContain('strap');
+    expect(partsSizeLabel(config, parts)).toBe('2 struts');
   });
 
   it('flags when Sheet B is too wide for A4', () => {

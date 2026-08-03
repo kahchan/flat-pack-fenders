@@ -116,9 +116,19 @@ describe('DXF entity counts and layers — blank-only model', () => {
     expect(circles.length).toBe(model.blank.holes.length);
     // 1 blank outline + 1 per slot (rect) + 1 per fold/score/seam line — each of those
     // paths is a single M subpath in pattern.ts, so pathPolys emits exactly one
-    // polyline per entry (see PLAN §9.2 comment in pattern.ts).
+    // polyline per entry (see PLAN §9.2 comment in pattern.ts). WP23 §23.5: a `slot`
+    // (punched tongue) join appends its own release-cut subpath into the SAME outline
+    // `d`, one per skirt (top, bottom) per dart, so those add to the outline's own
+    // polyline count instead of the primary-path count above.
+    const tongueSubpaths =
+      c.config.join === 'slot' ? 2 * Math.max(0, model.geo.n - 1) : 0;
     const primaryPolylines =
-      1 + model.blank.slots.length + model.blank.foldLines.length + model.blank.scoreLines.length + model.blank.seams.length;
+      1 +
+      tongueSubpaths +
+      model.blank.slots.length +
+      model.blank.foldLines.length +
+      model.blank.scoreLines.length +
+      model.blank.seams.length;
     expect(polylines.length).toBe(primaryPolylines);
 
     expect(entities.every((e) => e.layer === 'CUT' || e.layer === 'FOLD' || e.layer === 'HOLES')).toBe(true);
@@ -152,28 +162,34 @@ describe('Y-flip is negation relative to the model — PLAN "scrutinise the Y-fl
   });
 });
 
+// WP23 §23.3 removed the only curve-free Sheet-B part (the butt-strap/clip hardware)
+// along with the join it belonged to — a rivet goes straight through the lap now, and
+// the tab is integral to the blank, so Sheet-B is struts/mudflap only, and both have
+// curved (arc/quadratic) outlines. This test environment has no DOM at all (see
+// vite.config.ts's `environment: 'node'`), and only outline PATHS need it — hole
+// circles don't — so outlines/folds are stripped before buildDxf() the same way
+// `blankOnly()` strips the blank's own parts above.
+function partsHolesOnly(model: DrawingModel): DrawingModel {
+  return { ...model, parts: { ...model.parts, outlines: [], folds: [] } };
+}
+
 describe('parts offset — dy = Wd + 30, same as svg.ts\'s PARTS_GAP', () => {
   it('a hole on the parts sheet is offset by g.Wd + 30 before the Y-flip', () => {
-    // Curve-free synthetic config (struts: 0, mudflap: 0) so the FULL model — blank AND
-    // parts, real strap holes included — can run through the real buildDxf() with no
-    // DOM at all. This is the same offset svg.ts uses for <g transform="translate(0,…)">.
-    const config: FenderConfig = { ...CASES[0]![1].config, struts: 0, mudflap: 0, join: 'rivet', flaps: 6 };
-    const model = buildModel(config);
+    const config: FenderConfig = { ...CASES[0]![1].config, struts: 1, mudflap: 0 };
+    const model = partsHolesOnly(buildModel(config));
     expect(model.parts.holes.length).toBeGreaterThan(0);
     const entities = parseEntities(buildDxf(model));
     const circles = entities.filter((e) => e.type === 'CIRCLE');
-    const strapHole = model.parts.holes[0]!;
+    const strutHole = model.parts.holes[0]!;
     const dy = model.geo.Wd + 30;
-    const expectedY = Number((-(Number(strapHole.cy) + dy)).toFixed(3));
-    const strapCircle = circles.find((c) => c.points[0]![1] === expectedY);
-    expect(strapCircle).toBeDefined();
+    const expectedY = Number((-(Number(strutHole.cy) + dy)).toFixed(3));
+    const strutCircle = circles.find((c) => c.points[0]![1] === expectedY);
+    expect(strutCircle).toBeDefined();
   });
 
   it('full curve-free model: entity counts match blank + parts exactly', () => {
-    const config: FenderConfig = { ...CASES[0]![1].config, struts: 0, mudflap: 0, join: 'rivet', flaps: 6 };
-    const model = buildModel(config);
-    // No struts, no mudflap ⇒ every parts outline is a butt strap rect (h/v/Z only) —
-    // no [acqst] command anywhere in this model, so buildDxf never needs the DOM.
+    const config: FenderConfig = { ...CASES[0]![1].config, struts: 1, mudflap: 0 };
+    const model = partsHolesOnly(buildModel(config));
     const entities = parseEntities(buildDxf(model));
     const circles = entities.filter((e) => e.type === 'CIRCLE');
     const polylines = entities.filter((e) => e.type === 'LWPOLYLINE');
@@ -184,14 +200,8 @@ describe('parts offset — dy = Wd + 30, same as svg.ts\'s PARTS_GAP', () => {
       model.blank.slots.length +
       model.blank.foldLines.length +
       model.blank.scoreLines.length +
-      model.blank.seams.length +
-      model.parts.outlines.length +
-      model.parts.folds.length;
+      model.blank.seams.length;
     expect(polylines.length).toBe(expectedPolylines);
-
-    // Every butt-strap outline is a closed 4-point rect on CUT.
-    const partsCutPolys = polylines.filter((p) => p.layer === 'CUT' && p.points.length === 4);
-    expect(partsCutPolys.length).toBeGreaterThanOrEqual(model.parts.outlines.length);
   });
 });
 

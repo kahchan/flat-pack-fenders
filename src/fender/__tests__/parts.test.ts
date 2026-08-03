@@ -125,23 +125,16 @@ describe('parts invariants', () => {
     expect(three.outlines.length).toBe(3 + (base.mudflap > 0 ? 1 : 0));
   });
 
-  it('rivet join produces butt straps with four holes each, no fold lines', () => {
-    const rivet = buildParts({ ...base, join: 'rivet' });
-    expect(rivet.extraLabel).toBe('BUTT STRAP');
-    const strapFoldCount = rivet.folds.length - base.struts - (base.mudflap > 0 ? 1 : 0);
-    expect(strapFoldCount).toBe(0);
-  });
-
-  it('slot join produces clips with fold lines, no extra holes', () => {
-    const slotCfg = { ...base, join: 'slot' as const, flaps: 12 };
-    const slot = buildParts(slotCfg);
-    expect(slot.extraLabel).toBe('CLIP');
-    expect(slot.extraCount).toBe(slotCfg.flaps - 1);
-  });
-
-  it('zip and none joins need no extra parts', () => {
-    expect(buildParts({ ...base, join: 'zip' }).extraCount).toBe(0);
-    expect(buildParts({ ...base, join: 'none' }).extraCount).toBe(0);
+  // WP23 §23.3: no join needs a separate Sheet-B hardware piece any more. A rivet goes
+  // straight through the shingled lap now (no butt strap to squeeze a V shut), and the
+  // old slot join's clip is gone with the join it belonged to — `slot` is the integral
+  // punched tongue (§23.5), cut from the blank itself.
+  it('no join produces extra Sheet-B parts', () => {
+    for (const join of ['none', 'cinch', 'rivet', 'zip', 'slot'] as const) {
+      const p = buildParts({ ...base, join });
+      expect(p.extraCount, join).toBe(0);
+      expect(p.extraLabel, join).toBe('');
+    }
   });
 
   // PLAN §12: adding `pages` must not disturb the single continuous layout that

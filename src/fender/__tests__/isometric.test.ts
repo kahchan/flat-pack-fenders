@@ -1,150 +1,150 @@
 import { describe, expect, it } from 'vitest';
-import golden from './golden.json';
 import { buildIsometric, NS } from '../isometric';
 import { buildBlank } from '../pattern';
 import { DEFAULTS } from '../defaults';
 import { geo } from '../geometry';
+import { PRESETS } from '../../state/presets';
 import type { FenderConfig } from '../types';
 
-type PathFixture = { d: string };
-type HoleFixture = { cx: string; cy: string; r: number };
-type FacetFixture = { d: string; fill: string };
-type IsoFixture = {
-  facetCount: number;
-  firstFacet: FacetFixture;
-  lastFacet: FacetFixture;
-  edges: string[];
-  outline: string;
-  wheelCount: number;
-  wheel: string[];
-  seamCount: number;
-  firstSeam: PathFixture | null;
-  lastSeam: PathFixture | null;
-  holeCount: number;
-  firstHole: HoleFixture | null;
-  lastHole: HoleFixture | null;
-  slotCount: number;
-  firstSlot: PathFixture | null;
-  lastSlot: PathFixture | null;
-  strutCount: number;
-  firstStrut: PathFixture | null;
-  lastStrut: PathFixture | null;
-  mudflapCount: number;
-  mudflap: PathFixture | null;
-  viewBox: string;
-  aspect: string;
-};
-type Case = {
-  config: FenderConfig;
-  iso: Record<string, IsoFixture>;
-};
+/**
+ * WP28 §28.2 (decision C5): the preview renders real cut geometry — real section
+ * count on the skirt, a real thickness step, and every hole/slot/tongue/strut/mudflap
+ * as actual geometry — not a fixed-`NS` shaded proxy for it. The old golden-diff
+ * fixture (a verbatim `NS`-segment sweep that never read `g.n` at all) is gone with
+ * the geometry it pinned; these tests assert the WP28 verify checklist instead:
+ * skirt facet count === g.n, the crown stays smooth, the lap step and thickness are
+ * real and disappear at zero, every join's fastener geometry differs sensibly, and a
+ * dartless config renders without artefacts.
+ */
 
-const CASES = Object.entries(golden as unknown as Record<string, Case>);
-const SPINS = [18, -45];
-
-// The fixture (extract-golden.mjs) is a verbatim transcription: its `mix(t)` interpolates
-// two literal RGB triples and emits `rgb(r,g,b)`. The port can't hardcode those triples
-// (hard rule: colours are tokens) and `rgb(var(--draw-facet-...))` alone can't express a
-// numeric blend between two custom properties, so buildIsometric() emits a CSS
-// `color-mix()` expression instead, with the blend weight (not the colour) computed
-// numerically. To verify the two are the same ramp, parse the weight back out of our
-// `color-mix()` string and recompute the same rgb() a browser would render, then compare
-// channel-by-channel against the fixture's literal rgb(). A tolerance of 1 covers the
-// fixture's full-precision `t` vs. our `f1()`-quantised (1 decimal place) percentage.
-const DARK: [number, number, number] = [26, 34, 50];
-const LIT: [number, number, number] = [244, 240, 232];
-
-function litWeight(fill: string): number {
-  const m = fill.match(/--draw-facet-lit\)\)\s*([\d.]+)%/);
-  if (!m) throw new Error(`fill is not a color-mix() expression: ${fill}`);
-  return Number(m[1]) / 100;
+function facetCount(config: FenderConfig): { skirt: number; crown: number; edges: number; risers: number } {
+  const g = geo(config);
+  const iso = buildIsometric(config, g);
+  const nSkirt = Math.max(1, g.n);
+  const skirt = 2 * nSkirt;
+  const crown = NS;
+  const edges = g.t > 0 ? 2 * nSkirt : 0;
+  const risers = g.lap > 0 && nSkirt > 1 ? 2 * (nSkirt - 1) : 0;
+  expect(iso.facets.length).toBe(skirt + crown + edges + risers);
+  return { skirt, crown, edges, risers };
 }
 
-function parseRgb(fill: string): [number, number, number] {
-  const m = fill.match(/^rgb\((\d+),(\d+),(\d+)\)$/);
-  if (!m) throw new Error(`fixture fill is not rgb(): ${fill}`);
-  return [Number(m[1]), Number(m[2]), Number(m[3])];
-}
-
-function expectSameRamp(ourFill: string, fixtureFill: string) {
-  expect(ourFill).toMatch(
-    /^color-mix\(in srgb, rgb\(var\(--draw-facet-lit\)\) [\d.]+%, rgb\(var\(--draw-facet-dark\)\) [\d.]+%\)$/
-  );
-  const t = litWeight(ourFill);
-  const [fr, fg, fb] = parseRgb(fixtureFill);
-  const recomputed = DARK.map((c, i) => Math.round(c + (LIT[i] - c) * t));
-  expect(recomputed[0]).toBeCloseTo(fr, 0);
-  expect(recomputed[1]).toBeCloseTo(fg, 0);
-  expect(recomputed[2]).toBeCloseTo(fb, 0);
-}
-
-for (const [name, c] of CASES) {
-  describe.each(SPINS)(`buildIsometric(${name}, spin=%s)`, (spin) => {
-    const iso = buildIsometric(c.config, undefined, spin);
-    const fixture = c.iso[String(spin)]!;
-
-    it('facet count, first/last facet d and shading ramp match', () => {
-      expect(iso.facets).toHaveLength(fixture.facetCount);
-      expect(iso.facets[0]!.d).toBe(fixture.firstFacet.d);
-      expect(iso.facets[iso.facets.length - 1]!.d).toBe(fixture.lastFacet.d);
-      expectSameRamp(iso.facets[0]!.fill, fixture.firstFacet.fill);
-      expectSameRamp(iso.facets[iso.facets.length - 1]!.fill, fixture.lastFacet.fill);
-    });
-
-    it('edges (rails + caps) and outline match exactly, in order', () => {
-      expect(iso.edges.map((e) => e.d)).toEqual(fixture.edges);
-      expect(iso.outline[0]!.d).toBe(fixture.outline);
-    });
-
-    it('wheel ghost matches exactly, in order', () => {
-      expect(iso.wheel).toHaveLength(fixture.wheelCount);
-      expect(iso.wheel.map((w) => w.d)).toEqual(fixture.wheel);
-    });
-
-    it('seams match, in order', () => {
-      expect(iso.seams).toHaveLength(fixture.seamCount);
-      expect(iso.seams[0] ?? null).toEqual(fixture.firstSeam);
-      expect(iso.seams[iso.seams.length - 1] ?? null).toEqual(fixture.lastSeam);
-    });
-
-    it('holes match, in order (dart fasteners then strut fasteners)', () => {
-      expect(iso.holes).toHaveLength(fixture.holeCount);
-      expect(iso.holes[0] ?? null).toEqual(fixture.firstHole);
-      expect(iso.holes[iso.holes.length - 1] ?? null).toEqual(fixture.lastHole);
-    });
-
-    it('slots match, in order', () => {
-      expect(iso.slots).toHaveLength(fixture.slotCount);
-      expect(iso.slots[0] ?? null).toEqual(fixture.firstSlot);
-      expect(iso.slots[iso.slots.length - 1] ?? null).toEqual(fixture.lastSlot);
-    });
-
-    it('struts match, in order', () => {
-      expect(iso.struts).toHaveLength(fixture.strutCount);
-      expect(iso.struts[0] ?? null).toEqual(fixture.firstStrut);
-      expect(iso.struts[iso.struts.length - 1] ?? null).toEqual(fixture.lastStrut);
-    });
-
-    it('mudflap matches (absent when config.mudflap is 0)', () => {
-      expect(iso.mudflap).toHaveLength(fixture.mudflapCount);
-      expect(iso.mudflap[0] ?? null).toEqual(fixture.mudflap);
-    });
-
-    it('viewBox and aspect match', () => {
-      expect(iso.viewBox).toBe(fixture.viewBox);
-      expect(iso.aspect).toBe(fixture.aspect);
-    });
-  });
-}
-
-describe('isometric invariants', () => {
-  const base = CASES[0]![1].config;
-
-  it('facet count is 3 quads per segment, fixed at NS segments, independent of config', () => {
-    for (const [, c] of CASES) {
-      expect(buildIsometric(c.config).facets).toHaveLength(NS * 3);
+describe('buildIsometric — skirt facet count (WP28 §28.1/§28.2)', () => {
+  it('skirt facet count equals g.n (2 per section: top + bottom), crown stays fixed at NS', () => {
+    for (const flaps of [6, 22]) {
+      const config = { ...DEFAULTS, flaps };
+      const g = geo(config);
+      const c = facetCount(config);
+      expect(c.skirt).toBe(2 * g.n);
+      expect(c.crown).toBe(NS);
     }
   });
+
+  it('setting flaps to 6 vs 22 visibly changes the section count', () => {
+    const six = buildIsometric({ ...DEFAULTS, flaps: 6 });
+    const twentyTwo = buildIsometric({ ...DEFAULTS, flaps: 22 });
+    expect(six.facets.length).not.toBe(twentyTwo.facets.length);
+  });
+
+  it('crown facet count never changes with flaps — only the skirt does', () => {
+    const g6 = geo({ ...DEFAULTS, flaps: 6 });
+    const g22 = geo({ ...DEFAULTS, flaps: 22 });
+    const c6 = facetCount({ ...DEFAULTS, flaps: 6 });
+    const c22 = facetCount({ ...DEFAULTS, flaps: 22 });
+    expect(c6.crown).toBe(c22.crown);
+    expect(c6.skirt).not.toBe(c22.skirt);
+    expect(c6.skirt).toBe(2 * g6.n);
+    expect(c22.skirt).toBe(2 * g22.n);
+  });
+
+  it('every preset renders with skirt facet count exactly 2 × its flap count', () => {
+    for (const preset of PRESETS) {
+      facetCount(preset.config);
+    }
+  });
+});
+
+describe('buildIsometric — real thickness and the lap step (WP28 §28.2)', () => {
+  it('draws a free-edge thickness facet per skirt section when thick > 0, none at thick = 0', () => {
+    const withThick = facetCount({ ...DEFAULTS, thick: 0.8 });
+    const noThick = facetCount({ ...DEFAULTS, thick: 0 });
+    expect(withThick.edges).toBeGreaterThan(0);
+    expect(noThick.edges).toBe(0);
+  });
+
+  it('draws a riser facet at every interior dart when there is a real lap, none when dartless', () => {
+    const withLap = facetCount({ ...DEFAULTS, flaps: 20 });
+    expect(withLap.risers).toBeGreaterThan(0);
+    expect(withLap.risers).toBe(2 * (withLap.skirt / 2 - 1));
+
+    // A dartless config (WP23 §23.2's real branch, flaps <= 1) has no interior dart to
+    // riser at all — one panel spans the whole arc, and geo() itself guards flaps <= 1
+    // rather than only relying on the flaps slider's own floor (4) to keep it away.
+    const dartless = facetCount({ ...DEFAULTS, flaps: 1 });
+    expect(dartless.risers).toBe(0);
+    expect(dartless.skirt).toBe(2);
+  });
+
+  it('a dartless config (flaps <= 1) renders without NaN/Infinity anywhere', () => {
+    for (const flaps of [0, 1]) {
+      const config = { ...DEFAULTS, flaps };
+      const iso = buildIsometric(config);
+      const allD = [
+        ...iso.facets.map((f) => f.d),
+        ...iso.edges.map((e) => e.d),
+        ...iso.outline.map((o) => o.d),
+        ...iso.wheel.map((w) => w.d)
+      ].join(' ');
+      expect(allD).not.toMatch(/NaN|Infinity/);
+      expect(iso.viewBox).not.toMatch(/NaN|Infinity/);
+    }
+  });
+});
+
+describe('buildIsometric — join fastener geometry (WP23 §23.3/§23.6 in 3D)', () => {
+  const base = DEFAULTS;
+
+  it('slots (the punched tongue) appear only for the slot join, two quads per side per dart', () => {
+    const g = geo(base);
+    const darts = g.n - 1;
+    const none = buildIsometric({ ...base, join: 'none' });
+    const cinch = buildIsometric({ ...base, join: 'cinch' });
+    const zip = buildIsometric({ ...base, join: 'zip' });
+    const rivet = buildIsometric({ ...base, join: 'rivet' });
+    const slot = buildIsometric({ ...base, join: 'slot' });
+
+    expect(none.slots).toEqual([]);
+    expect(cinch.slots).toEqual([]);
+    expect(zip.slots).toEqual([]);
+    expect(rivet.slots).toEqual([]);
+    expect(slot.slots.length).toBe(darts * 2 * 2); // tongue + slot, 2 sides, per dart
+  });
+
+  it('none pierces nothing; cinch/rivet/zip/slot each add real fastener geometry', () => {
+    const none = buildIsometric({ ...base, join: 'none' });
+    const cinch = buildIsometric({ ...base, join: 'cinch' });
+    const zip = buildIsometric({ ...base, join: 'zip' });
+    const rivet = buildIsometric({ ...base, join: 'rivet' });
+    const slot = buildIsometric({ ...base, join: 'slot' });
+
+    // 'none' and 'slot' pierce no holes at the dart at all (slot's fastener is the
+    // tongue/slot quads above, not circular holes) — both differ from cinch/zip/rivet
+    // only by strut-hole count, so they must be equal to each other.
+    expect(slot.holes.length).toBe(none.holes.length);
+    expect(cinch.holes.length).toBeGreaterThan(none.holes.length);
+    expect(zip.holes.length).toBeGreaterThan(cinch.holes.length);
+    expect(rivet.holes.length).toBeGreaterThan(none.holes.length);
+  });
+
+  it('a dart seam line is drawn for every dart regardless of join', () => {
+    const g = geo(base);
+    const iso = buildIsometric(base);
+    expect(iso.seams.length).toBe(2 * (g.n - 1));
+  });
+});
+
+describe('isometric invariants', () => {
+  const base = DEFAULTS;
 
   it('spin changes the projection: spin=0 and the default (18) differ', () => {
     const flat = buildIsometric(base, undefined, 0);
@@ -160,24 +160,6 @@ describe('isometric invariants', () => {
   it('mudflap is present iff config.mudflap > 0', () => {
     expect(buildIsometric({ ...base, mudflap: 0 }).mudflap).toEqual([]);
     expect(buildIsometric({ ...base, mudflap: 100 }).mudflap.length).toBe(1);
-  });
-
-  it('slots appear only for the slot join; zip/rivet add fastener holes that slot/none do not', () => {
-    const none = buildIsometric({ ...base, join: 'none' });
-    const slot = buildIsometric({ ...base, join: 'slot' });
-    const zip = buildIsometric({ ...base, join: 'zip' });
-    const rivet = buildIsometric({ ...base, join: 'rivet' });
-
-    expect(none.slots).toEqual([]);
-    expect(zip.slots).toEqual([]);
-    expect(rivet.slots).toEqual([]);
-    expect(slot.slots.length).toBeGreaterThan(0);
-
-    // Neither 'slot' nor 'none' pierce the seam (ts === [] for both) — holes come only
-    // from the struts, so the two configs must have identical hole counts.
-    expect(slot.holes.length).toBe(none.holes.length);
-    expect(zip.holes.length).toBeGreaterThan(none.holes.length);
-    expect(rivet.holes.length).toBeGreaterThan(none.holes.length);
   });
 
   it('two strut fastener holes and one strut quad per side, per strut in blank.strutFrac', () => {

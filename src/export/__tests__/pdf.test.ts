@@ -11,8 +11,14 @@ import type { DrawingModel, FenderConfig } from '../../fender/types';
  * `pathPolys`'s curve branch needs a DOM this `node` vitest environment doesn't have (no
  * `jsdom` — see `pathPolys.test.ts`, `dxf.test.ts`). The blank never contains a curve
  * (PLAN §9.2), so Sheet A tiles + instructions are always safe to build for real; Sheet
- * B is only safe for a curve-free config (struts: 0, mudflap: 0, matching dxf.test.ts's
- * technique) or once its geometry is emptied entirely.
+ * B is only safe for a curve-free config or once its geometry is emptied entirely.
+ *
+ * WP23 §23.3 removed the only curve-free Sheet-B part (the butt-strap/clip hardware
+ * `curveFreeConfig` used to lean on) along with the join it belonged to — every
+ * remaining Sheet-B part (struts, mudflap) has a curved outline. `straightenParts`
+ * keeps a real pack (real page count, real per-part holes/folds/position) but swaps
+ * each part's own curved `outline`/`folds` for a straight stand-in, so buildPdf's Sheet
+ * B renderer never needs the DOM either.
  */
 
 type Case = { config: FenderConfig; baseName: string };
@@ -26,7 +32,25 @@ function withoutSheetB(model: DrawingModel): DrawingModel {
 }
 
 function curveFreeConfig(base: FenderConfig): FenderConfig {
-  return { ...base, struts: 0, mudflap: 0, join: 'rivet', flaps: 6 };
+  return { ...base, struts: 1, mudflap: 0 };
+}
+
+// Only `outline` ever curves (strut pill `a` arcs, mudflap `q` corners) — a strut's
+// own `folds` are already straight `v` segments, so those stay real and this keeps
+// the fold-count assertions below meaningful instead of vacuously zero.
+const STRAIGHT_OUTLINE = { d: 'M 0,0 h 1 v 1 h -1 Z' };
+
+function straightenParts(model: DrawingModel): DrawingModel {
+  return {
+    ...model,
+    parts: {
+      ...model.parts,
+      pages: model.parts.pages.map((page) => ({
+        ...page,
+        parts: page.parts.map((part) => ({ ...part, outline: STRAIGHT_OUTLINE }))
+      }))
+    }
+  };
 }
 
 // ---- Minimal PDF reader for the structural/measurement assertions below. Only reads
@@ -118,7 +142,7 @@ describe('buildPdf — Y-flip is the right way round (PLAN: "easiest thing to ge
 describe('buildPdf — page count and structure match the print tree', () => {
   it('one page per Sheet A tile, then one per Sheet B page, then instructions', () => {
     const config = curveFreeConfig(CASES[0]![1].config);
-    const model = buildModel(config);
+    const model = straightenParts(buildModel(config));
     const pdf = bytesToBinaryString(buildPdf(model));
     const pages = pageObjects(pdf);
     const expectedCount = model.tiling.tiles.length + model.parts.pages.length + 1;
@@ -161,15 +185,15 @@ describe('buildPdf — page count and structure match the print tree', () => {
     expect(pdf).not.toContain('/FontFile');
   });
 
-  it('a curve-free full model (struts: 0, mudflap: 0) runs end to end, real Sheet B included', () => {
+  it('a curve-free full model (struts: 1, mudflap: 0) runs end to end, real Sheet B included', () => {
     const config = curveFreeConfig(CASES[0]![1].config);
-    const model = buildModel(config);
+    const model = straightenParts(buildModel(config));
     expect(() => buildPdf(model)).not.toThrow();
   });
 
   it('OCG-gated CUT/FOLD/HOLES entity counts on Sheet B match the model, curve-free config', () => {
     const config = curveFreeConfig(CASES[0]![1].config);
-    const model = buildModel(config);
+    const model = straightenParts(buildModel(config));
     const pdf = bytesToBinaryString(buildPdf(model));
     const streams = contentStreams(pdf);
     const sheetBStreams = streams.slice(model.tiling.tiles.length, model.tiling.tiles.length + model.parts.pages.length);

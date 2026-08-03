@@ -93,7 +93,10 @@ describe('encodeConfig / decodeConfig — round trip', () => {
     expect(decoded.bevel).toBe(DEFAULTS.bevel);
     expect(decoded.hem).toBe(true);
     expect(decoded.side).toBe('rear');
-    expect(decoded).toEqual({ ...DEFAULTS, hem: true });
+    // WP23 §23.3 changed DEFAULTS.join to 'cinch', but this hash's own `join` token is
+    // present (literally `zip`, unlike the trailing `bevel`/`strutEnd` fields this test
+    // is actually about) — an old link's real join choice still decodes as written.
+    expect(decoded).toEqual({ ...DEFAULTS, hem: true, join: 'zip' });
   });
 
   it('carries `thick` as tenths so no field contains a "."', () => {

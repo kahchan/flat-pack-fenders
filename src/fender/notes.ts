@@ -26,12 +26,17 @@ import type {
  * record; it is deliberately not regenerated for this file.
  */
 
-/** Feeds assembly step 06. Source lines ~979–984. */
+/**
+ * Feeds assembly step 06. Source lines ~979–984, extended by WP23 §23.3/§23.5: the
+ * skirt now shingles, so every join fastens a real overlap rather than a butt seam —
+ * `cinch` is new, and `slot` is the integral punched tongue, not a separate clip.
+ */
 function joinNote(join: JoinKey): string {
   return {
+    cinch: 'One 4 mm hole per panel, outside the lap. Pull the lap shut with a zip tie spanning across and snip the tail flush.',
     zip: 'Two 4 mm holes at top and bottom of each dart, both sides. Pull the dart closed with a zip tie through each pair and snip the tails flush.',
-    rivet: 'Four 3.2 mm holes per dart plus a butt strap bridging the gap, two rivets per side.',
-    slot: 'Two 3 mm slots per dart. A folded clip threads both slots and holds the dart shut, no hardware.',
+    rivet: 'One 3.2 mm hole per layer, top and bottom of each dart, straight through the lap. Rivet each pair together.',
+    slot: 'A tongue punched from the lap folds through a slot in the panel beneath and lies flat against the inside. No hardware.',
     none: 'No holes at all. Score the marked line across both skirts and run one zip tie right around the girth of the fender in the scored channel. Nothing pierces the crown.'
   }[join];
 }
@@ -106,7 +111,7 @@ export function buildSteps(
     steps.push({
       n: '07',
       title: 'Lap the panels',
-      body: `Cut ${blank.panelCount} panels: each is one printed tile, and each except the last is cut ${LAP} mm past its seam line. That tail is the lap: it sits on the wheel side of the joint once assembled, so water crossing the seam runs over it rather than into it. Slide the panels together until the fastener row sits in the middle of the lap, then fasten through both layers: one ${s.join === 'rivet' ? 'rivet' : s.join === 'slot' ? 'clip' : 'zip tie'} per hole, across the full width. The lapped joint ends up stiffer than the sheet around it.`
+      body: `Cut ${blank.panelCount} panels: each is one printed tile, and each except the last is cut ${LAP} mm past its seam line. That tail is the lap: it sits on the wheel side of the joint once assembled, so water crossing the seam runs over it rather than into it. Slide the panels together until the fastener row sits in the middle of the lap, then fasten through both layers: one ${s.join === 'rivet' ? 'rivet' : 'zip tie'} per hole, across the full width. The lapped joint ends up stiffer than the sheet around it.`
     });
   }
 
@@ -168,9 +173,12 @@ export function buildNotes(
 
   return [
     {
-      title: 'Why the darts exist',
-      body: 'The blank is a developable cylinder along its length, so bending it round the wheel is free. Folding the skirts down is not: the skirt free edge sits on a smaller radius than the fold line, so it must be shorter. Each dart removes exactly that surplus.',
-      formula: `take-up = L × drop / R = ${f0(g.L)} × ${f0(g.drop)} / ${f0(g.R)} = ${f1(g.removal)} mm over ${g.n} darts → ${f1(g.notch)} mm each`
+      // WP23 §23.1/§23.2 — the source removed this surplus as a V-notch; it is now
+      // left in as a shingled lap instead (decision C1), so both the mechanism and the
+      // formula's own result (`lap`, not `notch`) change.
+      title: 'Why the shingle exists',
+      body: 'The blank is a developable cylinder along its length, so bending it round the wheel is free. Folding the skirts down is not: the skirt free edge sits on a smaller radius than the fold line, so it must be shorter than a plain butt fit. Rather than cutting that surplus away, each dart is cut as a plain slit and the surplus is left in as an overlap the next segment shingles under.',
+      formula: `take-up = L × drop / R = ${f0(g.L)} × ${f0(g.drop)} / ${f0(g.R)} = ${f1(g.removal)} mm over ${g.n} darts → ${f1(g.lap)} mm lap each`
     },
     {
       title: 'Radius chain',
@@ -207,9 +215,13 @@ export function buildNotes(
           : 'single sheet, no seams'
     },
     {
-      title: 'What a butt strap is',
-      body: 'A rivet cannot pull a V-shaped gap closed the way a zip tie can: it needs two layers to squeeze. The butt strap is a small separate rectangle that sits behind the dart and bridges it: two rivets into the left flap, two into the right. The dart stays open by design; the strap carries the load. Zip ties and clips need no strap because they pull through both sides at once.',
-      formula: 'strap 34 × 14 mm, 4 × 3.2 mm holes, one per dart'
+      // WP23 §23.1/§23.3 — a rivet used to need a separate butt strap because a V-
+      // shaped gap left it nothing to squeeze. With a real shingled lap under it, a
+      // rivet goes straight through both layers instead, so the strap (and its own
+      // Sheet-B part) is gone.
+      title: 'Rivets go straight through the lap',
+      body: 'A rivet through a butt seam has nothing to squeeze: a V-shaped gap needs two layers pulled together first, which is what the old butt strap was for. With a real shingled lap already sitting under the dart, the rivet passes straight through both layers on its own, one hole per layer, no separate part.',
+      formula: `1 rivet per layer, 4.5 mm in from the free edge, needs ≥ 7 mm lap (have ${f1(g.lap)} mm)`
     },
     {
       title: 'Every hole is a crack initiator',
@@ -247,9 +259,13 @@ export function buildNotes(
       formula: `setback = (r+t)×tan(α/2) = ${f1(g.setback)}, BA = α(r+0.44t) = ${f1(g.BA)}, net ${g.bendComp >= 0 ? '+' : ''}${f1(g.bendComp)} mm per fold`
     },
     {
-      title: 'Darts get wider with thickness',
-      body: 'Two folded flaps meeting at a closed dart collide edge-on if the dart is cut to the ideal width, so the material has to go somewhere. Adding one thickness to every dart gives the two edges room to sit alongside each other rather than fighting.',
-      formula: `dart = L×drop/R/n + t = ${f1(g.notch)} mm`
+      // WP23 §23.2 — the ideal-geometry surplus was always going somewhere; it used to
+      // be cut away as dart width, and now it is left in as lap width instead, one
+      // thickness wider either way so the two folded edges have room to sit alongside
+      // each other rather than fighting.
+      title: 'The lap gets wider with thickness',
+      body: 'Two folded flaps meeting at a plain slit would collide edge-on at the ideal geometric surplus, so the material has to go somewhere: it stays in, as overlap. Adding one thickness to every lap gives the two edges room to sit alongside each other rather than fighting.',
+      formula: `lap = L×drop/R/n + t = ${f1(g.lap)} mm`
     },
     {
       title: 'Hemmed edge',

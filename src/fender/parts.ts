@@ -135,23 +135,6 @@ function localMudflap(w: number, h: number): LocalPart {
   return { id: 'mudflap', outline, folds, holes, slots: [], label, w, h };
 }
 
-function localExtra(index: number, join: 'rivet' | 'slot', labelText: string | null): LocalPart {
-  const w = 34;
-  const h = 14;
-  const outline: Path = { d: `M 0,0 h ${w} v ${h} h ${-w} Z` };
-  const holes: Hole[] = [];
-  const folds: Path[] = [];
-  if (join === 'rivet') {
-    for (const cx of [8, 26]) {
-      for (const cy of [4.5, 9.5]) holes.push({ cx: f1(cx), cy: f1(cy), r: 1.6 });
-    }
-  } else {
-    folds.push({ d: `M 6,0 v ${h} M 28,0 v ${h}` });
-  }
-  const label: Label = { x: 0, y: f1(h + 5), size: 5, anchor: 'start', text: labelText ?? '' };
-  return { id: `extra-${index}`, outline, folds, holes, slots: [], label, w, h };
-}
-
 /**
  * `translate`/`rotate` for one packed part's `<g>` wrapper. Rotation is counter-
  * clockwise (`rotate(-90)`) so a rotated label reads bottom-to-top, never upside down
@@ -194,10 +177,11 @@ function packParts(locals: LocalPart[]): PartsPage[] {
 }
 
 /**
- * Sheet B — struts, mudflap, butt straps / clips.
+ * Sheet B — struts and the mudflap.
  *
- * Layout order is preserved from the design source: struts first, then the mudflap,
- * then the join hardware (butt straps or slot-and-tab clips), stacked top to bottom.
+ * Layout order is preserved from the design source: struts first, then the mudflap.
+ * WP23 §23.3: no join needs a separate hardware piece here any more — see
+ * `extraCount`'s own comment below — so `extraCount`/`extraLabel` are always 0/''.
  * `slots` holds the strap-end strut slots (PLAN FEEDBACK WP21 §21.1) — empty for a
  * bolt-ended strut, same as the source's declared-but-unused `partsSlots` before it.
  */
@@ -292,34 +276,13 @@ export function buildParts(s: FenderConfig, g: Geometry = geo(s)): PartsModel {
     py += s.mudflap + 16;
   }
 
-  const extraCount = s.join === 'rivet' || s.join === 'slot' ? g.n - 1 : 0;
-  const extraLabel = s.join === 'rivet' ? 'BUTT STRAP' : 'CLIP';
-  for (let i = 0; i < extraCount; i++) {
-    const col = i % 6;
-    const row = Math.floor(i / 6);
-    const x = 2 + col * 42;
-    const y = py + row * 22;
-    const w = 34;
-    const h = 14;
-    outlines.push({ d: `M ${f1(x)},${f1(y)} h ${w} v ${h} h ${-w} Z` });
-    if (s.join === 'rivet') {
-      for (const cx of [8, 26]) {
-        for (const cy of [4.5, 9.5]) {
-          holes.push({ cx: f1(x + cx), cy: f1(y + cy), r: 1.6 });
-        }
-      }
-    } else {
-      folds.push({ d: `M ${f1(x + 6)},${f1(y)} v ${h} M ${f1(x + 28)},${f1(y)} v ${h}` });
-    }
-    if (i === 0) {
-      labels.push({
-        x: f1(x),
-        y: f1(y - 3),
-        size: 5,
-        text: `${extraLabel} × ${extraCount}, 34 × 14 mm`
-      });
-    }
-  }
+  // WP23 §23.3: no join needs a separate Sheet-B hardware piece any more. The old butt
+  // strap existed only because a butt seam left rivets nothing to squeeze; with a real
+  // shingled lap under it, a rivet goes straight through both layers. The old slot join's
+  // clip is gone the same way the join itself is: `slot` is now the integral punched
+  // tongue (§23.5), cut from the blank, not a separate part.
+  const extraCount = 0;
+  const extraLabel = '';
 
   const width = Math.max(s.strutLen + 96, g.crownTail + 150);
   const height = py + Math.max(1, Math.ceil(extraCount / 6)) * 22 + 10;
@@ -331,9 +294,6 @@ export function buildParts(s: FenderConfig, g: Geometry = geo(s)): PartsModel {
   const locals: LocalPart[] = [];
   for (let i = 0; i < s.struts; i++) locals.push(localStrut(i, s.strutLen, s.strutEnd));
   if (s.mudflap > 0) locals.push(localMudflap(g.crownTail, s.mudflap));
-  for (let i = 0; i < extraCount; i++) {
-    locals.push(localExtra(i, s.join as 'rivet' | 'slot', i === 0 ? `${extraLabel} × ${extraCount}, 34 × 14 mm` : null));
-  }
   const pages = packParts(locals);
 
   // Only a part that fits a page in NEITHER orientation is a real constraint worth

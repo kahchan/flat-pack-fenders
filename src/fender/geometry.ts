@@ -1,5 +1,5 @@
 import { D2, WHEELS } from './defaults';
-import type { FenderConfig, Geometry } from './types';
+import type { FenderConfig, Geometry, JoinKey } from './types';
 
 /**
  * Every derived dimension, from 23 inputs.
@@ -16,11 +16,15 @@ import type { FenderConfig, Geometry } from './types';
  *             a straight edge, not a press brake) and k-factor as 0.44, the usual figure
  *             for soft sheet in air bending. At t = 0 every term collapses to zero.
  *
- *   notch     The blank is a developable cylinder along its length, so bending it round
+ *   lap       The blank is a developable cylinder along its length, so bending it round
  *             the wheel is free. Folding the skirts down is not: the skirt free edge sits
- *             on a smaller radius than the fold line, so it must be shorter. Each dart
- *             removes exactly that surplus, plus one thickness so the two folded edges
- *             sit alongside each other instead of colliding.
+ *             on a smaller radius than the fold line, so it must be shorter than a plain
+ *             butt fit. WP23 §23.2 (decision C1/C2): rather than cutting that surplus away
+ *             as a V-notch, the dart is cut as a plain slit (`notch` is always 0) and the
+ *             surplus is left in as a shingled overlap instead — `lap`, maximised, plus
+ *             one thickness so the two folded edges have room to sit alongside each other.
+ *             Nothing narrows `lap` back down; see `joinFits()` for what that overlap can
+ *             fasten.
  */
 export function geo(s: FenderConfig): Geometry {
   const bsd = WHEELS[s.wheel].bsd;
@@ -50,10 +54,15 @@ export function geo(s: FenderConfig): Geometry {
   const knee = (s.taperAt / 100) * L;
   const Wd = s.crown + 2 * skirtFlat;
 
+  // WP23 §23.2: a dartless skirt (n <= 1, no darts at all) is a real, drawable branch,
+  // not an error — `pitch`/`lap` guard against it explicitly rather than trusting `n`
+  // to stay positive, since geo() is called directly in tests with configs the UI's own
+  // flaps slider (min 4) could never reach.
   const n = s.flaps;
-  const pitch = L / n;
+  const pitch = n > 0 ? L / n : L;
   const removal = (L * drop) / R;
-  const notch = removal / n + t;
+  const notch = 0;
+  const lap = n > 1 ? removal / n + t : 0;
 
   return {
     bsd,
@@ -83,8 +92,72 @@ export function geo(s: FenderConfig): Geometry {
     n,
     pitch,
     removal,
-    notch
+    notch,
+    lap
   };
+}
+
+/**
+ * WP23 §23.3 (decision C3): the join family, ordered by the lap each needs. `slot` is
+ * the punched-tongue tab (§23.5) — same lap requirement as `zip` since it costs the
+ * same sections, just no hardware.
+ */
+export const JOIN_ORDER: readonly JoinKey[] = ['none', 'cinch', 'rivet', 'zip', 'slot'];
+
+export const JOIN_LAP_NEEDED: Record<JoinKey, number> = {
+  none: 0,
+  cinch: 3,
+  rivet: 7,
+  zip: 11,
+  slot: 11
+};
+
+export interface JoinFit {
+  join: JoinKey;
+  /** Lap this join needs, mm. */
+  needed: number;
+  fits: boolean;
+  /** How far short of fitting, mm. 0 when it already fits. */
+  short: number;
+}
+
+/**
+ * §23.4: reported for every join, always — the selector never disables an option, it
+ * says what fits and what falls short. `cinch`'s 0 mm floor (once `none` fits, `cinch`
+ * always does too) is what makes "nothing fits" unreachable (§23.3).
+ */
+export function joinFits(g: Geometry): JoinFit[] {
+  return JOIN_ORDER.map((join) => {
+    const needed = JOIN_LAP_NEEDED[join];
+    const short = Math.max(0, needed - g.lap);
+    return { join, needed, fits: short <= 1e-9, short };
+  });
+}
+
+/**
+ * §23.4's remedy, lever one: the largest flap count that still clears `needed` mm of
+ * lap, holding skirt/angle fixed — `lap(n) = removal/n + t` falls as `n` grows, so this
+ * is a ceiling, not a floor. `null` when the lever doesn't apply: `lap` never drops
+ * below `t`, so any flap count clears a `needed` at or under it.
+ */
+export function flapsForLap(g: Geometry, needed: number): number | null {
+  if (needed <= g.t) return null;
+  return Math.max(1, Math.floor(g.removal / (needed - g.t)));
+}
+
+/**
+ * §23.4's remedy, lever two: the raw skirt length (the `skirt` config field, not the
+ * flat-pattern `g.skirt`) that brings the lap up to `needed` mm, holding flap count and
+ * angle fixed. `null` when there are no darts to lap (`n <= 1`) or the angle is flat
+ * (`sin(a) <= 0`, no drop to trade against).
+ */
+export function skirtForLap(g: Geometry, needed: number): number | null {
+  if (g.n <= 1) return null;
+  const sinA = Math.sin(g.a);
+  if (sinA <= 0) return null;
+  const extra = needed - g.t;
+  if (extra <= 0) return 0;
+  return (extra * g.R * g.n) / (g.L * sinA);
 }
 
 /**

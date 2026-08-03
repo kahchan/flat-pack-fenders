@@ -81,9 +81,14 @@ export function buildFineTuningClusters(
           'skirt',
           'Skirt length',
           `${s.skirt} mm`,
-          `Drops ${f0(g.drop)} mm, adds ${f0(g.proj)} mm width each side`
+          `Drops ${f0(g.drop)} mm, adds ${f0(g.proj)} mm width each side, ${f1(g.lap)} mm lap`
         ),
-        item('angle', 'Skirt angle', `${s.angle}°`, 'From the crown plane. Steeper = deeper, narrower'),
+        item(
+          'angle',
+          'Skirt angle',
+          `${s.angle}°`,
+          `From the crown plane. Steeper = deeper, narrower, more lap (${f1(g.lap)} mm now)`
+        ),
         item(
           'taper',
           'Tail taper',
@@ -117,7 +122,7 @@ export function buildFineTuningClusters(
           'flaps',
           'Flap count',
           `× ${s.flaps}`,
-          `${f0(g.pitch)} mm pitch, ${f1(g.notch)} mm dart. More flaps = smoother curve, more fastening.`
+          `${f0(g.pitch)} mm pitch, ${f1(g.lap)} mm lap. More flaps = smoother curve, less lap to fasten through.`
         ),
         item(
           'thick',

@@ -49,7 +49,8 @@ const EXACT: (keyof Geometry)[] = [
   'n',
   'pitch',
   'removal',
-  'notch'
+  'notch',
+  'lap'
 ];
 
 describe.each(CASES)('geo(%s)', (_name, c) => {
@@ -76,8 +77,10 @@ describe('geometry invariants', () => {
       hem: false
     });
 
-    // With no thickness the dart is exactly the geometric surplus, nothing added.
-    expect(g.notch).toBeCloseTo(g.removal / g.n, 10);
+    // With no thickness the lap is exactly the geometric surplus, nothing added
+    // (WP23 §23.2 — the dart itself is always a plain slit; `notch` stays 0).
+    expect(g.notch).toBe(0);
+    expect(g.lap).toBeCloseTo(g.removal / g.n, 10);
 
     // But bendComp does NOT reach zero, and the design's engineering note says it does.
     // rBend = max(t, 0.2) keeps a 0.2 mm bend radius alive even at t = 0, leaving
@@ -88,6 +91,20 @@ describe('geometry invariants', () => {
     expect(g.bendComp).toBeLessThan(0);
     expect(Math.abs(g.bendComp)).toBeLessThan(0.02);
     expect(g.skirt).toBeCloseTo(g.skirtTrue, 1);
+  });
+
+  // WP23 §23.2 — a dartless skirt (no darts at all) is a real branch, not an error.
+  // The UI's own flaps slider can't reach this (min 4), but geo() is a pure function
+  // and must not divide by zero if something ever calls it with fewer.
+  it('a dartless skirt (flaps <= 1) never divides by zero', () => {
+    const base = CASES[0]![1].config as FenderConfig;
+    for (const flaps of [0, 1]) {
+      const g = geo({ ...base, flaps });
+      expect(Number.isFinite(g.pitch)).toBe(true);
+      expect(Number.isFinite(g.lap)).toBe(true);
+      expect(g.lap).toBe(0);
+      expect(g.notch).toBe(0);
+    }
   });
 
   it('developed length is the arc, not the chord', () => {

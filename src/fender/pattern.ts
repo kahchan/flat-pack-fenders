@@ -13,7 +13,7 @@ interface Event {
 /** Edge-to-edge clearance a seam's fastener column should keep from any other feature
  * column (dart fasteners, strut fasteners, mount slots, the mudflap holes) — WP19
  * §19.3/§19.4's "clear window" rule. Matches the 6 mm buffer the dart columns themselves
- * already use off their own centreline (`off = notch/2 + 6`, above). */
+ * already use off their own centreline (`cinch`'s `off = lap/2 + 6`, below). */
 export const SEAM_CLEAR = 6;
 
 /**
@@ -129,7 +129,16 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
     return pts;
   };
 
-  const seg = (pts: [number, number][]) => pts.map((p) => `${f1(p[0])},${f1(p[1])}`).join(' L ');
+  // WP23 §23.2: with `notch` always 0, a dart's own three points can now round to the
+  // SAME point as a neighbouring non-dart event (the taper knee, rarely, when a dart
+  // pitch position happens to land on it) — a zero-length segment in a CUT path, the
+  // exact laser-dwell defect the tongue bevel above already avoids. Deduped here, once,
+  // at render-rounding precision, rather than chasing every place a coincidence could
+  // occur.
+  const seg = (pts: [number, number][]) => {
+    const rounded = pts.map((p) => `${f1(p[0])},${f1(p[1])}`);
+    return rounded.filter((p, i) => i === 0 || p !== rounded[i - 1]).join(' L ');
+  };
 
   let outline = `M ${seg(edge(true))} L ${seg(edge(false).reverse())}`;
   if (s.tongue) {
@@ -192,8 +201,15 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
     });
   }
 
-  // ── Dart fastenings ────────────────────────────────────────────────────────
-  const off = g.notch / 2 + 6;
+  // ── Dart fastenings (WP23 §23.3/§23.6) ──────────────────────────────────────
+  // The dart is a plain slit now (`g.notch` is always 0) with `g.lap` of shingled
+  // overlap absorbed instead of cut away. `cinch` fastens outside that band, exactly
+  // like the old butt-seam tie, just with real overlap under it. `rivet`/`zip`/`slot`
+  // pass THROUGH the band, so their holes sit on a slanted column (§23.6): the band is
+  // a triangle, `lap` wide at the free edge and converging to zero at the fold, so a
+  // hole placed at a fixed absolute depth from the free edge needs a flat-pattern
+  // offset that varies with that depth for the two layers to land on the same point
+  // once assembled.
   for (let i = 1; i < g.n; i++) {
     const xc = i * g.pitch;
 
@@ -205,25 +221,78 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
       continue;
     }
 
-    for (const dir of [-1, 1]) {
-      const x = xc + dir * off;
-      dangerXs.push(x);
-      const tT = (t: number) => yFreeT(x) + g.skirt * t;
-      const tB = (t: number) => yFreeB(x) - g.skirt * t;
+    if (s.join === 'cinch') {
+      // Outside the lap band by design (§23.3) — the tie never passes through the
+      // overlap, so it needs almost no lap at all, just the same clearance the old
+      // butt-seam columns kept off their own centreline.
+      const off = g.lap / 2 + 6;
+      for (const dir of [-1, 1]) {
+        const x = xc + dir * off;
+        dangerXs.push(x);
+        holes.push(
+          { cx: f1(x), cy: f1(yFreeT(x) + g.skirt * 0.5), r: 2 },
+          { cx: f1(x), cy: f1(yFreeB(x) - g.skirt * 0.5), r: 2 }
+        );
+      }
+      continue;
+    }
 
-      if (s.join === 'zip') {
-        for (const t of [0.3, 0.78]) {
-          holes.push({ cx: f1(x), cy: f1(tT(t)), r: 2 }, { cx: f1(x), cy: f1(tB(t)), r: 2 });
-        }
-      } else if (s.join === 'rivet') {
-        for (const t of [0.4, 0.78]) {
-          holes.push({ cx: f1(x), cy: f1(tT(t)), r: 1.6 }, { cx: f1(x), cy: f1(tB(t)), r: 1.6 });
-        }
-      } else {
-        const h = Math.min(12, g.skirt * 0.5);
-        slots.push(
-          { x: f1(x - 1.5), y: f1(tT(0.28)), w: 3, h: f1(h) },
-          { x: f1(x - 1.5), y: f1(tB(0.28) - h), w: 3, h: f1(h) }
+    if (s.join === 'slot') {
+      // The punched tongue (§23.5, decision C6): a U-shaped release cut in the
+      // upstream panel (segment i, the one already on top per the shingle direction —
+      // "forward panel on top", same rule the panel seams use), freeing a tongue
+      // hinged at its inboard edge, passing through a slot in the downstream panel
+      // (segment i+1) beneath it. One pair per skirt (top, bottom).
+      const tw = 8;
+      const reach = Math.max(2, Math.min(14, g.skirt * 0.45));
+      const d0 = 2;
+      const xTongue = xc - g.lap / 4;
+      const xSlot = xc + g.lap / 4;
+      dangerXs.push(xTongue, xSlot);
+
+      for (const top of [true, false]) {
+        const free = top ? yFreeT : yFreeB;
+        const dirIn = top ? 1 : -1;
+        const yNear = (x: number) => free(x) + dirIn * d0;
+        const yFar = (x: number) => free(x) + dirIn * (d0 + reach);
+
+        const yA = yNear(xTongue);
+        const yB = yFar(xTongue);
+        // A separate release-cut subpath, not part of the dart slit — left open at
+        // the hinge (the fold-ward edge) so the tongue folds flat rather than
+        // detaching.
+        outline +=
+          ` M ${f1(xTongue - tw / 2)},${f1(yA)}` +
+          ` L ${f1(xTongue - tw / 2)},${f1(yB)}` +
+          ` L ${f1(xTongue + tw / 2)},${f1(yB)}` +
+          ` L ${f1(xTongue + tw / 2)},${f1(yA)}`;
+        scoreLines.push({
+          d: `M ${f1(xTongue - tw / 2)},${f1(yA)} L ${f1(xTongue + tw / 2)},${f1(yA)}`
+        });
+
+        const sy0 = yNear(xSlot);
+        const sy1 = yFar(xSlot);
+        slots.push({
+          x: f1(xSlot - tw / 2),
+          y: f1(Math.min(sy0, sy1)),
+          w: tw,
+          h: f1(Math.abs(sy1 - sy0))
+        });
+      }
+      continue;
+    }
+
+    // rivet, zip — through the lap, slanted per §23.6.
+    const depths = s.join === 'zip' ? [3.5, 8.5] : [4.5];
+    const r = s.join === 'zip' ? 2 : 1.6;
+    dangerXs.push(xc - g.lap / 2, xc + g.lap / 2);
+    for (const d of depths) {
+      const t = g.skirt > 0 ? d / g.skirt : 0;
+      for (const dir of [-1, 1]) {
+        const x = xc + dir * t * (g.lap / 2);
+        holes.push(
+          { cx: f1(x), cy: f1(yFreeT(x) + g.skirt * t), r },
+          { cx: f1(x), cy: f1(yFreeB(x) - g.skirt * t), r }
         );
       }
     }
@@ -322,16 +391,18 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
       });
 
       const xm = x + LAP / 2;
+      // WP23 §23.3 — a plain fastener row through both panel layers, same for every
+      // join: the panel lap is a separate joint from the dart lap, so it never grew a
+      // tongue-and-slot of its own, and the old `slot` join's clip (removed with it,
+      // see parts.ts) was the only reason this used to cut slots here instead of holes.
       const rowN = Math.max(3, Math.floor(g.Wd / 30));
       for (let j = 0; j <= rowN; j++) {
         const y = yFreeT(xm) + 7 + ((yFreeB(xm) - yFreeT(xm) - 14) * j) / rowN;
-        if (s.join === 'slot') slots.push({ x: f1(xm - 1.5), y: f1(y - 6), w: 3, h: 12 });
-        else
-          holes.push({
-            cx: f1(xm),
-            cy: f1(y),
-            r: s.join === 'rivet' ? 1.6 : 2
-          });
+        holes.push({
+          cx: f1(xm),
+          cy: f1(y),
+          r: s.join === 'rivet' ? 1.6 : 2
+        });
       }
 
       extraLabels.push({

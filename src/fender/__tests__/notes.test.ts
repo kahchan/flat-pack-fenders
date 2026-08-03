@@ -59,7 +59,10 @@ describe.each(CASES)('buildSteps(%s)', (_name, c) => {
 // WP19 §19.1/§19.5 adds 5 ("How the panel seam works" — OV/OVERLAP collapse to LAP,
 // reworded in built terms) and 9 ("Print geometry" — tile overlap is now stock-
 // dependent) on top of the WP17 set above.
-const CORRECTED_INDICES = new Set([1, 2, 4, 5, 6, 8, 9, 10, 11, 13, 14]);
+// WP23 §23.1/§23.2 adds 0 ("Why the darts exist" → "Why the shingle exists": the
+// surplus is now absorbed as lap, not cut away) — a factual correction, same category
+// as §9.3/§9.4/§9.9, not a wording pass.
+const CORRECTED_INDICES = new Set([0, 1, 2, 4, 5, 6, 8, 9, 10, 11, 13, 14]);
 
 // Index 13 = "Export" (PLAN §9.3) — its `formula` line changes ("R12 ASCII" →
 // "AC1015 (R2000)"); its body is ALSO reworded by WP17 (see CORRECTED_INDICES), unlike
@@ -71,7 +74,8 @@ const CORRECTED_INDICES = new Set([1, 2, 4, 5, 6, 8, 9, 10, 11, 13, 14]);
 // 10 "Bend allowance, properly", 11 "Darts get wider with thickness", 12 "Hemmed edge".
 // WP20 §20.1 adds 8 ("Nesting" — formula is now always "removed", not conditional on
 // `s.nest`, since the feature no longer exists to condition on).
-const CORRECTED_FORMULA_INDICES = new Set([4, 5, 6, 7, 8, 10, 11, 12, 13]);
+// WP23 §23.2 adds 0 ("Why the darts exist" — the formula now reports `lap`, not `notch`).
+const CORRECTED_FORMULA_INDICES = new Set([0, 4, 5, 6, 7, 8, 10, 11, 12, 13]);
 
 describe.each(CASES)('buildNotes(%s)', (_name, c) => {
   const notes = buildNotes(c.config);

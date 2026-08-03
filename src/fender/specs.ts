@@ -54,8 +54,10 @@ export function buildSpecs(
       note: `arc ÷ ${g.n} flaps`
     },
     {
-      label: 'Dart width',
-      value: `${f1(g.notch)} mm`,
+      // WP23 §23.2 — the dart is a plain slit now (`notch` is always 0); the surplus
+      // it used to remove is left in as this shingled overlap instead.
+      label: 'Lap width',
+      value: `${f1(g.lap)} mm`,
       note: s.thick > 0 ? `incl. ${f1(s.thick)} mm thickness clearance` : 'at the free edge, tapering to 0 at the fold'
     },
     {
@@ -66,7 +68,7 @@ export function buildSpecs(
     {
       label: 'Total take-up',
       value: `${f1(g.removal)} mm`,
-      note: 'removed by all darts, one side'
+      note: 'taken up as lap by all darts, one side'
     },
     // WP20 §20.1 (decision B2) — nesting is removed outright, so the nested-pair branch
     // this note used to carry goes with it.

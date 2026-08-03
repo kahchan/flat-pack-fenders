@@ -1,5 +1,5 @@
 import { PW, f0, f1 } from './defaults';
-import { geo, strutMount } from './geometry';
+import { flapsForLap, geo, joinFits, skirtForLap, strutMount } from './geometry';
 import { buildParts } from './parts';
 import { buildBlank } from './pattern';
 import type { BlankModel, FenderConfig, Geometry, PartsModel, Warning } from './types';
@@ -56,13 +56,6 @@ export function buildWarnings(
     });
   }
 
-  if (g.notch > 8) {
-    warnings.push({
-      id: 'darts-too-wide',
-      text: `Darts are ${f1(g.notch)} mm wide: the curve will read as facets and the gaps are hard to close cleanly. Add flaps.`
-    });
-  }
-
   if (g.skirt < 12 && s.join !== 'none') {
     warnings.push({
       id: 'skirt-too-short',
@@ -116,6 +109,25 @@ export function buildWarnings(
         text: `Strut length is ${f0(s.strutLen)} mm but the nearest mount point is only about ${f0(minMount)} mm away. Cut roughly ${f0(s.strutLen - minMount)} mm off before fitting, or it will foul the hub.`
       });
     }
+  }
+
+  // WP23 §23.4 — new, not in the design source. C3's whole point is that a join that
+  // doesn't fit is a warning, not a clamp: the selector still lets you pick it, so this
+  // is the one place that says so, naming both remedy levers (flaps down, or skirt up)
+  // computed from the same geometry the fit check itself reads.
+  const fit = joinFits(g).find((f) => f.join === s.join)!;
+  if (!fit.fits) {
+    const maxFlaps = flapsForLap(g, fit.needed);
+    const neededSkirt = skirtForLap(g, fit.needed);
+    const remedies = [
+      maxFlaps !== null && maxFlaps < s.flaps ? `${maxFlaps} sections` : null,
+      neededSkirt !== null ? `a ${f0(neededSkirt)} mm skirt` : null
+    ].filter((r): r is string => r !== null);
+    const remedyText = remedies.length > 0 ? remedies.join(' or ') + ' would do it' : 'fewer sections or a deeper skirt would do it';
+    warnings.push({
+      id: 'join-lacks-lap',
+      text: `${s.join} needs ${f0(fit.needed)} mm of lap, but this fender has ${f1(g.lap)} mm at ${g.n} sections: ${remedyText}.`
+    });
   }
 
   return warnings;

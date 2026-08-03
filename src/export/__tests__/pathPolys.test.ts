@@ -84,7 +84,7 @@ describe('pathPolys — straight subpaths (M/L/H/V/Z), no DOM', () => {
   });
 
   it('reproduces the real blank outline head/tail exactly — PLAN §7 golden text', () => {
-    // "M 0.0,40.9 L 20.0,0.0 L 66.7,0.0 L 69.1,25.4 L 71.6,0.0 …" — default config.
+    // "M 0.0,40.9 L 20.0,0.0 L 69.1,0.0 L 69.1,25.4 L 69.1,0.0 …" — default config.
     //
     // PLAN §7's original head ("M 0.0,0.0 L 65.1,0.0 …", 124 vertices) predates the
     // §13.3 bevel. Two changes move the count to 125:
@@ -94,10 +94,15 @@ describe('pathPolys — straight subpaths (M/L/H/V/Z), no DOM', () => {
     //       corner, so the tongue append no longer repeats it — that duplicate was a
     //       zero-length segment in a CUT path, which can dwell a laser and puts a
     //       repeated vertex in the DXF polyline
+    // WP23 §23.2 drops it to 123: `notch` is always 0 now (a plain slit, not a V), so
+    // the first dart's own three points land at exactly `pitch` (69.1) instead of
+    // straddling it, AND DEFAULTS' dart at the taper knee (a coincidence of pitch × 14
+    // landing on the knee, both ≈967.6 mm) rounds to the same point on both edges,
+    // deduped by the zero-length-segment rule below.
     const model = buildModel(DEFAULTS);
     const [outline] = pathPolys(model.blank.outline);
     expect(outline).toBeDefined();
-    expect(outline!.length).toBe(125);
+    expect(outline!.length).toBe(123);
 
     // No consecutive duplicate vertices anywhere in the cut path.
     for (let i = 1; i < outline!.length; i++) {
@@ -107,7 +112,7 @@ describe('pathPolys — straight subpaths (M/L/H/V/Z), no DOM', () => {
     }
     expect(outline![0]).toEqual([0, 40.9]);
     expect(outline![1]).toEqual([20, 0]);
-    expect(outline![2]).toEqual([66.7, 0]);
+    expect(outline![2]).toEqual([69.1, 0]);
     expect(outline![3]).toEqual([69.1, 25.4]);
     const last = outline![outline!.length - 1]!;
     expect(last).toEqual([0, 40.9]);

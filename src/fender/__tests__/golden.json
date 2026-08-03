@@ -55,10 +55,11 @@
       "n": 20,
       "pitch": 69.11503837897546,
       "removal": 81.77826941447204,
-      "notch": 4.888913470723602
+      "notch": 0,
+      "lap": 4.888913470723602
     },
     "blank": {
-      "outline": "M 0.0,40.9 L 20.0,0.0 L 66.7,0.0 L 69.1,25.4 L 71.6,0.0 L 135.8,0.0 L 138.2,25.4 L 140.7,0.0 L 204.9,0.0 L 207.3,25.4 L 209.8,0.0 L 274.0,0.0 L 276.5,25.4 L 278.9,0.0 L 343.1,0.0 L 345.6,25.4 L 348.0,0.0 L 412.2,0.0 L 414.7,25.4 L 417.1,0.0 L 481.4,0.0 L 483.8,25.4 L 486.2,0.0 L 550.5,0.0 L 552.9,25.4 L 555.4,0.0 L 619.6,0.0 L 622.0,25.4 L 624.5,0.0 L 688.7,0.0 L 691.2,25.4 L 693.6,0.0 L 757.8,0.0 L 760.3,25.4 L 762.7,0.0 L 826.9,0.0 L 829.4,25.4 L 831.8,0.0 L 896.1,0.0 L 898.5,25.4 L 900.9,0.0 L 967.6,0.0 L 965.2,0.0 L 967.6,25.4 L 970.1,0.0 L 1034.3,0.7 L 1036.7,26.1 L 1039.2,0.7 L 1103.4,1.4 L 1105.8,26.8 L 1108.3,1.4 L 1172.5,2.1 L 1175.0,27.5 L 1177.4,2.1 L 1241.6,2.8 L 1244.1,28.2 L 1246.5,2.8 L 1310.7,3.4 L 1313.2,28.9 L 1315.6,3.4 L 1382.3,4.1 L 1382.3,101.8 L 1315.6,102.4 L 1313.2,77.0 L 1310.7,102.4 L 1246.5,103.1 L 1244.1,77.7 L 1241.6,103.1 L 1177.4,103.8 L 1175.0,78.4 L 1172.5,103.8 L 1108.3,104.5 L 1105.8,79.1 L 1103.4,104.5 L 1039.2,105.2 L 1036.7,79.8 L 1034.3,105.2 L 970.1,105.9 L 967.6,80.4 L 965.2,105.9 L 967.6,105.9 L 900.9,105.9 L 898.5,80.4 L 896.1,105.9 L 831.8,105.9 L 829.4,80.4 L 826.9,105.9 L 762.7,105.9 L 760.3,80.4 L 757.8,105.9 L 693.6,105.9 L 691.2,80.4 L 688.7,105.9 L 624.5,105.9 L 622.0,80.4 L 619.6,105.9 L 555.4,105.9 L 552.9,80.4 L 550.5,105.9 L 486.2,105.9 L 483.8,80.4 L 481.4,105.9 L 417.1,105.9 L 414.7,80.4 L 412.2,105.9 L 348.0,105.9 L 345.6,80.4 L 343.1,105.9 L 278.9,105.9 L 276.5,80.4 L 274.0,105.9 L 209.8,105.9 L 207.3,80.4 L 204.9,105.9 L 140.7,105.9 L 138.2,80.4 L 135.8,105.9 L 71.6,105.9 L 69.1,80.4 L 66.7,105.9 L 20.0,105.9 L 0.0,64.9 L -34,64.9 L -34,40.9 L 0,40.9 Z",
+      "outline": "M 0.0,40.9 L 20.0,0.0 L 69.1,0.0 L 69.1,25.4 L 69.1,0.0 L 138.2,0.0 L 138.2,25.4 L 138.2,0.0 L 207.3,0.0 L 207.3,25.4 L 207.3,0.0 L 276.5,0.0 L 276.5,25.4 L 276.5,0.0 L 345.6,0.0 L 345.6,25.4 L 345.6,0.0 L 414.7,0.0 L 414.7,25.4 L 414.7,0.0 L 483.8,0.0 L 483.8,25.4 L 483.8,0.0 L 552.9,0.0 L 552.9,25.4 L 552.9,0.0 L 622.0,0.0 L 622.0,25.4 L 622.0,0.0 L 691.2,0.0 L 691.2,25.4 L 691.2,0.0 L 760.3,0.0 L 760.3,25.4 L 760.3,0.0 L 829.4,0.0 L 829.4,25.4 L 829.4,0.0 L 898.5,0.0 L 898.5,25.4 L 898.5,0.0 L 967.6,0.0 L 967.6,25.4 L 967.6,0.0 L 1036.7,0.7 L 1036.7,26.1 L 1036.7,0.7 L 1105.8,1.4 L 1105.8,26.8 L 1105.8,1.4 L 1175.0,2.1 L 1175.0,27.5 L 1175.0,2.1 L 1244.1,2.8 L 1244.1,28.2 L 1244.1,2.8 L 1313.2,3.4 L 1313.2,28.9 L 1313.2,3.4 L 1382.3,4.1 L 1382.3,101.8 L 1313.2,102.4 L 1313.2,77.0 L 1313.2,102.4 L 1244.1,103.1 L 1244.1,77.7 L 1244.1,103.1 L 1175.0,103.8 L 1175.0,78.4 L 1175.0,103.8 L 1105.8,104.5 L 1105.8,79.1 L 1105.8,104.5 L 1036.7,105.2 L 1036.7,79.8 L 1036.7,105.2 L 967.6,105.9 L 967.6,80.4 L 967.6,105.9 L 898.5,105.9 L 898.5,80.4 L 898.5,105.9 L 829.4,105.9 L 829.4,80.4 L 829.4,105.9 L 760.3,105.9 L 760.3,80.4 L 760.3,105.9 L 691.2,105.9 L 691.2,80.4 L 691.2,105.9 L 622.0,105.9 L 622.0,80.4 L 622.0,105.9 L 552.9,105.9 L 552.9,80.4 L 552.9,105.9 L 483.8,105.9 L 483.8,80.4 L 483.8,105.9 L 414.7,105.9 L 414.7,80.4 L 414.7,105.9 L 345.6,105.9 L 345.6,80.4 L 345.6,105.9 L 276.5,105.9 L 276.5,80.4 L 276.5,105.9 L 207.3,105.9 L 207.3,80.4 L 207.3,105.9 L 138.2,105.9 L 138.2,80.4 L 138.2,105.9 L 69.1,105.9 L 69.1,80.4 L 69.1,105.9 L 20.0,105.9 L 0.0,64.9 L -34,64.9 L -34,40.9 L 0,40.9 Z",
       "foldLines": [
         "M 0.0,25.4 L 967.6,25.4 L 1382.3,29.6",
         "M 0.0,80.4 L 967.6,80.4 L 1382.3,76.3",
@@ -70,11 +71,11 @@
       "seamCount": 5,
       "lapCount": 5,
       "lapArrows": [
-        "M 181.5,60.9 L 193.5,60.9 M 191.0,58.4 L 193.5,60.9 L 191.0,63.4",
-        "M 428.5,60.9 L 440.5,60.9 M 438.0,58.4 L 440.5,60.9 L 438.0,63.4",
-        "M 665.5,60.9 L 677.5,60.9 M 675.0,58.4 L 677.5,60.9 L 675.0,63.4",
-        "M 912.5,60.9 L 924.5,60.9 M 922.0,58.4 L 924.5,60.9 L 922.0,63.4",
-        "M 1149.5,60.9 L 1161.5,60.9 M 1159.0,58.4 L 1161.5,60.9 L 1159.0,63.4"
+        "M 217.0,60.9 L 229.0,60.9 M 226.5,58.4 L 229.0,60.9 L 226.5,63.4",
+        "M 464.0,60.9 L 476.0,60.9 M 473.5,58.4 L 476.0,60.9 L 473.5,63.4",
+        "M 711.0,60.9 L 723.0,60.9 M 720.5,58.4 L 723.0,60.9 L 720.5,63.4",
+        "M 948.0,60.9 L 960.0,60.9 M 957.5,58.4 L 960.0,60.9 L 957.5,63.4",
+        "M 1195.0,60.9 L 1207.0,60.9 M 1204.5,58.4 L 1207.0,60.9 L 1204.5,63.4"
       ],
       "panelCount": 6,
       "strutFrac": [
@@ -85,13 +86,13 @@
       "bboxW": 1416.300767579509,
       "bboxH": 105.88005210459605,
       "firstHole": {
-        "cx": "60.7",
-        "cy": "7.6",
+        "cx": "68.8",
+        "cy": "3.5",
         "r": 2
       },
       "lastHole": {
-        "cx": "1155.5",
-        "cy": "97.0",
+        "cx": "1201.0",
+        "cy": "96.6",
         "r": 2
       },
       "firstSlot": {
@@ -201,7 +202,7 @@
       "height": 220,
       "fitsA4": true,
       "extraCount": 0,
-      "extraLabel": "CLIP"
+      "extraLabel": ""
     },
     "xsec": {
       "paths": [
@@ -426,8 +427,8 @@
         },
         "holeCount": 160,
         "firstHole": {
-          "cx": "332.0",
-          "cy": "-7.8",
+          "cx": "332.9",
+          "cy": "-10.3",
           "r": 2
         },
         "lastHole": {
@@ -484,7 +485,7 @@
         "holeCount": 160,
         "firstHole": {
           "cx": "-46.5",
-          "cy": "-108.8",
+          "cy": "-111.6",
           "r": 2
         },
         "lastHole": {
@@ -570,9 +571,9 @@
     ],
     "engNotes": [
       {
-        "title": "Why the darts exist",
+        "title": "Why the shingle exists",
         "body": "The blank is a developable cylinder along its length, so bending it round the wheel is free. Folding the skirts down is not: the skirt free edge sits on a smaller radius than the fold line, so it must be shorter. Each dart removes exactly that surplus.",
-        "formula": "take-up = L × drop / R = 1382 × 21 / 360 = 81.8 mm over 20 darts → 4.9 mm each"
+        "formula": "take-up = L × drop / R = 1382 × 21 / 360 = 81.8 mm over 20 darts → 0.0 mm each"
       },
       {
         "title": "Radius chain",
@@ -600,7 +601,7 @@
         "formula": "6 panels · 20 mm lap · fastener row at lap centre"
       },
       {
-        "title": "What a butt strap is",
+        "title": "Rivets go straight through the lap",
         "body": "A rivet cannot pull a V-shaped gap closed the way a zip tie can — it needs two layers to squeeze. The butt strap is a small separate rectangle that sits behind the dart and bridges it: two rivets into the left flap, two into the right. The dart stays open by design; the strap carries the load. Zip ties and clips need no strap because they pull through both sides at once.",
         "formula": "strap 34 × 14 mm · 4 × 3.2 mm holes · one per dart"
       },
@@ -630,9 +631,9 @@
         "formula": "setback = (r+t)·tan(α/2) = 0.8 · BA = α(r+0.44t) = 1.1 · net -0.6 mm per fold"
       },
       {
-        "title": "Darts get wider with thickness",
+        "title": "The lap gets wider with thickness",
         "body": "Two folded flaps meeting at a closed dart collide edge-on if the dart is cut to the ideal width — the material has to go somewhere. Adding one thickness to every dart gives the two edges room to sit alongside each other rather than fighting.",
-        "formula": "dart = L·drop/R/n + t = 4.9 mm"
+        "formula": "dart = L·drop/R/n + t = 0.0 mm"
       },
       {
         "title": "Hemmed edge",
@@ -677,7 +678,7 @@
         "note": "arc ÷ 20 flaps"
       },
       {
-        "label": "Dart width",
+        "label": "Lap width",
         "value": "4.9 mm",
         "note": "incl. 0.8 mm thickness clearance"
       },
@@ -689,7 +690,7 @@
       {
         "label": "Total take-up",
         "value": "81.8 mm",
-        "note": "removed by all darts, one side"
+        "note": "taken up as lap by all darts, one side"
       },
       {
         "label": "Blank area",
@@ -766,10 +767,11 @@
       "n": 16,
       "pitch": 76.29270492780213,
       "removal": 111.5158219288255,
-      "notch": 7.769738870551594
+      "notch": 0,
+      "lap": 7.769738870551594
     },
     "blank": {
-      "outline": "M 0.0,48.4 L 20.0,0.0 L 72.4,0.0 L 76.3,29.4 L 80.2,0.0 L 148.7,0.0 L 152.6,29.4 L 156.5,0.0 L 225.0,0.0 L 228.9,29.4 L 232.8,0.0 L 301.3,0.0 L 305.2,29.4 L 309.1,0.0 L 377.6,0.0 L 381.5,29.4 L 385.3,0.0 L 453.9,0.0 L 457.8,29.4 L 461.6,0.0 L 530.2,0.0 L 534.0,29.4 L 537.9,0.0 L 606.5,0.0 L 610.3,29.4 L 614.2,0.0 L 682.7,0.0 L 686.6,29.4 L 690.5,0.0 L 759.0,0.0 L 762.9,29.4 L 766.8,0.0 L 835.3,0.0 L 839.2,29.4 L 843.1,0.0 L 854.5,0.0 L 911.6,1.3 L 915.5,30.7 L 919.4,1.3 L 987.9,2.9 L 991.8,32.3 L 995.7,2.9 L 1064.2,4.5 L 1068.1,34.0 L 1072.0,4.5 L 1140.5,6.1 L 1144.4,35.6 L 1148.3,6.1 L 1220.7,7.8 L 1220.7,113.1 L 1148.3,114.7 L 1144.4,85.3 L 1140.5,114.7 L 1072.0,116.4 L 1068.1,86.9 L 1064.2,116.4 L 995.7,118.0 L 991.8,88.5 L 987.9,118.0 L 919.4,119.6 L 915.5,90.1 L 911.6,119.6 L 854.5,120.9 L 843.1,120.9 L 839.2,91.4 L 835.3,120.9 L 766.8,120.9 L 762.9,91.4 L 759.0,120.9 L 690.5,120.9 L 686.6,91.4 L 682.7,120.9 L 614.2,120.9 L 610.3,91.4 L 606.5,120.9 L 537.9,120.9 L 534.0,91.4 L 530.2,120.9 L 461.6,120.9 L 457.8,91.4 L 453.9,120.9 L 385.3,120.9 L 381.5,91.4 L 377.6,120.9 L 309.1,120.9 L 305.2,91.4 L 301.3,120.9 L 232.8,120.9 L 228.9,91.4 L 225.0,120.9 L 156.5,120.9 L 152.6,91.4 L 148.7,120.9 L 80.2,120.9 L 76.3,91.4 L 72.4,120.9 L 20.0,120.9 L 0.0,72.4 L -34,72.4 L -34,48.4 L 0,48.4 Z",
+      "outline": "M 0.0,48.4 L 20.0,0.0 L 76.3,0.0 L 76.3,29.4 L 76.3,0.0 L 152.6,0.0 L 152.6,29.4 L 152.6,0.0 L 228.9,0.0 L 228.9,29.4 L 228.9,0.0 L 305.2,0.0 L 305.2,29.4 L 305.2,0.0 L 381.5,0.0 L 381.5,29.4 L 381.5,0.0 L 457.8,0.0 L 457.8,29.4 L 457.8,0.0 L 534.0,0.0 L 534.0,29.4 L 534.0,0.0 L 610.3,0.0 L 610.3,29.4 L 610.3,0.0 L 686.6,0.0 L 686.6,29.4 L 686.6,0.0 L 762.9,0.0 L 762.9,29.4 L 762.9,0.0 L 839.2,0.0 L 839.2,29.4 L 839.2,0.0 L 854.5,0.0 L 915.5,1.3 L 915.5,30.7 L 915.5,1.3 L 991.8,2.9 L 991.8,32.3 L 991.8,2.9 L 1068.1,4.5 L 1068.1,34.0 L 1068.1,4.5 L 1144.4,6.1 L 1144.4,35.6 L 1144.4,6.1 L 1220.7,7.8 L 1220.7,113.1 L 1144.4,114.7 L 1144.4,85.3 L 1144.4,114.7 L 1068.1,116.4 L 1068.1,86.9 L 1068.1,116.4 L 991.8,118.0 L 991.8,88.5 L 991.8,118.0 L 915.5,119.6 L 915.5,90.1 L 915.5,119.6 L 854.5,120.9 L 839.2,120.9 L 839.2,91.4 L 839.2,120.9 L 762.9,120.9 L 762.9,91.4 L 762.9,120.9 L 686.6,120.9 L 686.6,91.4 L 686.6,120.9 L 610.3,120.9 L 610.3,91.4 L 610.3,120.9 L 534.0,120.9 L 534.0,91.4 L 534.0,120.9 L 457.8,120.9 L 457.8,91.4 L 457.8,120.9 L 381.5,120.9 L 381.5,91.4 L 381.5,120.9 L 305.2,120.9 L 305.2,91.4 L 305.2,120.9 L 228.9,120.9 L 228.9,91.4 L 228.9,120.9 L 152.6,120.9 L 152.6,91.4 L 152.6,120.9 L 76.3,120.9 L 76.3,91.4 L 76.3,120.9 L 20.0,120.9 L 0.0,72.4 L -34,72.4 L -34,48.4 L 0,48.4 Z",
       "foldLines": [
         "M 0.0,29.4 L 854.5,29.4 L 1220.7,37.2",
         "M 0.0,91.4 L 854.5,91.4 L 1220.7,83.7",
@@ -791,8 +793,8 @@
       "bboxW": 1254.6832788448341,
       "bboxH": 120.88005210459605,
       "firstHole": {
-        "cx": "66.4",
-        "cy": "8.8",
+        "cx": "75.8",
+        "cy": "3.5",
         "r": 2
       },
       "lastHole": {
@@ -935,7 +937,7 @@
       "height": 233,
       "fitsA4": false,
       "extraCount": 0,
-      "extraLabel": "CLIP"
+      "extraLabel": ""
     },
     "xsec": {
       "paths": [
@@ -1145,8 +1147,8 @@
         },
         "holeCount": 132,
         "firstHole": {
-          "cx": "173.2",
-          "cy": "-260.5",
+          "cx": "170.5",
+          "cy": "-262.3",
           "r": 2
         },
         "lastHole": {
@@ -1203,7 +1205,7 @@
         "holeCount": 132,
         "firstHole": {
           "cx": "-52.7",
-          "cy": "-303.1",
+          "cy": "-303.9",
           "r": 2
         },
         "lastHole": {
@@ -1296,9 +1298,9 @@
     ],
     "engNotes": [
       {
-        "title": "Why the darts exist",
+        "title": "Why the shingle exists",
         "body": "The blank is a developable cylinder along its length, so bending it round the wheel is free. Folding the skirts down is not: the skirt free edge sits on a smaller radius than the fold line, so it must be shorter. Each dart removes exactly that surplus.",
-        "formula": "take-up = L × drop / R = 1221 × 25 / 269 = 111.5 mm over 16 darts → 7.8 mm each"
+        "formula": "take-up = L × drop / R = 1221 × 25 / 269 = 111.5 mm over 16 darts → 0.0 mm each"
       },
       {
         "title": "Radius chain",
@@ -1326,7 +1328,7 @@
         "formula": "single sheet — no seams"
       },
       {
-        "title": "What a butt strap is",
+        "title": "Rivets go straight through the lap",
         "body": "A rivet cannot pull a V-shaped gap closed the way a zip tie can — it needs two layers to squeeze. The butt strap is a small separate rectangle that sits behind the dart and bridges it: two rivets into the left flap, two into the right. The dart stays open by design; the strap carries the load. Zip ties and clips need no strap because they pull through both sides at once.",
         "formula": "strap 34 × 14 mm · 4 × 3.2 mm holes · one per dart"
       },
@@ -1356,9 +1358,9 @@
         "formula": "setback = (r+t)·tan(α/2) = 0.8 · BA = α(r+0.44t) = 1.1 · net -0.6 mm per fold"
       },
       {
-        "title": "Darts get wider with thickness",
+        "title": "The lap gets wider with thickness",
         "body": "Two folded flaps meeting at a closed dart collide edge-on if the dart is cut to the ideal width — the material has to go somewhere. Adding one thickness to every dart gives the two edges room to sit alongside each other rather than fighting.",
-        "formula": "dart = L·drop/R/n + t = 7.8 mm"
+        "formula": "dart = L·drop/R/n + t = 0.0 mm"
       },
       {
         "title": "Hemmed edge",
@@ -1403,7 +1405,7 @@
         "note": "arc ÷ 16 flaps"
       },
       {
-        "label": "Dart width",
+        "label": "Lap width",
         "value": "7.8 mm",
         "note": "incl. 0.8 mm thickness clearance"
       },
@@ -1415,7 +1417,7 @@
       {
         "label": "Total take-up",
         "value": "111.5 mm",
-        "note": "removed by all darts, one side"
+        "note": "taken up as lap by all darts, one side"
       },
       {
         "label": "Blank area",
@@ -1492,10 +1494,11 @@
       "n": 20,
       "pitch": 54.977871437821385,
       "removal": 65.05089612514821,
-      "notch": 4.05254480625741
+      "notch": 0,
+      "lap": 4.05254480625741
     },
     "blank": {
-      "outline": "M 0.0,40.9 L 20.0,0.0 L 53.0,0.0 L 55.0,25.4 L 57.0,0.0 L 107.9,0.0 L 110.0,25.4 L 112.0,0.0 L 162.9,0.0 L 164.9,25.4 L 167.0,0.0 L 217.9,0.0 L 219.9,25.4 L 221.9,0.0 L 272.9,0.0 L 274.9,25.4 L 276.9,0.0 L 327.8,0.0 L 329.9,25.4 L 331.9,0.0 L 382.8,0.0 L 384.8,25.4 L 386.9,0.0 L 437.8,0.0 L 439.8,25.4 L 441.8,0.0 L 492.8,0.0 L 494.8,25.4 L 496.8,0.0 L 547.8,0.0 L 549.8,25.4 L 551.8,0.0 L 602.7,0.0 L 604.8,25.4 L 606.8,0.0 L 657.7,0.0 L 659.7,25.4 L 661.8,0.0 L 712.7,0.0 L 714.7,25.4 L 716.7,0.0 L 769.7,0.0 L 767.7,0.0 L 769.7,25.4 L 771.7,0.0 L 822.6,1.1 L 824.7,26.6 L 826.7,1.1 L 877.6,2.3 L 879.6,27.7 L 881.7,2.3 L 932.6,3.4 L 934.6,28.9 L 936.7,3.4 L 987.6,4.6 L 989.6,30.0 L 991.6,4.6 L 1042.6,5.7 L 1044.6,31.2 L 1046.6,5.7 L 1099.6,6.9 L 1099.6,99.0 L 1046.6,100.2 L 1044.6,74.7 L 1042.6,100.2 L 991.6,101.3 L 989.6,75.9 L 987.6,101.3 L 936.7,102.4 L 934.6,77.0 L 932.6,102.4 L 881.7,103.6 L 879.6,78.1 L 877.6,103.6 L 826.7,104.7 L 824.7,79.3 L 822.6,104.7 L 771.7,105.9 L 769.7,80.4 L 767.7,105.9 L 769.7,105.9 L 716.7,105.9 L 714.7,80.4 L 712.7,105.9 L 661.8,105.9 L 659.7,80.4 L 657.7,105.9 L 606.8,105.9 L 604.8,80.4 L 602.7,105.9 L 551.8,105.9 L 549.8,80.4 L 547.8,105.9 L 496.8,105.9 L 494.8,80.4 L 492.8,105.9 L 441.8,105.9 L 439.8,80.4 L 437.8,105.9 L 386.9,105.9 L 384.8,80.4 L 382.8,105.9 L 331.9,105.9 L 329.9,80.4 L 327.8,105.9 L 276.9,105.9 L 274.9,80.4 L 272.9,105.9 L 221.9,105.9 L 219.9,80.4 L 217.9,105.9 L 167.0,105.9 L 164.9,80.4 L 162.9,105.9 L 112.0,105.9 L 110.0,80.4 L 107.9,105.9 L 57.0,105.9 L 55.0,80.4 L 53.0,105.9 L 20.0,105.9 L 0.0,64.9 L -34,64.9 L -34,40.9 L 0,40.9 Z",
+      "outline": "M 0.0,40.9 L 20.0,0.0 L 55.0,0.0 L 55.0,25.4 L 55.0,0.0 L 110.0,0.0 L 110.0,25.4 L 110.0,0.0 L 164.9,0.0 L 164.9,25.4 L 164.9,0.0 L 219.9,0.0 L 219.9,25.4 L 219.9,0.0 L 274.9,0.0 L 274.9,25.4 L 274.9,0.0 L 329.9,0.0 L 329.9,25.4 L 329.9,0.0 L 384.8,0.0 L 384.8,25.4 L 384.8,0.0 L 439.8,0.0 L 439.8,25.4 L 439.8,0.0 L 494.8,0.0 L 494.8,25.4 L 494.8,0.0 L 549.8,0.0 L 549.8,25.4 L 549.8,0.0 L 604.8,0.0 L 604.8,25.4 L 604.8,0.0 L 659.7,0.0 L 659.7,25.4 L 659.7,0.0 L 714.7,0.0 L 714.7,25.4 L 714.7,0.0 L 769.7,0.0 L 769.7,25.4 L 769.7,0.0 L 824.7,1.1 L 824.7,26.6 L 824.7,1.1 L 879.6,2.3 L 879.6,27.7 L 879.6,2.3 L 934.6,3.4 L 934.6,28.9 L 934.6,3.4 L 989.6,4.6 L 989.6,30.0 L 989.6,4.6 L 1044.6,5.7 L 1044.6,31.2 L 1044.6,5.7 L 1099.6,6.9 L 1099.6,99.0 L 1044.6,100.2 L 1044.6,74.7 L 1044.6,100.2 L 989.6,101.3 L 989.6,75.9 L 989.6,101.3 L 934.6,102.4 L 934.6,77.0 L 934.6,102.4 L 879.6,103.6 L 879.6,78.1 L 879.6,103.6 L 824.7,104.7 L 824.7,79.3 L 824.7,104.7 L 769.7,105.9 L 769.7,80.4 L 769.7,105.9 L 714.7,105.9 L 714.7,80.4 L 714.7,105.9 L 659.7,105.9 L 659.7,80.4 L 659.7,105.9 L 604.8,105.9 L 604.8,80.4 L 604.8,105.9 L 549.8,105.9 L 549.8,80.4 L 549.8,105.9 L 494.8,105.9 L 494.8,80.4 L 494.8,105.9 L 439.8,105.9 L 439.8,80.4 L 439.8,105.9 L 384.8,105.9 L 384.8,80.4 L 384.8,105.9 L 329.9,105.9 L 329.9,80.4 L 329.9,105.9 L 274.9,105.9 L 274.9,80.4 L 274.9,105.9 L 219.9,105.9 L 219.9,80.4 L 219.9,105.9 L 164.9,105.9 L 164.9,80.4 L 164.9,105.9 L 110.0,105.9 L 110.0,80.4 L 110.0,105.9 L 55.0,105.9 L 55.0,80.4 L 55.0,105.9 L 20.0,105.9 L 0.0,64.9 L -34,64.9 L -34,40.9 L 0,40.9 Z",
       "foldLines": [
         "M 0.0,25.4 L 769.7,25.4 L 1099.6,32.3",
         "M 0.0,80.4 L 769.7,80.4 L 1099.6,73.6",
@@ -1516,8 +1519,8 @@
       "bboxW": 1133.5574287564277,
       "bboxH": 105.88005210459605,
       "firstHole": {
-        "cx": "47.0",
-        "cy": "7.6",
+        "cx": "54.7",
+        "cy": "3.5",
         "r": 2
       },
       "lastHole": {
@@ -1632,7 +1635,7 @@
       "height": 180,
       "fitsA4": true,
       "extraCount": 0,
-      "extraLabel": "CLIP"
+      "extraLabel": ""
     },
     "xsec": {
       "paths": [
@@ -1842,8 +1845,8 @@
         },
         "holeCount": 160,
         "firstHole": {
-          "cx": "256.7",
-          "cy": "-338.6",
+          "cx": "255.2",
+          "cy": "-339.6",
           "r": 2
         },
         "lastHole": {
@@ -1900,7 +1903,7 @@
         "holeCount": 160,
         "firstHole": {
           "cx": "-46.5",
-          "cy": "-413.0",
+          "cy": "-413.5",
           "r": 2
         },
         "lastHole": {
@@ -1984,9 +1987,9 @@
     ],
     "engNotes": [
       {
-        "title": "Why the darts exist",
+        "title": "Why the shingle exists",
         "body": "The blank is a developable cylinder along its length, so bending it round the wheel is free. Folding the skirts down is not: the skirt free edge sits on a smaller radius than the fold line, so it must be shorter. Each dart removes exactly that surplus.",
-        "formula": "take-up = L × drop / R = 1100 × 21 / 360 = 65.1 mm over 20 darts → 4.1 mm each"
+        "formula": "take-up = L × drop / R = 1100 × 21 / 360 = 65.1 mm over 20 darts → 0.0 mm each"
       },
       {
         "title": "Radius chain",
@@ -2014,7 +2017,7 @@
         "formula": "single sheet — no seams"
       },
       {
-        "title": "What a butt strap is",
+        "title": "Rivets go straight through the lap",
         "body": "A rivet cannot pull a V-shaped gap closed the way a zip tie can — it needs two layers to squeeze. The butt strap is a small separate rectangle that sits behind the dart and bridges it: two rivets into the left flap, two into the right. The dart stays open by design; the strap carries the load. Zip ties and clips need no strap because they pull through both sides at once.",
         "formula": "strap 34 × 14 mm · 4 × 3.2 mm holes · one per dart"
       },
@@ -2044,9 +2047,9 @@
         "formula": "setback = (r+t)·tan(α/2) = 0.8 · BA = α(r+0.44t) = 1.1 · net -0.6 mm per fold"
       },
       {
-        "title": "Darts get wider with thickness",
+        "title": "The lap gets wider with thickness",
         "body": "Two folded flaps meeting at a closed dart collide edge-on if the dart is cut to the ideal width — the material has to go somewhere. Adding one thickness to every dart gives the two edges room to sit alongside each other rather than fighting.",
-        "formula": "dart = L·drop/R/n + t = 4.1 mm"
+        "formula": "dart = L·drop/R/n + t = 0.0 mm"
       },
       {
         "title": "Hemmed edge",
@@ -2091,7 +2094,7 @@
         "note": "arc ÷ 20 flaps"
       },
       {
-        "label": "Dart width",
+        "label": "Lap width",
         "value": "4.1 mm",
         "note": "incl. 0.8 mm thickness clearance"
       },
@@ -2103,7 +2106,7 @@
       {
         "label": "Total take-up",
         "value": "65.1 mm",
-        "note": "removed by all darts, one side"
+        "note": "taken up as lap by all darts, one side"
       },
       {
         "label": "Blank area",
@@ -2180,10 +2183,11 @@
       "n": 22,
       "pitch": 74.25582635757694,
       "removal": 118.95021005741387,
-      "notch": 6.606827729882449
+      "notch": 0,
+      "lap": 6.606827729882449
     },
     "blank": {
-      "outline": "M 0.0,61.6 L 20.0,0.0 L 71.0,0.0 L 74.3,37.6 L 77.6,0.0 L 145.2,0.0 L 148.5,37.6 L 151.8,0.0 L 219.5,0.0 L 222.8,37.6 L 226.1,0.0 L 293.7,0.0 L 297.0,37.6 L 300.3,0.0 L 368.0,0.0 L 371.3,37.6 L 374.6,0.0 L 442.2,0.0 L 445.5,37.6 L 448.8,0.0 L 516.5,0.0 L 519.8,37.6 L 523.1,0.0 L 590.7,0.0 L 594.0,37.6 L 597.4,0.0 L 665.0,0.0 L 668.3,37.6 L 671.6,0.0 L 739.3,0.0 L 742.6,37.6 L 745.9,0.0 L 813.5,0.0 L 816.8,37.6 L 820.1,0.0 L 887.8,0.0 L 891.1,37.6 L 894.4,0.0 L 962.0,0.0 L 965.3,37.6 L 968.6,0.0 L 1036.3,0.0 L 1039.6,37.6 L 1042.9,0.0 L 1110.5,0.0 L 1113.8,37.6 L 1117.1,0.0 L 1143.5,0.0 L 1184.8,0.8 L 1188.1,38.4 L 1191.4,0.8 L 1259.0,2.2 L 1262.3,39.7 L 1265.7,2.2 L 1333.3,3.5 L 1336.6,41.1 L 1339.9,3.5 L 1407.6,4.9 L 1410.9,42.5 L 1414.2,4.9 L 1481.8,6.3 L 1485.1,43.8 L 1488.4,6.3 L 1556.1,7.6 L 1559.4,45.2 L 1562.7,7.6 L 1633.6,9.0 L 1633.6,138.1 L 1562.7,139.5 L 1559.4,101.9 L 1556.1,139.5 L 1488.4,140.8 L 1485.1,103.3 L 1481.8,140.8 L 1414.2,142.2 L 1410.9,104.7 L 1407.6,142.2 L 1339.9,143.6 L 1336.6,106.0 L 1333.3,143.6 L 1265.7,144.9 L 1262.3,107.4 L 1259.0,144.9 L 1191.4,146.3 L 1188.1,108.7 L 1184.8,146.3 L 1143.5,147.1 L 1117.1,147.1 L 1113.8,109.6 L 1110.5,147.1 L 1042.9,147.1 L 1039.6,109.6 L 1036.3,147.1 L 968.6,147.1 L 965.3,109.6 L 962.0,147.1 L 894.4,147.1 L 891.1,109.6 L 887.8,147.1 L 820.1,147.1 L 816.8,109.6 L 813.5,147.1 L 745.9,147.1 L 742.6,109.6 L 739.3,147.1 L 671.6,147.1 L 668.3,109.6 L 665.0,147.1 L 597.4,147.1 L 594.0,109.6 L 590.7,147.1 L 523.1,147.1 L 519.8,109.6 L 516.5,147.1 L 448.8,147.1 L 445.5,109.6 L 442.2,147.1 L 374.6,147.1 L 371.3,109.6 L 368.0,147.1 L 300.3,147.1 L 297.0,109.6 L 293.7,147.1 L 226.1,147.1 L 222.8,109.6 L 219.5,147.1 L 151.8,147.1 L 148.5,109.6 L 145.2,147.1 L 77.6,147.1 L 74.3,109.6 L 71.0,147.1 L 20.0,147.1 L 0.0,85.6 L -34,85.6 L -34,61.6 L 0,61.6 Z",
+      "outline": "M 0.0,61.6 L 20.0,0.0 L 74.3,0.0 L 74.3,37.6 L 74.3,0.0 L 148.5,0.0 L 148.5,37.6 L 148.5,0.0 L 222.8,0.0 L 222.8,37.6 L 222.8,0.0 L 297.0,0.0 L 297.0,37.6 L 297.0,0.0 L 371.3,0.0 L 371.3,37.6 L 371.3,0.0 L 445.5,0.0 L 445.5,37.6 L 445.5,0.0 L 519.8,0.0 L 519.8,37.6 L 519.8,0.0 L 594.0,0.0 L 594.0,37.6 L 594.0,0.0 L 668.3,0.0 L 668.3,37.6 L 668.3,0.0 L 742.6,0.0 L 742.6,37.6 L 742.6,0.0 L 816.8,0.0 L 816.8,37.6 L 816.8,0.0 L 891.1,0.0 L 891.1,37.6 L 891.1,0.0 L 965.3,0.0 L 965.3,37.6 L 965.3,0.0 L 1039.6,0.0 L 1039.6,37.6 L 1039.6,0.0 L 1113.8,0.0 L 1113.8,37.6 L 1113.8,0.0 L 1143.5,0.0 L 1188.1,0.8 L 1188.1,38.4 L 1188.1,0.8 L 1262.3,2.2 L 1262.3,39.7 L 1262.3,2.2 L 1336.6,3.5 L 1336.6,41.1 L 1336.6,3.5 L 1410.9,4.9 L 1410.9,42.5 L 1410.9,4.9 L 1485.1,6.3 L 1485.1,43.8 L 1485.1,6.3 L 1559.4,7.6 L 1559.4,45.2 L 1559.4,7.6 L 1633.6,9.0 L 1633.6,138.1 L 1559.4,139.5 L 1559.4,101.9 L 1559.4,139.5 L 1485.1,140.8 L 1485.1,103.3 L 1485.1,140.8 L 1410.9,142.2 L 1410.9,104.7 L 1410.9,142.2 L 1336.6,143.6 L 1336.6,106.0 L 1336.6,143.6 L 1262.3,144.9 L 1262.3,107.4 L 1262.3,144.9 L 1188.1,146.3 L 1188.1,108.7 L 1188.1,146.3 L 1143.5,147.1 L 1113.8,147.1 L 1113.8,109.6 L 1113.8,147.1 L 1039.6,147.1 L 1039.6,109.6 L 1039.6,147.1 L 965.3,147.1 L 965.3,109.6 L 965.3,147.1 L 891.1,147.1 L 891.1,109.6 L 891.1,147.1 L 816.8,147.1 L 816.8,109.6 L 816.8,147.1 L 742.6,147.1 L 742.6,109.6 L 742.6,147.1 L 668.3,147.1 L 668.3,109.6 L 668.3,147.1 L 594.0,147.1 L 594.0,109.6 L 594.0,147.1 L 519.8,147.1 L 519.8,109.6 L 519.8,147.1 L 445.5,147.1 L 445.5,109.6 L 445.5,147.1 L 371.3,147.1 L 371.3,109.6 L 371.3,147.1 L 297.0,147.1 L 297.0,109.6 L 297.0,147.1 L 222.8,147.1 L 222.8,109.6 L 222.8,147.1 L 148.5,147.1 L 148.5,109.6 L 148.5,147.1 L 74.3,147.1 L 74.3,109.6 L 74.3,147.1 L 20.0,147.1 L 0.0,85.6 L -34,85.6 L -34,61.6 L 0,61.6 Z",
       "foldLines": [
         "M 0.0,37.6 L 1143.5,37.6 L 1633.6,46.6",
         "M 0.0,109.6 L 1143.5,109.6 L 1633.6,100.6",
@@ -2195,12 +2199,12 @@
       "seamCount": 6,
       "lapCount": 6,
       "lapArrows": [
-        "M 196.0,81.6 L 208.0,81.6 M 205.5,79.1 L 208.0,81.6 L 205.5,84.1",
-        "M 419.0,81.6 L 431.0,81.6 M 428.5,79.1 L 431.0,81.6 L 428.5,84.1",
-        "M 641.5,81.6 L 653.5,81.6 M 651.0,79.1 L 653.5,81.6 L 651.0,84.1",
-        "M 885.0,81.6 L 897.0,81.6 M 894.5,79.1 L 897.0,81.6 L 894.5,84.1",
-        "M 1132.0,81.6 L 1144.0,81.6 M 1141.5,79.1 L 1144.0,81.6 L 1141.5,84.1",
-        "M 1379.0,81.6 L 1391.0,81.6 M 1388.5,79.1 L 1391.0,81.6 L 1388.5,84.1"
+        "M 202.0,81.6 L 214.0,81.6 M 211.5,79.1 L 214.0,81.6 L 211.5,84.1",
+        "M 425.0,81.6 L 437.0,81.6 M 434.5,79.1 L 437.0,81.6 L 434.5,84.1",
+        "M 647.5,81.6 L 659.5,81.6 M 657.0,79.1 L 659.5,81.6 L 657.0,84.1",
+        "M 894.5,81.6 L 906.5,81.6 M 904.0,79.1 L 906.5,81.6 L 904.0,84.1",
+        "M 1141.5,81.6 L 1153.5,81.6 M 1151.0,79.1 L 1153.5,81.6 L 1151.0,84.1",
+        "M 1388.5,81.6 L 1400.5,81.6 M 1398.0,79.1 L 1400.5,81.6 L 1398.0,84.1"
       ],
       "panelCount": 7,
       "strutFrac": [
@@ -2212,13 +2216,13 @@
       "bboxW": 1667.6281798666926,
       "bboxH": 147.12007815689407,
       "firstHole": {
-        "cx": "65.0",
-        "cy": "11.3",
+        "cx": "73.9",
+        "cy": "3.5",
         "r": 2
       },
       "lastHole": {
-        "cx": "1385.0",
-        "cy": "135.7",
+        "cx": "1394.5",
+        "cy": "135.5",
         "r": 2
       },
       "firstSlot": {
@@ -2356,7 +2360,7 @@
       "height": 233,
       "fitsA4": false,
       "extraCount": 0,
-      "extraLabel": "CLIP"
+      "extraLabel": ""
     },
     "xsec": {
       "paths": [
@@ -2596,8 +2600,8 @@
         },
         "holeCount": 180,
         "firstHole": {
-          "cx": "257.0",
-          "cy": "-335.5",
+          "cx": "254.8",
+          "cy": "-337.2",
           "r": 2
         },
         "lastHole": {
@@ -2654,7 +2658,7 @@
         "holeCount": 180,
         "firstHole": {
           "cx": "-59.8",
-          "cy": "-405.3",
+          "cy": "-406.2",
           "r": 2
         },
         "lastHole": {
@@ -2749,9 +2753,9 @@
     ],
     "engNotes": [
       {
-        "title": "Why the darts exist",
+        "title": "Why the shingle exists",
         "body": "The blank is a developable cylinder along its length, so bending it round the wheel is free. Folding the skirts down is not: the skirt free edge sits on a smaller radius than the fold line, so it must be shorter. Each dart removes exactly that surplus.",
-        "formula": "take-up = L × drop / R = 1634 × 26 / 360 = 119.0 mm over 22 darts → 6.6 mm each"
+        "formula": "take-up = L × drop / R = 1634 × 26 / 360 = 119.0 mm over 22 darts → 0.0 mm each"
       },
       {
         "title": "Radius chain",
@@ -2779,7 +2783,7 @@
         "formula": "7 panels · 20 mm lap · fastener row at lap centre"
       },
       {
-        "title": "What a butt strap is",
+        "title": "Rivets go straight through the lap",
         "body": "A rivet cannot pull a V-shaped gap closed the way a zip tie can — it needs two layers to squeeze. The butt strap is a small separate rectangle that sits behind the dart and bridges it: two rivets into the left flap, two into the right. The dart stays open by design; the strap carries the load. Zip ties and clips need no strap because they pull through both sides at once.",
         "formula": "strap 34 × 14 mm · 4 × 3.2 mm holes · one per dart"
       },
@@ -2809,9 +2813,9 @@
         "formula": "setback = (r+t)·tan(α/2) = 1.2 · BA = α(r+0.44t) = 1.7 · net -0.8 mm per fold"
       },
       {
-        "title": "Darts get wider with thickness",
+        "title": "The lap gets wider with thickness",
         "body": "Two folded flaps meeting at a closed dart collide edge-on if the dart is cut to the ideal width — the material has to go somewhere. Adding one thickness to every dart gives the two edges room to sit alongside each other rather than fighting.",
-        "formula": "dart = L·drop/R/n + t = 6.6 mm"
+        "formula": "dart = L·drop/R/n + t = 0.0 mm"
       },
       {
         "title": "Hemmed edge",
@@ -2856,7 +2860,7 @@
         "note": "arc ÷ 22 flaps"
       },
       {
-        "label": "Dart width",
+        "label": "Lap width",
         "value": "6.6 mm",
         "note": "incl. 1.2 mm thickness clearance"
       },
@@ -2868,7 +2872,7 @@
       {
         "label": "Total take-up",
         "value": "119.0 mm",
-        "note": "removed by all darts, one side"
+        "note": "taken up as lap by all darts, one side"
       },
       {
         "label": "Blank area",
@@ -2945,10 +2949,11 @@
       "n": 16,
       "pitch": 75.4418569174549,
       "removal": 111.5158219288255,
-      "notch": 7.769738870551594
+      "notch": 0,
+      "lap": 7.769738870551594
     },
     "blank": {
-      "outline": "M 0.0,0.0 L 71.6,0.0 L 75.4,29.4 L 79.3,0.0 L 147.0,0.0 L 150.9,29.4 L 154.8,0.0 L 222.4,0.0 L 226.3,29.4 L 230.2,0.0 L 297.9,0.0 L 301.8,29.4 L 305.7,0.0 L 373.3,0.0 L 377.2,29.4 L 381.1,0.0 L 448.8,0.0 L 452.7,29.4 L 456.5,0.0 L 524.2,0.0 L 528.1,29.4 L 532.0,0.0 L 599.6,0.0 L 603.5,29.4 L 607.4,0.0 L 675.1,0.0 L 679.0,29.4 L 682.9,0.0 L 750.5,0.0 L 754.4,29.4 L 758.3,0.0 L 826.0,0.0 L 829.9,29.4 L 833.7,0.0 L 844.9,0.0 L 901.4,0.0 L 905.3,29.4 L 909.2,0.0 L 976.9,0.0 L 980.7,29.4 L 984.6,0.0 L 1052.3,0.0 L 1056.2,29.4 L 1060.1,0.0 L 1127.7,0.0 L 1131.6,29.4 L 1135.5,0.0 L 1207.1,0.0 L 1207.1,120.9 L 1135.5,120.9 L 1131.6,91.4 L 1127.7,120.9 L 1060.1,120.9 L 1056.2,91.4 L 1052.3,120.9 L 984.6,120.9 L 980.7,91.4 L 976.9,120.9 L 909.2,120.9 L 905.3,91.4 L 901.4,120.9 L 844.9,120.9 L 833.7,120.9 L 829.9,91.4 L 826.0,120.9 L 758.3,120.9 L 754.4,91.4 L 750.5,120.9 L 682.9,120.9 L 679.0,91.4 L 675.1,120.9 L 607.4,120.9 L 603.5,91.4 L 599.6,120.9 L 532.0,120.9 L 528.1,91.4 L 524.2,120.9 L 456.5,120.9 L 452.7,91.4 L 448.8,120.9 L 381.1,120.9 L 377.2,91.4 L 373.3,120.9 L 305.7,120.9 L 301.8,91.4 L 297.9,120.9 L 230.2,120.9 L 226.3,91.4 L 222.4,120.9 L 154.8,120.9 L 150.9,91.4 L 147.0,120.9 L 79.3,120.9 L 75.4,91.4 L 71.6,120.9 L 0.0,120.9 Z",
+      "outline": "M 0.0,0.0 L 75.4,0.0 L 75.4,29.4 L 75.4,0.0 L 150.9,0.0 L 150.9,29.4 L 150.9,0.0 L 226.3,0.0 L 226.3,29.4 L 226.3,0.0 L 301.8,0.0 L 301.8,29.4 L 301.8,0.0 L 377.2,0.0 L 377.2,29.4 L 377.2,0.0 L 452.7,0.0 L 452.7,29.4 L 452.7,0.0 L 528.1,0.0 L 528.1,29.4 L 528.1,0.0 L 603.5,0.0 L 603.5,29.4 L 603.5,0.0 L 679.0,0.0 L 679.0,29.4 L 679.0,0.0 L 754.4,0.0 L 754.4,29.4 L 754.4,0.0 L 829.9,0.0 L 829.9,29.4 L 829.9,0.0 L 844.9,0.0 L 905.3,0.0 L 905.3,29.4 L 905.3,0.0 L 980.7,0.0 L 980.7,29.4 L 980.7,0.0 L 1056.2,0.0 L 1056.2,29.4 L 1056.2,0.0 L 1131.6,0.0 L 1131.6,29.4 L 1131.6,0.0 L 1207.1,0.0 L 1207.1,120.9 L 1131.6,120.9 L 1131.6,91.4 L 1131.6,120.9 L 1056.2,120.9 L 1056.2,91.4 L 1056.2,120.9 L 980.7,120.9 L 980.7,91.4 L 980.7,120.9 L 905.3,120.9 L 905.3,91.4 L 905.3,120.9 L 844.9,120.9 L 829.9,120.9 L 829.9,91.4 L 829.9,120.9 L 754.4,120.9 L 754.4,91.4 L 754.4,120.9 L 679.0,120.9 L 679.0,91.4 L 679.0,120.9 L 603.5,120.9 L 603.5,91.4 L 603.5,120.9 L 528.1,120.9 L 528.1,91.4 L 528.1,120.9 L 452.7,120.9 L 452.7,91.4 L 452.7,120.9 L 377.2,120.9 L 377.2,91.4 L 377.2,120.9 L 301.8,120.9 L 301.8,91.4 L 301.8,120.9 L 226.3,120.9 L 226.3,91.4 L 226.3,120.9 L 150.9,120.9 L 150.9,91.4 L 150.9,120.9 L 75.4,120.9 L 75.4,91.4 L 75.4,120.9 L 0.0,120.9 Z",
       "foldLines": [
         "M 0.0,29.4 L 844.9,29.4 L 1207.1,29.4",
         "M 0.0,91.4 L 844.9,91.4 L 1207.1,91.4",
@@ -3114,7 +3119,7 @@
       "height": 233,
       "fitsA4": false,
       "extraCount": 0,
-      "extraLabel": "CLIP"
+      "extraLabel": ""
     },
     "xsec": {
       "paths": [
@@ -3469,9 +3474,9 @@
     ],
     "engNotes": [
       {
-        "title": "Why the darts exist",
+        "title": "Why the shingle exists",
         "body": "The blank is a developable cylinder along its length, so bending it round the wheel is free. Folding the skirts down is not: the skirt free edge sits on a smaller radius than the fold line, so it must be shorter. Each dart removes exactly that surplus.",
-        "formula": "take-up = L × drop / R = 1207 × 25 / 266 = 111.5 mm over 16 darts → 7.8 mm each"
+        "formula": "take-up = L × drop / R = 1207 × 25 / 266 = 111.5 mm over 16 darts → 0.0 mm each"
       },
       {
         "title": "Radius chain",
@@ -3499,7 +3504,7 @@
         "formula": "single sheet — no seams"
       },
       {
-        "title": "What a butt strap is",
+        "title": "Rivets go straight through the lap",
         "body": "A rivet cannot pull a V-shaped gap closed the way a zip tie can — it needs two layers to squeeze. The butt strap is a small separate rectangle that sits behind the dart and bridges it: two rivets into the left flap, two into the right. The dart stays open by design; the strap carries the load. Zip ties and clips need no strap because they pull through both sides at once.",
         "formula": "strap 34 × 14 mm · 4 × 3.2 mm holes · one per dart"
       },
@@ -3529,9 +3534,9 @@
         "formula": "setback = (r+t)·tan(α/2) = 0.8 · BA = α(r+0.44t) = 1.1 · net -0.6 mm per fold"
       },
       {
-        "title": "Darts get wider with thickness",
+        "title": "The lap gets wider with thickness",
         "body": "Two folded flaps meeting at a closed dart collide edge-on if the dart is cut to the ideal width — the material has to go somewhere. Adding one thickness to every dart gives the two edges room to sit alongside each other rather than fighting.",
-        "formula": "dart = L·drop/R/n + t = 7.8 mm"
+        "formula": "dart = L·drop/R/n + t = 0.0 mm"
       },
       {
         "title": "Hemmed edge",
@@ -3576,7 +3581,7 @@
         "note": "arc ÷ 16 flaps"
       },
       {
-        "label": "Dart width",
+        "label": "Lap width",
         "value": "7.8 mm",
         "note": "incl. 0.8 mm thickness clearance"
       },
@@ -3588,7 +3593,7 @@
       {
         "label": "Total take-up",
         "value": "111.5 mm",
-        "note": "removed by all darts, one side"
+        "note": "taken up as lap by all darts, one side"
       },
       {
         "label": "Blank area",
@@ -3665,18 +3670,19 @@
       "n": 12,
       "pitch": 132.54321227853606,
       "removal": 111.5158219288255,
-      "notch": 11.292985160735459
+      "notch": 0,
+      "lap": 11.292985160735459
     },
     "blank": {
-      "outline": "M 0.0,55.6 L 20.0,0.0 L 126.9,0.0 L 132.5,28.6 L 138.2,0.0 L 259.4,0.0 L 265.1,28.6 L 270.7,0.0 L 392.0,0.0 L 397.6,28.6 L 403.3,0.0 L 524.5,0.0 L 530.2,28.6 L 535.8,0.0 L 657.1,0.0 L 662.7,28.6 L 668.4,0.0 L 789.6,0.0 L 795.3,28.6 L 800.9,0.0 L 922.2,0.0 L 927.8,28.6 L 933.4,0.0 L 1054.7,0.0 L 1060.3,28.6 L 1066.0,0.0 L 1113.4,0.0 L 1187.2,1.6 L 1192.9,30.2 L 1198.5,1.6 L 1319.8,4.3 L 1325.4,32.9 L 1331.1,4.3 L 1452.3,7.0 L 1458.0,35.6 L 1463.6,7.0 L 1590.5,9.8 L 1590.5,125.5 L 1463.6,128.2 L 1458.0,99.6 L 1452.3,128.2 L 1331.1,130.9 L 1325.4,102.3 L 1319.8,130.9 L 1198.5,133.6 L 1192.9,105.0 L 1187.2,133.6 L 1113.4,135.2 L 1066.0,135.2 L 1060.3,106.6 L 1054.7,135.2 L 933.4,135.2 L 927.8,106.6 L 922.2,135.2 L 800.9,135.2 L 795.3,106.6 L 789.6,135.2 L 668.4,135.2 L 662.7,106.6 L 657.1,135.2 L 535.8,135.2 L 530.2,106.6 L 524.5,135.2 L 403.3,135.2 L 397.6,106.6 L 392.0,135.2 L 270.7,135.2 L 265.1,106.6 L 259.4,135.2 L 138.2,135.2 L 132.5,106.6 L 126.9,135.2 L 20.0,135.2 L 0.0,79.6 L -34,79.6 L -34,55.6 L 0,55.6 Z",
+      "outline": "M 0.0,55.6 L 20.0,0.0 L 132.5,0.0 L 132.5,28.6 L 132.5,0.0 L 265.1,0.0 L 265.1,28.6 L 265.1,0.0 L 397.6,0.0 L 397.6,28.6 L 397.6,0.0 L 530.2,0.0 L 530.2,28.6 L 530.2,0.0 L 662.7,0.0 L 662.7,28.6 L 662.7,0.0 L 795.3,0.0 L 795.3,28.6 L 795.3,0.0 L 927.8,0.0 L 927.8,28.6 L 927.8,0.0 L 1060.3,0.0 L 1060.3,28.6 L 1060.3,0.0 L 1113.4,0.0 L 1192.9,1.6 L 1192.9,30.2 L 1192.9,1.6 L 1325.4,4.3 L 1325.4,32.9 L 1325.4,4.3 L 1458.0,7.0 L 1458.0,35.6 L 1458.0,7.0 L 1590.5,9.8 L 1590.5,125.5 L 1458.0,128.2 L 1458.0,99.6 L 1458.0,128.2 L 1325.4,130.9 L 1325.4,102.3 L 1325.4,130.9 L 1192.9,133.6 L 1192.9,105.0 L 1192.9,133.6 L 1113.4,135.2 L 1060.3,135.2 L 1060.3,106.6 L 1060.3,135.2 L 927.8,135.2 L 927.8,106.6 L 927.8,135.2 L 795.3,135.2 L 795.3,106.6 L 795.3,135.2 L 662.7,135.2 L 662.7,106.6 L 662.7,135.2 L 530.2,135.2 L 530.2,106.6 L 530.2,135.2 L 397.6,135.2 L 397.6,106.6 L 397.6,135.2 L 265.1,135.2 L 265.1,106.6 L 265.1,135.2 L 132.5,135.2 L 132.5,106.6 L 132.5,135.2 L 20.0,135.2 L 0.0,79.6 L -34,79.6 L -34,55.6 L 0,55.6 Z M 125.7,2.0 L 125.7,14.9 L 133.7,14.9 L 133.7,2.0 M 125.7,133.2 L 125.7,120.3 L 133.7,120.3 L 133.7,133.2 M 258.3,2.0 L 258.3,14.9 L 266.3,14.9 L 266.3,2.0 M 258.3,133.2 L 258.3,120.3 L 266.3,120.3 L 266.3,133.2 M 390.8,2.0 L 390.8,14.9 L 398.8,14.9 L 398.8,2.0 M 390.8,133.2 L 390.8,120.3 L 398.8,120.3 L 398.8,133.2 M 523.3,2.0 L 523.3,14.9 L 531.3,14.9 L 531.3,2.0 M 523.3,133.2 L 523.3,120.3 L 531.3,120.3 L 531.3,133.2 M 655.9,2.0 L 655.9,14.9 L 663.9,14.9 L 663.9,2.0 M 655.9,133.2 L 655.9,120.3 L 663.9,120.3 L 663.9,133.2 M 788.4,2.0 L 788.4,14.9 L 796.4,14.9 L 796.4,2.0 M 788.4,133.2 L 788.4,120.3 L 796.4,120.3 L 796.4,133.2 M 921.0,2.0 L 921.0,14.9 L 929.0,14.9 L 929.0,2.0 M 921.0,133.2 L 921.0,120.3 L 929.0,120.3 L 929.0,133.2 M 1053.5,2.0 L 1053.5,14.9 L 1061.5,14.9 L 1061.5,2.0 M 1053.5,133.2 L 1053.5,120.3 L 1061.5,120.3 L 1061.5,133.2 M 1186.1,3.6 L 1186.1,16.4 L 1194.1,16.4 L 1194.1,3.6 M 1186.1,131.6 L 1186.1,118.8 L 1194.1,118.8 L 1194.1,131.6 M 1318.6,6.3 L 1318.6,19.1 L 1326.6,19.1 L 1326.6,6.3 M 1318.6,128.9 L 1318.6,116.1 L 1326.6,116.1 L 1326.6,128.9 M 1451.2,9.0 L 1451.2,21.9 L 1459.2,21.9 L 1459.2,9.0 M 1451.2,126.2 L 1451.2,113.3 L 1459.2,113.3 L 1459.2,126.2",
       "foldLines": [
         "M 0.0,28.6 L 1113.4,28.6 L 1590.5,38.4",
         "M 0.0,106.6 L 1113.4,106.6 L 1590.5,96.9",
         "M -34,67.6 L 1590.5,67.6"
       ],
-      "scoreLineCount": 0,
+      "scoreLineCount": 22,
       "holeCount": 15,
-      "slotCount": 47,
+      "slotCount": 25,
       "seamCount": 0,
       "lapCount": 0,
       "lapArrows": [],
@@ -3700,10 +3706,10 @@
         "r": 2
       },
       "firstSlot": {
-        "x": "119.4",
-        "y": "8.0",
-        "w": 3,
-        "h": "12.0"
+        "x": "131.4",
+        "y": "2.0",
+        "w": 8,
+        "h": "12.9"
       },
       "lastSlot": {
         "x": "-28.0",
@@ -3717,35 +3723,13 @@
         "M 7,12.0 h 206.0 a 7 7 0 0 1 0 14 h -206.0 a 7 7 0 0 1 0 -14 Z",
         "M 7,35.0 h 206.0 a 7 7 0 0 1 0 14 h -206.0 a 7 7 0 0 1 0 -14 Z",
         "M 7,58.0 h 206.0 a 7 7 0 0 1 0 14 h -206.0 a 7 7 0 0 1 0 -14 Z",
-        "M 0,95.0 h 58.5 v 72.0 q 0,18.0 -18.0,18.0 h -22.5 q -18.0,0 -18.0,-18.0 Z",
-        "M 2.0,201.0 h 34 v 14 h -34 Z",
-        "M 44.0,201.0 h 34 v 14 h -34 Z",
-        "M 86.0,201.0 h 34 v 14 h -34 Z",
-        "M 128.0,201.0 h 34 v 14 h -34 Z",
-        "M 170.0,201.0 h 34 v 14 h -34 Z",
-        "M 212.0,201.0 h 34 v 14 h -34 Z",
-        "M 2.0,223.0 h 34 v 14 h -34 Z",
-        "M 44.0,223.0 h 34 v 14 h -34 Z",
-        "M 86.0,223.0 h 34 v 14 h -34 Z",
-        "M 128.0,223.0 h 34 v 14 h -34 Z",
-        "M 170.0,223.0 h 34 v 14 h -34 Z"
+        "M 0,95.0 h 58.5 v 72.0 q 0,18.0 -18.0,18.0 h -22.5 q -18.0,0 -18.0,-18.0 Z"
       ],
       "folds": [
         "M 26,12.0 v 14 M 194.0,12.0 v 14",
         "M 26,35.0 v 14 M 194.0,35.0 v 14",
         "M 26,58.0 v 14 M 194.0,58.0 v 14",
-        "M 0,111.0 h 58.5",
-        "M 8.0,201.0 v 14 M 30.0,201.0 v 14",
-        "M 50.0,201.0 v 14 M 72.0,201.0 v 14",
-        "M 92.0,201.0 v 14 M 114.0,201.0 v 14",
-        "M 134.0,201.0 v 14 M 156.0,201.0 v 14",
-        "M 176.0,201.0 v 14 M 198.0,201.0 v 14",
-        "M 218.0,201.0 v 14 M 240.0,201.0 v 14",
-        "M 8.0,223.0 v 14 M 30.0,223.0 v 14",
-        "M 50.0,223.0 v 14 M 72.0,223.0 v 14",
-        "M 92.0,223.0 v 14 M 114.0,223.0 v 14",
-        "M 134.0,223.0 v 14 M 156.0,223.0 v 14",
-        "M 176.0,223.0 v 14 M 198.0,223.0 v 14"
+        "M 0,111.0 h 58.5"
       ],
       "holes": [
         {
@@ -3849,20 +3833,14 @@
           "y": "105.0",
           "size": 5,
           "text": "MUDFLAP, 59 × 90 mm, lap 16 mm under the tail"
-        },
-        {
-          "x": "2.0",
-          "y": "198.0",
-          "size": 5,
-          "text": "CLIP × 11, 34 × 14 mm"
         }
       ],
-      "viewBox": "-2 0 316.0 255.0",
+      "viewBox": "-2 0 316.0 233.0",
       "width": 316,
-      "height": 255,
+      "height": 233,
       "fitsA4": false,
-      "extraCount": 11,
-      "extraLabel": "CLIP"
+      "extraCount": 0,
+      "extraLabel": ""
     },
     "xsec": {
       "paths": [
@@ -4113,10 +4091,10 @@
         },
         "slotCount": 44,
         "firstSlot": {
-          "d": "M 206.0,-355.4 L 215.2,-359.9"
+          "d": "M 201.5,-357.6 L 210.5,-362.0"
         },
         "lastSlot": {
-          "d": "M 26.2,360.3 L 22.9,365.0"
+          "d": "M 20.3,362.0 L 16.9,366.7"
         },
         "strutCount": 6,
         "firstStrut": {
@@ -4174,10 +4152,10 @@
         },
         "slotCount": 44,
         "firstSlot": {
-          "d": "M -62.9,-406.1 L -55.8,-416.3"
+          "d": "M -62.9,-406.6 L -55.8,-416.8"
         },
         "lastSlot": {
-          "d": "M 54.3,331.8 L 47.1,340.2"
+          "d": "M 54.3,335.6 L 47.1,344.0"
         },
         "strutCount": 6,
         "firstStrut": {
@@ -4194,7 +4172,7 @@
         "aspect": "170.0 / 890.0"
       }
     },
-    "joinNote": "Two 3 mm slots per dart. A folded clip threads both slots and holds the dart shut — no hardware.",
+    "joinNote": "A tongue punched from the lap folds through a slot in the panel beneath and lies flat against the inside. No hardware.",
     "warnings": [
       {
         "text": "260° of coverage wraps past the frame. Measure from the tyre to the fork crown (front) or seat tube (rear) before cutting — most frames foul somewhere between 200° and 240°."
@@ -4204,9 +4182,6 @@
       },
       {
         "text": "Tapered tail is 59 mm, narrower than the 55 mm tyre. It will throw spray sideways at the very end — keep the taper under 22% or widen the crown."
-      },
-      {
-        "text": "Darts are 11.3 mm wide — the curve will read as facets and the gaps are hard to close cleanly. Add flaps."
       },
       {
         "text": "A single blank needs 1591 mm of stock in one piece. Switch to A4 panels unless you have a roll."
@@ -4244,7 +4219,7 @@
       {
         "n": "06",
         "title": "Close the darts",
-        "body": "Two 3 mm slots per dart. A folded clip threads both slots and holds the dart shut — no hardware."
+        "body": "A tongue punched from the lap folds through a slot in the panel beneath and lies flat against the inside. No hardware."
       },
       {
         "n": "07",
@@ -4264,9 +4239,9 @@
     ],
     "engNotes": [
       {
-        "title": "Why the darts exist",
+        "title": "Why the shingle exists",
         "body": "The blank is a developable cylinder along its length, so bending it round the wheel is free. Folding the skirts down is not: the skirt free edge sits on a smaller radius than the fold line, so it must be shorter. Each dart removes exactly that surplus.",
-        "formula": "take-up = L × drop / R = 1591 × 25 / 351 = 111.5 mm over 12 darts → 11.3 mm each"
+        "formula": "take-up = L × drop / R = 1591 × 25 / 351 = 111.5 mm over 12 darts → 0.0 mm each"
       },
       {
         "title": "Radius chain",
@@ -4294,7 +4269,7 @@
         "formula": "single sheet — no seams"
       },
       {
-        "title": "What a butt strap is",
+        "title": "Rivets go straight through the lap",
         "body": "A rivet cannot pull a V-shaped gap closed the way a zip tie can — it needs two layers to squeeze. The butt strap is a small separate rectangle that sits behind the dart and bridges it: two rivets into the left flap, two into the right. The dart stays open by design; the strap carries the load. Zip ties and clips need no strap because they pull through both sides at once.",
         "formula": "strap 34 × 14 mm · 4 × 3.2 mm holes · one per dart"
       },
@@ -4324,9 +4299,9 @@
         "formula": "setback = (r+t)·tan(α/2) = 2.1 · BA = α(r+0.44t) = 2.8 · net -1.4 mm per fold"
       },
       {
-        "title": "Darts get wider with thickness",
+        "title": "The lap gets wider with thickness",
         "body": "Two folded flaps meeting at a closed dart collide edge-on if the dart is cut to the ideal width — the material has to go somewhere. Adding one thickness to every dart gives the two edges room to sit alongside each other rather than fighting.",
-        "formula": "dart = L·drop/R/n + t = 11.3 mm"
+        "formula": "dart = L·drop/R/n + t = 0.0 mm"
       },
       {
         "title": "Hemmed edge",
@@ -4371,7 +4346,7 @@
         "note": "arc ÷ 12 flaps"
       },
       {
-        "label": "Dart width",
+        "label": "Lap width",
         "value": "11.3 mm",
         "note": "incl. 2.0 mm thickness clearance"
       },
@@ -4383,7 +4358,7 @@
       {
         "label": "Total take-up",
         "value": "111.5 mm",
-        "note": "removed by all darts, one side"
+        "note": "taken up as lap by all darts, one side"
       },
       {
         "label": "Blank area",
@@ -4397,7 +4372,7 @@
       },
       {
         "label": "Sheets to print",
-        "value": "10",
+        "value": "9",
         "note": "7 × 1 tiles + parts + instructions"
       }
     ],
@@ -4460,10 +4435,11 @@
       "n": 20,
       "pitch": 69.11503837897546,
       "removal": 81.77826941447204,
-      "notch": 4.888913470723602
+      "notch": 0,
+      "lap": 4.888913470723602
     },
     "blank": {
-      "outline": "M 0.0,40.9 L 20.0,0.0 L 66.7,0.0 L 69.1,25.4 L 71.6,0.0 L 135.8,0.0 L 138.2,25.4 L 140.7,0.0 L 204.9,0.0 L 207.3,25.4 L 209.8,0.0 L 274.0,0.0 L 276.5,25.4 L 278.9,0.0 L 343.1,0.0 L 345.6,25.4 L 348.0,0.0 L 412.2,0.0 L 414.7,25.4 L 417.1,0.0 L 481.4,0.0 L 483.8,25.4 L 486.2,0.0 L 550.5,0.0 L 552.9,25.4 L 555.4,0.0 L 619.6,0.0 L 622.0,25.4 L 624.5,0.0 L 688.7,0.0 L 691.2,25.4 L 693.6,0.0 L 757.8,0.0 L 760.3,25.4 L 762.7,0.0 L 826.9,0.0 L 829.4,25.4 L 831.8,0.0 L 896.1,0.0 L 898.5,25.4 L 900.9,0.0 L 967.6,0.0 L 965.2,0.0 L 967.6,25.4 L 970.1,0.0 L 1034.3,0.7 L 1036.7,26.1 L 1039.2,0.7 L 1103.4,1.4 L 1105.8,26.8 L 1108.3,1.4 L 1172.5,2.1 L 1175.0,27.5 L 1177.4,2.1 L 1241.6,2.8 L 1244.1,28.2 L 1246.5,2.8 L 1310.7,3.4 L 1313.2,28.9 L 1315.6,3.4 L 1382.3,4.1 L 1382.3,101.8 L 1315.6,102.4 L 1313.2,77.0 L 1310.7,102.4 L 1246.5,103.1 L 1244.1,77.7 L 1241.6,103.1 L 1177.4,103.8 L 1175.0,78.4 L 1172.5,103.8 L 1108.3,104.5 L 1105.8,79.1 L 1103.4,104.5 L 1039.2,105.2 L 1036.7,79.8 L 1034.3,105.2 L 970.1,105.9 L 967.6,80.4 L 965.2,105.9 L 967.6,105.9 L 900.9,105.9 L 898.5,80.4 L 896.1,105.9 L 831.8,105.9 L 829.4,80.4 L 826.9,105.9 L 762.7,105.9 L 760.3,80.4 L 757.8,105.9 L 693.6,105.9 L 691.2,80.4 L 688.7,105.9 L 624.5,105.9 L 622.0,80.4 L 619.6,105.9 L 555.4,105.9 L 552.9,80.4 L 550.5,105.9 L 486.2,105.9 L 483.8,80.4 L 481.4,105.9 L 417.1,105.9 L 414.7,80.4 L 412.2,105.9 L 348.0,105.9 L 345.6,80.4 L 343.1,105.9 L 278.9,105.9 L 276.5,80.4 L 274.0,105.9 L 209.8,105.9 L 207.3,80.4 L 204.9,105.9 L 140.7,105.9 L 138.2,80.4 L 135.8,105.9 L 71.6,105.9 L 69.1,80.4 L 66.7,105.9 L 20.0,105.9 L 0.0,64.9 L -34,64.9 L -34,40.9 L 0,40.9 Z",
+      "outline": "M 0.0,40.9 L 20.0,0.0 L 69.1,0.0 L 69.1,25.4 L 69.1,0.0 L 138.2,0.0 L 138.2,25.4 L 138.2,0.0 L 207.3,0.0 L 207.3,25.4 L 207.3,0.0 L 276.5,0.0 L 276.5,25.4 L 276.5,0.0 L 345.6,0.0 L 345.6,25.4 L 345.6,0.0 L 414.7,0.0 L 414.7,25.4 L 414.7,0.0 L 483.8,0.0 L 483.8,25.4 L 483.8,0.0 L 552.9,0.0 L 552.9,25.4 L 552.9,0.0 L 622.0,0.0 L 622.0,25.4 L 622.0,0.0 L 691.2,0.0 L 691.2,25.4 L 691.2,0.0 L 760.3,0.0 L 760.3,25.4 L 760.3,0.0 L 829.4,0.0 L 829.4,25.4 L 829.4,0.0 L 898.5,0.0 L 898.5,25.4 L 898.5,0.0 L 967.6,0.0 L 967.6,25.4 L 967.6,0.0 L 1036.7,0.7 L 1036.7,26.1 L 1036.7,0.7 L 1105.8,1.4 L 1105.8,26.8 L 1105.8,1.4 L 1175.0,2.1 L 1175.0,27.5 L 1175.0,2.1 L 1244.1,2.8 L 1244.1,28.2 L 1244.1,2.8 L 1313.2,3.4 L 1313.2,28.9 L 1313.2,3.4 L 1382.3,4.1 L 1382.3,101.8 L 1313.2,102.4 L 1313.2,77.0 L 1313.2,102.4 L 1244.1,103.1 L 1244.1,77.7 L 1244.1,103.1 L 1175.0,103.8 L 1175.0,78.4 L 1175.0,103.8 L 1105.8,104.5 L 1105.8,79.1 L 1105.8,104.5 L 1036.7,105.2 L 1036.7,79.8 L 1036.7,105.2 L 967.6,105.9 L 967.6,80.4 L 967.6,105.9 L 898.5,105.9 L 898.5,80.4 L 898.5,105.9 L 829.4,105.9 L 829.4,80.4 L 829.4,105.9 L 760.3,105.9 L 760.3,80.4 L 760.3,105.9 L 691.2,105.9 L 691.2,80.4 L 691.2,105.9 L 622.0,105.9 L 622.0,80.4 L 622.0,105.9 L 552.9,105.9 L 552.9,80.4 L 552.9,105.9 L 483.8,105.9 L 483.8,80.4 L 483.8,105.9 L 414.7,105.9 L 414.7,80.4 L 414.7,105.9 L 345.6,105.9 L 345.6,80.4 L 345.6,105.9 L 276.5,105.9 L 276.5,80.4 L 276.5,105.9 L 207.3,105.9 L 207.3,80.4 L 207.3,105.9 L 138.2,105.9 L 138.2,80.4 L 138.2,105.9 L 69.1,105.9 L 69.1,80.4 L 69.1,105.9 L 20.0,105.9 L 0.0,64.9 L -34,64.9 L -34,40.9 L 0,40.9 Z",
       "foldLines": [
         "M 0.0,25.4 L 967.6,25.4 L 1382.3,29.6",
         "M 0.0,80.4 L 967.6,80.4 L 1382.3,76.3",
@@ -4475,11 +4451,11 @@
       "seamCount": 5,
       "lapCount": 5,
       "lapArrows": [
-        "M 181.5,60.9 L 193.5,60.9 M 191.0,58.4 L 193.5,60.9 L 191.0,63.4",
-        "M 428.5,60.9 L 440.5,60.9 M 438.0,58.4 L 440.5,60.9 L 438.0,63.4",
-        "M 665.5,60.9 L 677.5,60.9 M 675.0,58.4 L 677.5,60.9 L 675.0,63.4",
-        "M 912.5,60.9 L 924.5,60.9 M 922.0,58.4 L 924.5,60.9 L 922.0,63.4",
-        "M 1149.5,60.9 L 1161.5,60.9 M 1159.0,58.4 L 1161.5,60.9 L 1159.0,63.4"
+        "M 217.0,60.9 L 229.0,60.9 M 226.5,58.4 L 229.0,60.9 L 226.5,63.4",
+        "M 464.0,60.9 L 476.0,60.9 M 473.5,58.4 L 476.0,60.9 L 473.5,63.4",
+        "M 711.0,60.9 L 723.0,60.9 M 720.5,58.4 L 723.0,60.9 L 720.5,63.4",
+        "M 948.0,60.9 L 960.0,60.9 M 957.5,58.4 L 960.0,60.9 L 957.5,63.4",
+        "M 1195.0,60.9 L 1207.0,60.9 M 1204.5,58.4 L 1207.0,60.9 L 1204.5,63.4"
       ],
       "panelCount": 6,
       "strutFrac": [
@@ -4490,13 +4466,13 @@
       "bboxW": 1416.300767579509,
       "bboxH": 105.88005210459605,
       "firstHole": {
-        "cx": "60.7",
-        "cy": "7.6",
+        "cx": "68.8",
+        "cy": "3.5",
         "r": 2
       },
       "lastHole": {
-        "cx": "1155.5",
-        "cy": "97.0",
+        "cx": "1201.0",
+        "cy": "96.6",
         "r": 2
       },
       "firstSlot": {
@@ -4606,7 +4582,7 @@
       "height": 220,
       "fitsA4": true,
       "extraCount": 0,
-      "extraLabel": "CLIP"
+      "extraLabel": ""
     },
     "xsec": {
       "paths": [
@@ -4831,8 +4807,8 @@
         },
         "holeCount": 160,
         "firstHole": {
-          "cx": "332.0",
-          "cy": "-7.8",
+          "cx": "332.9",
+          "cy": "-10.3",
           "r": 2
         },
         "lastHole": {
@@ -4889,7 +4865,7 @@
         "holeCount": 160,
         "firstHole": {
           "cx": "-46.5",
-          "cy": "-108.8",
+          "cy": "-111.6",
           "r": 2
         },
         "lastHole": {
@@ -4975,9 +4951,9 @@
     ],
     "engNotes": [
       {
-        "title": "Why the darts exist",
+        "title": "Why the shingle exists",
         "body": "The blank is a developable cylinder along its length, so bending it round the wheel is free. Folding the skirts down is not: the skirt free edge sits on a smaller radius than the fold line, so it must be shorter. Each dart removes exactly that surplus.",
-        "formula": "take-up = L × drop / R = 1382 × 21 / 360 = 81.8 mm over 20 darts → 4.9 mm each"
+        "formula": "take-up = L × drop / R = 1382 × 21 / 360 = 81.8 mm over 20 darts → 0.0 mm each"
       },
       {
         "title": "Radius chain",
@@ -5005,7 +4981,7 @@
         "formula": "6 panels · 20 mm lap · fastener row at lap centre"
       },
       {
-        "title": "What a butt strap is",
+        "title": "Rivets go straight through the lap",
         "body": "A rivet cannot pull a V-shaped gap closed the way a zip tie can — it needs two layers to squeeze. The butt strap is a small separate rectangle that sits behind the dart and bridges it: two rivets into the left flap, two into the right. The dart stays open by design; the strap carries the load. Zip ties and clips need no strap because they pull through both sides at once.",
         "formula": "strap 34 × 14 mm · 4 × 3.2 mm holes · one per dart"
       },
@@ -5035,9 +5011,9 @@
         "formula": "setback = (r+t)·tan(α/2) = 0.8 · BA = α(r+0.44t) = 1.1 · net -0.6 mm per fold"
       },
       {
-        "title": "Darts get wider with thickness",
+        "title": "The lap gets wider with thickness",
         "body": "Two folded flaps meeting at a closed dart collide edge-on if the dart is cut to the ideal width — the material has to go somewhere. Adding one thickness to every dart gives the two edges room to sit alongside each other rather than fighting.",
-        "formula": "dart = L·drop/R/n + t = 4.9 mm"
+        "formula": "dart = L·drop/R/n + t = 0.0 mm"
       },
       {
         "title": "Hemmed edge",
@@ -5082,7 +5058,7 @@
         "note": "arc ÷ 20 flaps"
       },
       {
-        "label": "Dart width",
+        "label": "Lap width",
         "value": "4.9 mm",
         "note": "incl. 0.8 mm thickness clearance"
       },
@@ -5094,7 +5070,7 @@
       {
         "label": "Total take-up",
         "value": "81.8 mm",
-        "note": "removed by all darts, one side"
+        "note": "taken up as lap by all darts, one side"
       },
       {
         "label": "Blank area",
@@ -5171,26 +5147,27 @@
       "n": 20,
       "pitch": 69.11503837897546,
       "removal": 81.77826941447204,
-      "notch": 4.888913470723602
+      "notch": 0,
+      "lap": 4.888913470723602
     },
     "blank": {
-      "outline": "M 0.0,40.9 L 20.0,0.0 L 66.7,0.0 L 69.1,25.4 L 71.6,0.0 L 135.8,0.0 L 138.2,25.4 L 140.7,0.0 L 204.9,0.0 L 207.3,25.4 L 209.8,0.0 L 274.0,0.0 L 276.5,25.4 L 278.9,0.0 L 343.1,0.0 L 345.6,25.4 L 348.0,0.0 L 412.2,0.0 L 414.7,25.4 L 417.1,0.0 L 481.4,0.0 L 483.8,25.4 L 486.2,0.0 L 550.5,0.0 L 552.9,25.4 L 555.4,0.0 L 619.6,0.0 L 622.0,25.4 L 624.5,0.0 L 688.7,0.0 L 691.2,25.4 L 693.6,0.0 L 757.8,0.0 L 760.3,25.4 L 762.7,0.0 L 826.9,0.0 L 829.4,25.4 L 831.8,0.0 L 896.1,0.0 L 898.5,25.4 L 900.9,0.0 L 967.6,0.0 L 965.2,0.0 L 967.6,25.4 L 970.1,0.0 L 1034.3,0.7 L 1036.7,26.1 L 1039.2,0.7 L 1103.4,1.4 L 1105.8,26.8 L 1108.3,1.4 L 1172.5,2.1 L 1175.0,27.5 L 1177.4,2.1 L 1241.6,2.8 L 1244.1,28.2 L 1246.5,2.8 L 1310.7,3.4 L 1313.2,28.9 L 1315.6,3.4 L 1382.3,4.1 L 1382.3,101.8 L 1315.6,102.4 L 1313.2,77.0 L 1310.7,102.4 L 1246.5,103.1 L 1244.1,77.7 L 1241.6,103.1 L 1177.4,103.8 L 1175.0,78.4 L 1172.5,103.8 L 1108.3,104.5 L 1105.8,79.1 L 1103.4,104.5 L 1039.2,105.2 L 1036.7,79.8 L 1034.3,105.2 L 970.1,105.9 L 967.6,80.4 L 965.2,105.9 L 967.6,105.9 L 900.9,105.9 L 898.5,80.4 L 896.1,105.9 L 831.8,105.9 L 829.4,80.4 L 826.9,105.9 L 762.7,105.9 L 760.3,80.4 L 757.8,105.9 L 693.6,105.9 L 691.2,80.4 L 688.7,105.9 L 624.5,105.9 L 622.0,80.4 L 619.6,105.9 L 555.4,105.9 L 552.9,80.4 L 550.5,105.9 L 486.2,105.9 L 483.8,80.4 L 481.4,105.9 L 417.1,105.9 L 414.7,80.4 L 412.2,105.9 L 348.0,105.9 L 345.6,80.4 L 343.1,105.9 L 278.9,105.9 L 276.5,80.4 L 274.0,105.9 L 209.8,105.9 L 207.3,80.4 L 204.9,105.9 L 140.7,105.9 L 138.2,80.4 L 135.8,105.9 L 71.6,105.9 L 69.1,80.4 L 66.7,105.9 L 20.0,105.9 L 0.0,64.9 L -34,64.9 L -34,40.9 L 0,40.9 Z",
+      "outline": "M 0.0,40.9 L 20.0,0.0 L 69.1,0.0 L 69.1,25.4 L 69.1,0.0 L 138.2,0.0 L 138.2,25.4 L 138.2,0.0 L 207.3,0.0 L 207.3,25.4 L 207.3,0.0 L 276.5,0.0 L 276.5,25.4 L 276.5,0.0 L 345.6,0.0 L 345.6,25.4 L 345.6,0.0 L 414.7,0.0 L 414.7,25.4 L 414.7,0.0 L 483.8,0.0 L 483.8,25.4 L 483.8,0.0 L 552.9,0.0 L 552.9,25.4 L 552.9,0.0 L 622.0,0.0 L 622.0,25.4 L 622.0,0.0 L 691.2,0.0 L 691.2,25.4 L 691.2,0.0 L 760.3,0.0 L 760.3,25.4 L 760.3,0.0 L 829.4,0.0 L 829.4,25.4 L 829.4,0.0 L 898.5,0.0 L 898.5,25.4 L 898.5,0.0 L 967.6,0.0 L 967.6,25.4 L 967.6,0.0 L 1036.7,0.7 L 1036.7,26.1 L 1036.7,0.7 L 1105.8,1.4 L 1105.8,26.8 L 1105.8,1.4 L 1175.0,2.1 L 1175.0,27.5 L 1175.0,2.1 L 1244.1,2.8 L 1244.1,28.2 L 1244.1,2.8 L 1313.2,3.4 L 1313.2,28.9 L 1313.2,3.4 L 1382.3,4.1 L 1382.3,101.8 L 1313.2,102.4 L 1313.2,77.0 L 1313.2,102.4 L 1244.1,103.1 L 1244.1,77.7 L 1244.1,103.1 L 1175.0,103.8 L 1175.0,78.4 L 1175.0,103.8 L 1105.8,104.5 L 1105.8,79.1 L 1105.8,104.5 L 1036.7,105.2 L 1036.7,79.8 L 1036.7,105.2 L 967.6,105.9 L 967.6,80.4 L 967.6,105.9 L 898.5,105.9 L 898.5,80.4 L 898.5,105.9 L 829.4,105.9 L 829.4,80.4 L 829.4,105.9 L 760.3,105.9 L 760.3,80.4 L 760.3,105.9 L 691.2,105.9 L 691.2,80.4 L 691.2,105.9 L 622.0,105.9 L 622.0,80.4 L 622.0,105.9 L 552.9,105.9 L 552.9,80.4 L 552.9,105.9 L 483.8,105.9 L 483.8,80.4 L 483.8,105.9 L 414.7,105.9 L 414.7,80.4 L 414.7,105.9 L 345.6,105.9 L 345.6,80.4 L 345.6,105.9 L 276.5,105.9 L 276.5,80.4 L 276.5,105.9 L 207.3,105.9 L 207.3,80.4 L 207.3,105.9 L 138.2,105.9 L 138.2,80.4 L 138.2,105.9 L 69.1,105.9 L 69.1,80.4 L 69.1,105.9 L 20.0,105.9 L 0.0,64.9 L -34,64.9 L -34,40.9 L 0,40.9 Z",
       "foldLines": [
         "M 0.0,25.4 L 967.6,25.4 L 1382.3,29.6",
         "M 0.0,80.4 L 967.6,80.4 L 1382.3,76.3",
         "M -34,52.9 L 1382.3,52.9"
       ],
       "scoreLineCount": 0,
-      "holeCount": 183,
+      "holeCount": 107,
       "slotCount": 3,
       "seamCount": 5,
       "lapCount": 5,
       "lapArrows": [
-        "M 181.5,60.9 L 193.5,60.9 M 191.0,58.4 L 193.5,60.9 L 191.0,63.4",
-        "M 428.5,60.9 L 440.5,60.9 M 438.0,58.4 L 440.5,60.9 L 438.0,63.4",
-        "M 665.5,60.9 L 677.5,60.9 M 675.0,58.4 L 677.5,60.9 L 675.0,63.4",
-        "M 912.5,60.9 L 924.5,60.9 M 922.0,58.4 L 924.5,60.9 L 922.0,63.4",
-        "M 1149.5,60.9 L 1161.5,60.9 M 1159.0,58.4 L 1161.5,60.9 L 1159.0,63.4"
+        "M 217.0,60.9 L 229.0,60.9 M 226.5,58.4 L 229.0,60.9 L 226.5,63.4",
+        "M 464.0,60.9 L 476.0,60.9 M 473.5,58.4 L 476.0,60.9 L 473.5,63.4",
+        "M 711.0,60.9 L 723.0,60.9 M 720.5,58.4 L 723.0,60.9 L 720.5,63.4",
+        "M 948.0,60.9 L 960.0,60.9 M 957.5,58.4 L 960.0,60.9 L 957.5,63.4",
+        "M 1195.0,60.9 L 1207.0,60.9 M 1204.5,58.4 L 1207.0,60.9 L 1204.5,63.4"
       ],
       "panelCount": 6,
       "strutFrac": [
@@ -5201,13 +5178,13 @@
       "bboxW": 1416.300767579509,
       "bboxH": 105.88005210459605,
       "firstHole": {
-        "cx": "60.7",
-        "cy": "10.2",
+        "cx": "68.7",
+        "cy": "4.5",
         "r": 1.6
       },
       "lastHole": {
-        "cx": "1155.5",
-        "cy": "97.0",
+        "cx": "1201.0",
+        "cy": "96.6",
         "r": 1.6
       },
       "firstSlot": {
@@ -5227,26 +5204,7 @@
       "outlines": [
         "M 7,12.0 h 146.0 a 7 7 0 0 1 0 14 h -146.0 a 7 7 0 0 1 0 -14 Z",
         "M 7,35.0 h 146.0 a 7 7 0 0 1 0 14 h -146.0 a 7 7 0 0 1 0 -14 Z",
-        "M 0,72.0 h 46.8 v 84.4 q 0,15.6 -15.6,15.6 h -15.6 q -15.6,0 -15.6,-15.6 Z",
-        "M 2.0,188.0 h 34 v 14 h -34 Z",
-        "M 44.0,188.0 h 34 v 14 h -34 Z",
-        "M 86.0,188.0 h 34 v 14 h -34 Z",
-        "M 128.0,188.0 h 34 v 14 h -34 Z",
-        "M 170.0,188.0 h 34 v 14 h -34 Z",
-        "M 212.0,188.0 h 34 v 14 h -34 Z",
-        "M 2.0,210.0 h 34 v 14 h -34 Z",
-        "M 44.0,210.0 h 34 v 14 h -34 Z",
-        "M 86.0,210.0 h 34 v 14 h -34 Z",
-        "M 128.0,210.0 h 34 v 14 h -34 Z",
-        "M 170.0,210.0 h 34 v 14 h -34 Z",
-        "M 212.0,210.0 h 34 v 14 h -34 Z",
-        "M 2.0,232.0 h 34 v 14 h -34 Z",
-        "M 44.0,232.0 h 34 v 14 h -34 Z",
-        "M 86.0,232.0 h 34 v 14 h -34 Z",
-        "M 128.0,232.0 h 34 v 14 h -34 Z",
-        "M 170.0,232.0 h 34 v 14 h -34 Z",
-        "M 212.0,232.0 h 34 v 14 h -34 Z",
-        "M 2.0,254.0 h 34 v 14 h -34 Z"
+        "M 0,72.0 h 46.8 v 84.4 q 0,15.6 -15.6,15.6 h -15.6 q -15.6,0 -15.6,-15.6 Z"
       ],
       "folds": [
         "M 26,12.0 v 14 M 134.0,12.0 v 14",
@@ -5308,386 +5266,6 @@
           "cx": "37.4",
           "cy": "80.0",
           "r": 2
-        },
-        {
-          "cx": "10.0",
-          "cy": "192.5",
-          "r": 1.6
-        },
-        {
-          "cx": "10.0",
-          "cy": "197.5",
-          "r": 1.6
-        },
-        {
-          "cx": "28.0",
-          "cy": "192.5",
-          "r": 1.6
-        },
-        {
-          "cx": "28.0",
-          "cy": "197.5",
-          "r": 1.6
-        },
-        {
-          "cx": "52.0",
-          "cy": "192.5",
-          "r": 1.6
-        },
-        {
-          "cx": "52.0",
-          "cy": "197.5",
-          "r": 1.6
-        },
-        {
-          "cx": "70.0",
-          "cy": "192.5",
-          "r": 1.6
-        },
-        {
-          "cx": "70.0",
-          "cy": "197.5",
-          "r": 1.6
-        },
-        {
-          "cx": "94.0",
-          "cy": "192.5",
-          "r": 1.6
-        },
-        {
-          "cx": "94.0",
-          "cy": "197.5",
-          "r": 1.6
-        },
-        {
-          "cx": "112.0",
-          "cy": "192.5",
-          "r": 1.6
-        },
-        {
-          "cx": "112.0",
-          "cy": "197.5",
-          "r": 1.6
-        },
-        {
-          "cx": "136.0",
-          "cy": "192.5",
-          "r": 1.6
-        },
-        {
-          "cx": "136.0",
-          "cy": "197.5",
-          "r": 1.6
-        },
-        {
-          "cx": "154.0",
-          "cy": "192.5",
-          "r": 1.6
-        },
-        {
-          "cx": "154.0",
-          "cy": "197.5",
-          "r": 1.6
-        },
-        {
-          "cx": "178.0",
-          "cy": "192.5",
-          "r": 1.6
-        },
-        {
-          "cx": "178.0",
-          "cy": "197.5",
-          "r": 1.6
-        },
-        {
-          "cx": "196.0",
-          "cy": "192.5",
-          "r": 1.6
-        },
-        {
-          "cx": "196.0",
-          "cy": "197.5",
-          "r": 1.6
-        },
-        {
-          "cx": "220.0",
-          "cy": "192.5",
-          "r": 1.6
-        },
-        {
-          "cx": "220.0",
-          "cy": "197.5",
-          "r": 1.6
-        },
-        {
-          "cx": "238.0",
-          "cy": "192.5",
-          "r": 1.6
-        },
-        {
-          "cx": "238.0",
-          "cy": "197.5",
-          "r": 1.6
-        },
-        {
-          "cx": "10.0",
-          "cy": "214.5",
-          "r": 1.6
-        },
-        {
-          "cx": "10.0",
-          "cy": "219.5",
-          "r": 1.6
-        },
-        {
-          "cx": "28.0",
-          "cy": "214.5",
-          "r": 1.6
-        },
-        {
-          "cx": "28.0",
-          "cy": "219.5",
-          "r": 1.6
-        },
-        {
-          "cx": "52.0",
-          "cy": "214.5",
-          "r": 1.6
-        },
-        {
-          "cx": "52.0",
-          "cy": "219.5",
-          "r": 1.6
-        },
-        {
-          "cx": "70.0",
-          "cy": "214.5",
-          "r": 1.6
-        },
-        {
-          "cx": "70.0",
-          "cy": "219.5",
-          "r": 1.6
-        },
-        {
-          "cx": "94.0",
-          "cy": "214.5",
-          "r": 1.6
-        },
-        {
-          "cx": "94.0",
-          "cy": "219.5",
-          "r": 1.6
-        },
-        {
-          "cx": "112.0",
-          "cy": "214.5",
-          "r": 1.6
-        },
-        {
-          "cx": "112.0",
-          "cy": "219.5",
-          "r": 1.6
-        },
-        {
-          "cx": "136.0",
-          "cy": "214.5",
-          "r": 1.6
-        },
-        {
-          "cx": "136.0",
-          "cy": "219.5",
-          "r": 1.6
-        },
-        {
-          "cx": "154.0",
-          "cy": "214.5",
-          "r": 1.6
-        },
-        {
-          "cx": "154.0",
-          "cy": "219.5",
-          "r": 1.6
-        },
-        {
-          "cx": "178.0",
-          "cy": "214.5",
-          "r": 1.6
-        },
-        {
-          "cx": "178.0",
-          "cy": "219.5",
-          "r": 1.6
-        },
-        {
-          "cx": "196.0",
-          "cy": "214.5",
-          "r": 1.6
-        },
-        {
-          "cx": "196.0",
-          "cy": "219.5",
-          "r": 1.6
-        },
-        {
-          "cx": "220.0",
-          "cy": "214.5",
-          "r": 1.6
-        },
-        {
-          "cx": "220.0",
-          "cy": "219.5",
-          "r": 1.6
-        },
-        {
-          "cx": "238.0",
-          "cy": "214.5",
-          "r": 1.6
-        },
-        {
-          "cx": "238.0",
-          "cy": "219.5",
-          "r": 1.6
-        },
-        {
-          "cx": "10.0",
-          "cy": "236.5",
-          "r": 1.6
-        },
-        {
-          "cx": "10.0",
-          "cy": "241.5",
-          "r": 1.6
-        },
-        {
-          "cx": "28.0",
-          "cy": "236.5",
-          "r": 1.6
-        },
-        {
-          "cx": "28.0",
-          "cy": "241.5",
-          "r": 1.6
-        },
-        {
-          "cx": "52.0",
-          "cy": "236.5",
-          "r": 1.6
-        },
-        {
-          "cx": "52.0",
-          "cy": "241.5",
-          "r": 1.6
-        },
-        {
-          "cx": "70.0",
-          "cy": "236.5",
-          "r": 1.6
-        },
-        {
-          "cx": "70.0",
-          "cy": "241.5",
-          "r": 1.6
-        },
-        {
-          "cx": "94.0",
-          "cy": "236.5",
-          "r": 1.6
-        },
-        {
-          "cx": "94.0",
-          "cy": "241.5",
-          "r": 1.6
-        },
-        {
-          "cx": "112.0",
-          "cy": "236.5",
-          "r": 1.6
-        },
-        {
-          "cx": "112.0",
-          "cy": "241.5",
-          "r": 1.6
-        },
-        {
-          "cx": "136.0",
-          "cy": "236.5",
-          "r": 1.6
-        },
-        {
-          "cx": "136.0",
-          "cy": "241.5",
-          "r": 1.6
-        },
-        {
-          "cx": "154.0",
-          "cy": "236.5",
-          "r": 1.6
-        },
-        {
-          "cx": "154.0",
-          "cy": "241.5",
-          "r": 1.6
-        },
-        {
-          "cx": "178.0",
-          "cy": "236.5",
-          "r": 1.6
-        },
-        {
-          "cx": "178.0",
-          "cy": "241.5",
-          "r": 1.6
-        },
-        {
-          "cx": "196.0",
-          "cy": "236.5",
-          "r": 1.6
-        },
-        {
-          "cx": "196.0",
-          "cy": "241.5",
-          "r": 1.6
-        },
-        {
-          "cx": "220.0",
-          "cy": "236.5",
-          "r": 1.6
-        },
-        {
-          "cx": "220.0",
-          "cy": "241.5",
-          "r": 1.6
-        },
-        {
-          "cx": "238.0",
-          "cy": "236.5",
-          "r": 1.6
-        },
-        {
-          "cx": "238.0",
-          "cy": "241.5",
-          "r": 1.6
-        },
-        {
-          "cx": "10.0",
-          "cy": "258.5",
-          "r": 1.6
-        },
-        {
-          "cx": "10.0",
-          "cy": "263.5",
-          "r": 1.6
-        },
-        {
-          "cx": "28.0",
-          "cy": "258.5",
-          "r": 1.6
-        },
-        {
-          "cx": "28.0",
-          "cy": "263.5",
-          "r": 1.6
         }
       ],
       "slots": [],
@@ -5709,20 +5287,14 @@
           "y": "82.0",
           "size": 5,
           "text": "MUDFLAP, 47 × 100 mm, lap 16 mm under the tail"
-        },
-        {
-          "x": "2.0",
-          "y": "185.0",
-          "size": 5,
-          "text": "BUTT STRAP × 19, 34 × 14 mm"
         }
       ],
-      "viewBox": "-2 0 256.0 286.0",
+      "viewBox": "-2 0 256.0 220.0",
       "width": 256,
-      "height": 286,
+      "height": 220,
       "fitsA4": true,
-      "extraCount": 19,
-      "extraLabel": "BUTT STRAP"
+      "extraCount": 0,
+      "extraLabel": ""
     },
     "xsec": {
       "paths": [
@@ -5947,8 +5519,8 @@
         },
         "holeCount": 160,
         "firstHole": {
-          "cx": "335.0",
-          "cy": "-6.8",
+          "cx": "335.9",
+          "cy": "-9.2",
           "r": 1.6
         },
         "lastHole": {
@@ -6005,7 +5577,7 @@
         "holeCount": 160,
         "firstHole": {
           "cx": "-44.6",
-          "cy": "-109.5",
+          "cy": "-112.3",
           "r": 1.6
         },
         "lastHole": {
@@ -6031,7 +5603,7 @@
         "aspect": "140.0 / 900.0"
       }
     },
-    "joinNote": "Four 3.2 mm holes per dart plus a butt strap bridging the gap — two rivets per side.",
+    "joinNote": "One 3.2 mm hole per layer, top and bottom of each dart, straight through the lap. Rivet each pair together.",
     "warnings": [
       {
         "text": "Tyre radius is estimated at 346 mm from BSD + section width. Measure the real thing and set “Measured tyre radius” — a 5 mm error here shifts every dart."
@@ -6066,7 +5638,7 @@
       {
         "n": "06",
         "title": "Close the darts",
-        "body": "Four 3.2 mm holes per dart plus a butt strap bridging the gap — two rivets per side."
+        "body": "One 3.2 mm hole per layer, top and bottom of each dart, straight through the lap. Rivet each pair together."
       },
       {
         "n": "07",
@@ -6091,9 +5663,9 @@
     ],
     "engNotes": [
       {
-        "title": "Why the darts exist",
+        "title": "Why the shingle exists",
         "body": "The blank is a developable cylinder along its length, so bending it round the wheel is free. Folding the skirts down is not: the skirt free edge sits on a smaller radius than the fold line, so it must be shorter. Each dart removes exactly that surplus.",
-        "formula": "take-up = L × drop / R = 1382 × 21 / 360 = 81.8 mm over 20 darts → 4.9 mm each"
+        "formula": "take-up = L × drop / R = 1382 × 21 / 360 = 81.8 mm over 20 darts → 0.0 mm each"
       },
       {
         "title": "Radius chain",
@@ -6121,7 +5693,7 @@
         "formula": "6 panels · 20 mm lap · fastener row at lap centre"
       },
       {
-        "title": "What a butt strap is",
+        "title": "Rivets go straight through the lap",
         "body": "A rivet cannot pull a V-shaped gap closed the way a zip tie can — it needs two layers to squeeze. The butt strap is a small separate rectangle that sits behind the dart and bridges it: two rivets into the left flap, two into the right. The dart stays open by design; the strap carries the load. Zip ties and clips need no strap because they pull through both sides at once.",
         "formula": "strap 34 × 14 mm · 4 × 3.2 mm holes · one per dart"
       },
@@ -6151,9 +5723,9 @@
         "formula": "setback = (r+t)·tan(α/2) = 0.8 · BA = α(r+0.44t) = 1.1 · net -0.6 mm per fold"
       },
       {
-        "title": "Darts get wider with thickness",
+        "title": "The lap gets wider with thickness",
         "body": "Two folded flaps meeting at a closed dart collide edge-on if the dart is cut to the ideal width — the material has to go somewhere. Adding one thickness to every dart gives the two edges room to sit alongside each other rather than fighting.",
-        "formula": "dart = L·drop/R/n + t = 4.9 mm"
+        "formula": "dart = L·drop/R/n + t = 0.0 mm"
       },
       {
         "title": "Hemmed edge",
@@ -6198,7 +5770,7 @@
         "note": "arc ÷ 20 flaps"
       },
       {
-        "label": "Dart width",
+        "label": "Lap width",
         "value": "4.9 mm",
         "note": "incl. 0.8 mm thickness clearance"
       },
@@ -6210,7 +5782,7 @@
       {
         "label": "Total take-up",
         "value": "81.8 mm",
-        "note": "removed by all darts, one side"
+        "note": "taken up as lap by all darts, one side"
       },
       {
         "label": "Blank area",
@@ -6224,7 +5796,7 @@
       },
       {
         "label": "Sheets to print",
-        "value": "9",
+        "value": "8",
         "note": "6 × 1 tiles + parts + instructions"
       }
     ],
@@ -6287,10 +5859,11 @@
       "n": 16,
       "pitch": 76.29270492780213,
       "removal": 111.5158219288255,
-      "notch": 7.769738870551594
+      "notch": 0,
+      "lap": 7.769738870551594
     },
     "blank": {
-      "outline": "M 0.0,48.4 L 20.0,0.0 L 72.4,0.0 L 76.3,29.4 L 80.2,0.0 L 148.7,0.0 L 152.6,29.4 L 156.5,0.0 L 225.0,0.0 L 228.9,29.4 L 232.8,0.0 L 301.3,0.0 L 305.2,29.4 L 309.1,0.0 L 377.6,0.0 L 381.5,29.4 L 385.3,0.0 L 453.9,0.0 L 457.8,29.4 L 461.6,0.0 L 530.2,0.0 L 534.0,29.4 L 537.9,0.0 L 606.5,0.0 L 610.3,29.4 L 614.2,0.0 L 682.7,0.0 L 686.6,29.4 L 690.5,0.0 L 759.0,0.0 L 762.9,29.4 L 766.8,0.0 L 835.3,0.0 L 839.2,29.4 L 843.1,0.0 L 854.5,0.0 L 911.6,1.3 L 915.5,30.7 L 919.4,1.3 L 987.9,2.9 L 991.8,32.3 L 995.7,2.9 L 1064.2,4.5 L 1068.1,34.0 L 1072.0,4.5 L 1140.5,6.1 L 1144.4,35.6 L 1148.3,6.1 L 1220.7,7.8 L 1220.7,113.1 L 1148.3,114.7 L 1144.4,85.3 L 1140.5,114.7 L 1072.0,116.4 L 1068.1,86.9 L 1064.2,116.4 L 995.7,118.0 L 991.8,88.5 L 987.9,118.0 L 919.4,119.6 L 915.5,90.1 L 911.6,119.6 L 854.5,120.9 L 843.1,120.9 L 839.2,91.4 L 835.3,120.9 L 766.8,120.9 L 762.9,91.4 L 759.0,120.9 L 690.5,120.9 L 686.6,91.4 L 682.7,120.9 L 614.2,120.9 L 610.3,91.4 L 606.5,120.9 L 537.9,120.9 L 534.0,91.4 L 530.2,120.9 L 461.6,120.9 L 457.8,91.4 L 453.9,120.9 L 385.3,120.9 L 381.5,91.4 L 377.6,120.9 L 309.1,120.9 L 305.2,91.4 L 301.3,120.9 L 232.8,120.9 L 228.9,91.4 L 225.0,120.9 L 156.5,120.9 L 152.6,91.4 L 148.7,120.9 L 80.2,120.9 L 76.3,91.4 L 72.4,120.9 L 20.0,120.9 L 0.0,72.4 L -34,72.4 L -34,48.4 L 0,48.4 Z",
+      "outline": "M 0.0,48.4 L 20.0,0.0 L 76.3,0.0 L 76.3,29.4 L 76.3,0.0 L 152.6,0.0 L 152.6,29.4 L 152.6,0.0 L 228.9,0.0 L 228.9,29.4 L 228.9,0.0 L 305.2,0.0 L 305.2,29.4 L 305.2,0.0 L 381.5,0.0 L 381.5,29.4 L 381.5,0.0 L 457.8,0.0 L 457.8,29.4 L 457.8,0.0 L 534.0,0.0 L 534.0,29.4 L 534.0,0.0 L 610.3,0.0 L 610.3,29.4 L 610.3,0.0 L 686.6,0.0 L 686.6,29.4 L 686.6,0.0 L 762.9,0.0 L 762.9,29.4 L 762.9,0.0 L 839.2,0.0 L 839.2,29.4 L 839.2,0.0 L 854.5,0.0 L 915.5,1.3 L 915.5,30.7 L 915.5,1.3 L 991.8,2.9 L 991.8,32.3 L 991.8,2.9 L 1068.1,4.5 L 1068.1,34.0 L 1068.1,4.5 L 1144.4,6.1 L 1144.4,35.6 L 1144.4,6.1 L 1220.7,7.8 L 1220.7,113.1 L 1144.4,114.7 L 1144.4,85.3 L 1144.4,114.7 L 1068.1,116.4 L 1068.1,86.9 L 1068.1,116.4 L 991.8,118.0 L 991.8,88.5 L 991.8,118.0 L 915.5,119.6 L 915.5,90.1 L 915.5,119.6 L 854.5,120.9 L 839.2,120.9 L 839.2,91.4 L 839.2,120.9 L 762.9,120.9 L 762.9,91.4 L 762.9,120.9 L 686.6,120.9 L 686.6,91.4 L 686.6,120.9 L 610.3,120.9 L 610.3,91.4 L 610.3,120.9 L 534.0,120.9 L 534.0,91.4 L 534.0,120.9 L 457.8,120.9 L 457.8,91.4 L 457.8,120.9 L 381.5,120.9 L 381.5,91.4 L 381.5,120.9 L 305.2,120.9 L 305.2,91.4 L 305.2,120.9 L 228.9,120.9 L 228.9,91.4 L 228.9,120.9 L 152.6,120.9 L 152.6,91.4 L 152.6,120.9 L 76.3,120.9 L 76.3,91.4 L 76.3,120.9 L 20.0,120.9 L 0.0,72.4 L -34,72.4 L -34,48.4 L 0,48.4 Z",
       "foldLines": [
         "M 0.0,29.4 L 854.5,29.4 L 1220.7,37.2",
         "M 0.0,91.4 L 854.5,91.4 L 1220.7,83.7",
@@ -6312,8 +5885,8 @@
       "bboxW": 1254.6832788448341,
       "bboxH": 120.88005210459605,
       "firstHole": {
-        "cx": "66.4",
-        "cy": "8.8",
+        "cx": "75.8",
+        "cy": "3.5",
         "r": 2
       },
       "lastHole": {
@@ -6456,7 +6029,7 @@
       "height": 233,
       "fitsA4": false,
       "extraCount": 0,
-      "extraLabel": "CLIP"
+      "extraLabel": ""
     },
     "xsec": {
       "paths": [
@@ -6666,8 +6239,8 @@
         },
         "holeCount": 132,
         "firstHole": {
-          "cx": "173.2",
-          "cy": "-260.5",
+          "cx": "170.5",
+          "cy": "-262.3",
           "r": 2
         },
         "lastHole": {
@@ -6724,7 +6297,7 @@
         "holeCount": 132,
         "firstHole": {
           "cx": "-52.7",
-          "cy": "-303.1",
+          "cy": "-303.9",
           "r": 2
         },
         "lastHole": {
@@ -6817,9 +6390,9 @@
     ],
     "engNotes": [
       {
-        "title": "Why the darts exist",
+        "title": "Why the shingle exists",
         "body": "The blank is a developable cylinder along its length, so bending it round the wheel is free. Folding the skirts down is not: the skirt free edge sits on a smaller radius than the fold line, so it must be shorter. Each dart removes exactly that surplus.",
-        "formula": "take-up = L × drop / R = 1221 × 25 / 269 = 111.5 mm over 16 darts → 7.8 mm each"
+        "formula": "take-up = L × drop / R = 1221 × 25 / 269 = 111.5 mm over 16 darts → 0.0 mm each"
       },
       {
         "title": "Radius chain",
@@ -6847,7 +6420,7 @@
         "formula": "single sheet — no seams"
       },
       {
-        "title": "What a butt strap is",
+        "title": "Rivets go straight through the lap",
         "body": "A rivet cannot pull a V-shaped gap closed the way a zip tie can — it needs two layers to squeeze. The butt strap is a small separate rectangle that sits behind the dart and bridges it: two rivets into the left flap, two into the right. The dart stays open by design; the strap carries the load. Zip ties and clips need no strap because they pull through both sides at once.",
         "formula": "strap 34 × 14 mm · 4 × 3.2 mm holes · one per dart"
       },
@@ -6877,9 +6450,9 @@
         "formula": "setback = (r+t)·tan(α/2) = 0.8 · BA = α(r+0.44t) = 1.1 · net -0.6 mm per fold"
       },
       {
-        "title": "Darts get wider with thickness",
+        "title": "The lap gets wider with thickness",
         "body": "Two folded flaps meeting at a closed dart collide edge-on if the dart is cut to the ideal width — the material has to go somewhere. Adding one thickness to every dart gives the two edges room to sit alongside each other rather than fighting.",
-        "formula": "dart = L·drop/R/n + t = 7.8 mm"
+        "formula": "dart = L·drop/R/n + t = 0.0 mm"
       },
       {
         "title": "Hemmed edge",
@@ -6924,7 +6497,7 @@
         "note": "arc ÷ 16 flaps"
       },
       {
-        "label": "Dart width",
+        "label": "Lap width",
         "value": "7.8 mm",
         "note": "incl. 0.8 mm thickness clearance"
       },
@@ -6936,7 +6509,7 @@
       {
         "label": "Total take-up",
         "value": "111.5 mm",
-        "note": "removed by all darts, one side"
+        "note": "taken up as lap by all darts, one side"
       },
       {
         "label": "Blank area",
@@ -7013,10 +6586,11 @@
       "n": 20,
       "pitch": 69.11503837897546,
       "removal": 81.77826941447204,
-      "notch": 4.888913470723602
+      "notch": 0,
+      "lap": 4.888913470723602
     },
     "blank": {
-      "outline": "M 0.0,40.9 L 20.0,0.0 L 66.7,0.0 L 69.1,25.4 L 71.6,0.0 L 135.8,0.0 L 138.2,25.4 L 140.7,0.0 L 204.9,0.0 L 207.3,25.4 L 209.8,0.0 L 274.0,0.0 L 276.5,25.4 L 278.9,0.0 L 343.1,0.0 L 345.6,25.4 L 348.0,0.0 L 412.2,0.0 L 414.7,25.4 L 417.1,0.0 L 481.4,0.0 L 483.8,25.4 L 486.2,0.0 L 550.5,0.0 L 552.9,25.4 L 555.4,0.0 L 619.6,0.0 L 622.0,25.4 L 624.5,0.0 L 688.7,0.0 L 691.2,25.4 L 693.6,0.0 L 757.8,0.0 L 760.3,25.4 L 762.7,0.0 L 826.9,0.0 L 829.4,25.4 L 831.8,0.0 L 896.1,0.0 L 898.5,25.4 L 900.9,0.0 L 967.6,0.0 L 965.2,0.0 L 967.6,25.4 L 970.1,0.0 L 1034.3,0.7 L 1036.7,26.1 L 1039.2,0.7 L 1103.4,1.4 L 1105.8,26.8 L 1108.3,1.4 L 1172.5,2.1 L 1175.0,27.5 L 1177.4,2.1 L 1241.6,2.8 L 1244.1,28.2 L 1246.5,2.8 L 1310.7,3.4 L 1313.2,28.9 L 1315.6,3.4 L 1382.3,4.1 L 1382.3,101.8 L 1315.6,102.4 L 1313.2,77.0 L 1310.7,102.4 L 1246.5,103.1 L 1244.1,77.7 L 1241.6,103.1 L 1177.4,103.8 L 1175.0,78.4 L 1172.5,103.8 L 1108.3,104.5 L 1105.8,79.1 L 1103.4,104.5 L 1039.2,105.2 L 1036.7,79.8 L 1034.3,105.2 L 970.1,105.9 L 967.6,80.4 L 965.2,105.9 L 967.6,105.9 L 900.9,105.9 L 898.5,80.4 L 896.1,105.9 L 831.8,105.9 L 829.4,80.4 L 826.9,105.9 L 762.7,105.9 L 760.3,80.4 L 757.8,105.9 L 693.6,105.9 L 691.2,80.4 L 688.7,105.9 L 624.5,105.9 L 622.0,80.4 L 619.6,105.9 L 555.4,105.9 L 552.9,80.4 L 550.5,105.9 L 486.2,105.9 L 483.8,80.4 L 481.4,105.9 L 417.1,105.9 L 414.7,80.4 L 412.2,105.9 L 348.0,105.9 L 345.6,80.4 L 343.1,105.9 L 278.9,105.9 L 276.5,80.4 L 274.0,105.9 L 209.8,105.9 L 207.3,80.4 L 204.9,105.9 L 140.7,105.9 L 138.2,80.4 L 135.8,105.9 L 71.6,105.9 L 69.1,80.4 L 66.7,105.9 L 20.0,105.9 L 0.0,64.9 L -34,64.9 L -34,40.9 L 0,40.9 Z",
+      "outline": "M 0.0,40.9 L 20.0,0.0 L 69.1,0.0 L 69.1,25.4 L 69.1,0.0 L 138.2,0.0 L 138.2,25.4 L 138.2,0.0 L 207.3,0.0 L 207.3,25.4 L 207.3,0.0 L 276.5,0.0 L 276.5,25.4 L 276.5,0.0 L 345.6,0.0 L 345.6,25.4 L 345.6,0.0 L 414.7,0.0 L 414.7,25.4 L 414.7,0.0 L 483.8,0.0 L 483.8,25.4 L 483.8,0.0 L 552.9,0.0 L 552.9,25.4 L 552.9,0.0 L 622.0,0.0 L 622.0,25.4 L 622.0,0.0 L 691.2,0.0 L 691.2,25.4 L 691.2,0.0 L 760.3,0.0 L 760.3,25.4 L 760.3,0.0 L 829.4,0.0 L 829.4,25.4 L 829.4,0.0 L 898.5,0.0 L 898.5,25.4 L 898.5,0.0 L 967.6,0.0 L 967.6,25.4 L 967.6,0.0 L 1036.7,0.7 L 1036.7,26.1 L 1036.7,0.7 L 1105.8,1.4 L 1105.8,26.8 L 1105.8,1.4 L 1175.0,2.1 L 1175.0,27.5 L 1175.0,2.1 L 1244.1,2.8 L 1244.1,28.2 L 1244.1,2.8 L 1313.2,3.4 L 1313.2,28.9 L 1313.2,3.4 L 1382.3,4.1 L 1382.3,101.8 L 1313.2,102.4 L 1313.2,77.0 L 1313.2,102.4 L 1244.1,103.1 L 1244.1,77.7 L 1244.1,103.1 L 1175.0,103.8 L 1175.0,78.4 L 1175.0,103.8 L 1105.8,104.5 L 1105.8,79.1 L 1105.8,104.5 L 1036.7,105.2 L 1036.7,79.8 L 1036.7,105.2 L 967.6,105.9 L 967.6,80.4 L 967.6,105.9 L 898.5,105.9 L 898.5,80.4 L 898.5,105.9 L 829.4,105.9 L 829.4,80.4 L 829.4,105.9 L 760.3,105.9 L 760.3,80.4 L 760.3,105.9 L 691.2,105.9 L 691.2,80.4 L 691.2,105.9 L 622.0,105.9 L 622.0,80.4 L 622.0,105.9 L 552.9,105.9 L 552.9,80.4 L 552.9,105.9 L 483.8,105.9 L 483.8,80.4 L 483.8,105.9 L 414.7,105.9 L 414.7,80.4 L 414.7,105.9 L 345.6,105.9 L 345.6,80.4 L 345.6,105.9 L 276.5,105.9 L 276.5,80.4 L 276.5,105.9 L 207.3,105.9 L 207.3,80.4 L 207.3,105.9 L 138.2,105.9 L 138.2,80.4 L 138.2,105.9 L 69.1,105.9 L 69.1,80.4 L 69.1,105.9 L 20.0,105.9 L 0.0,64.9 L -34,64.9 L -34,40.9 L 0,40.9 Z",
       "foldLines": [
         "M 0.0,25.4 L 967.6,25.4 L 1382.3,29.6",
         "M 0.0,80.4 L 967.6,80.4 L 1382.3,76.3",
@@ -7028,11 +6602,11 @@
       "seamCount": 5,
       "lapCount": 5,
       "lapArrows": [
-        "M 181.5,60.9 L 193.5,60.9 M 191.0,58.4 L 193.5,60.9 L 191.0,63.4",
-        "M 428.5,60.9 L 440.5,60.9 M 438.0,58.4 L 440.5,60.9 L 438.0,63.4",
-        "M 665.5,60.9 L 677.5,60.9 M 675.0,58.4 L 677.5,60.9 L 675.0,63.4",
-        "M 912.5,60.9 L 924.5,60.9 M 922.0,58.4 L 924.5,60.9 L 922.0,63.4",
-        "M 1149.5,60.9 L 1161.5,60.9 M 1159.0,58.4 L 1161.5,60.9 L 1159.0,63.4"
+        "M 217.0,60.9 L 229.0,60.9 M 226.5,58.4 L 229.0,60.9 L 226.5,63.4",
+        "M 464.0,60.9 L 476.0,60.9 M 473.5,58.4 L 476.0,60.9 L 473.5,63.4",
+        "M 711.0,60.9 L 723.0,60.9 M 720.5,58.4 L 723.0,60.9 L 720.5,63.4",
+        "M 948.0,60.9 L 960.0,60.9 M 957.5,58.4 L 960.0,60.9 L 957.5,63.4",
+        "M 1195.0,60.9 L 1207.0,60.9 M 1204.5,58.4 L 1207.0,60.9 L 1204.5,63.4"
       ],
       "panelCount": 6,
       "strutFrac": [
@@ -7043,13 +6617,13 @@
       "bboxW": 1416.300767579509,
       "bboxH": 105.88005210459605,
       "firstHole": {
-        "cx": "60.7",
-        "cy": "7.6",
+        "cx": "68.8",
+        "cy": "3.5",
         "r": 2
       },
       "lastHole": {
-        "cx": "1155.5",
-        "cy": "97.0",
+        "cx": "1201.0",
+        "cy": "96.6",
         "r": 2
       },
       "firstSlot": {
@@ -7164,7 +6738,7 @@
       "height": 256,
       "fitsA4": true,
       "extraCount": 0,
-      "extraLabel": "CLIP"
+      "extraLabel": ""
     },
     "xsec": {
       "paths": [
@@ -7389,8 +6963,8 @@
         },
         "holeCount": 160,
         "firstHole": {
-          "cx": "332.0",
-          "cy": "-7.8",
+          "cx": "332.9",
+          "cy": "-10.3",
           "r": 2
         },
         "lastHole": {
@@ -7447,7 +7021,7 @@
         "holeCount": 160,
         "firstHole": {
           "cx": "-46.5",
-          "cy": "-108.8",
+          "cy": "-111.6",
           "r": 2
         },
         "lastHole": {
@@ -7533,9 +7107,9 @@
     ],
     "engNotes": [
       {
-        "title": "Why the darts exist",
+        "title": "Why the shingle exists",
         "body": "The blank is a developable cylinder along its length, so bending it round the wheel is free. Folding the skirts down is not: the skirt free edge sits on a smaller radius than the fold line, so it must be shorter. Each dart removes exactly that surplus.",
-        "formula": "take-up = L × drop / R = 1382 × 21 / 360 = 81.8 mm over 20 darts → 4.9 mm each"
+        "formula": "take-up = L × drop / R = 1382 × 21 / 360 = 81.8 mm over 20 darts → 0.0 mm each"
       },
       {
         "title": "Radius chain",
@@ -7563,7 +7137,7 @@
         "formula": "6 panels · 20 mm lap · fastener row at lap centre"
       },
       {
-        "title": "What a butt strap is",
+        "title": "Rivets go straight through the lap",
         "body": "A rivet cannot pull a V-shaped gap closed the way a zip tie can — it needs two layers to squeeze. The butt strap is a small separate rectangle that sits behind the dart and bridges it: two rivets into the left flap, two into the right. The dart stays open by design; the strap carries the load. Zip ties and clips need no strap because they pull through both sides at once.",
         "formula": "strap 34 × 14 mm · 4 × 3.2 mm holes · one per dart"
       },
@@ -7593,9 +7167,9 @@
         "formula": "setback = (r+t)·tan(α/2) = 0.8 · BA = α(r+0.44t) = 1.1 · net -0.6 mm per fold"
       },
       {
-        "title": "Darts get wider with thickness",
+        "title": "The lap gets wider with thickness",
         "body": "Two folded flaps meeting at a closed dart collide edge-on if the dart is cut to the ideal width — the material has to go somewhere. Adding one thickness to every dart gives the two edges room to sit alongside each other rather than fighting.",
-        "formula": "dart = L·drop/R/n + t = 4.9 mm"
+        "formula": "dart = L·drop/R/n + t = 0.0 mm"
       },
       {
         "title": "Hemmed edge",
@@ -7640,7 +7214,7 @@
         "note": "arc ÷ 20 flaps"
       },
       {
-        "label": "Dart width",
+        "label": "Lap width",
         "value": "4.9 mm",
         "note": "incl. 0.8 mm thickness clearance"
       },
@@ -7652,7 +7226,7 @@
       {
         "label": "Total take-up",
         "value": "81.8 mm",
-        "note": "removed by all darts, one side"
+        "note": "taken up as lap by all darts, one side"
       },
       {
         "label": "Blank area",
@@ -7729,10 +7303,11 @@
       "n": 16,
       "pitch": 76.29270492780213,
       "removal": 111.5158219288255,
-      "notch": 7.769738870551594
+      "notch": 0,
+      "lap": 7.769738870551594
     },
     "blank": {
-      "outline": "M 0.0,48.4 L 20.0,0.0 L 72.4,0.0 L 76.3,29.4 L 80.2,0.0 L 148.7,0.0 L 152.6,29.4 L 156.5,0.0 L 225.0,0.0 L 228.9,29.4 L 232.8,0.0 L 301.3,0.0 L 305.2,29.4 L 309.1,0.0 L 377.6,0.0 L 381.5,29.4 L 385.3,0.0 L 453.9,0.0 L 457.8,29.4 L 461.6,0.0 L 530.2,0.0 L 534.0,29.4 L 537.9,0.0 L 606.5,0.0 L 610.3,29.4 L 614.2,0.0 L 682.7,0.0 L 686.6,29.4 L 690.5,0.0 L 759.0,0.0 L 762.9,29.4 L 766.8,0.0 L 835.3,0.0 L 839.2,29.4 L 843.1,0.0 L 854.5,0.0 L 911.6,1.3 L 915.5,30.7 L 919.4,1.3 L 987.9,2.9 L 991.8,32.3 L 995.7,2.9 L 1064.2,4.5 L 1068.1,34.0 L 1072.0,4.5 L 1140.5,6.1 L 1144.4,35.6 L 1148.3,6.1 L 1220.7,7.8 L 1220.7,113.1 L 1148.3,114.7 L 1144.4,85.3 L 1140.5,114.7 L 1072.0,116.4 L 1068.1,86.9 L 1064.2,116.4 L 995.7,118.0 L 991.8,88.5 L 987.9,118.0 L 919.4,119.6 L 915.5,90.1 L 911.6,119.6 L 854.5,120.9 L 843.1,120.9 L 839.2,91.4 L 835.3,120.9 L 766.8,120.9 L 762.9,91.4 L 759.0,120.9 L 690.5,120.9 L 686.6,91.4 L 682.7,120.9 L 614.2,120.9 L 610.3,91.4 L 606.5,120.9 L 537.9,120.9 L 534.0,91.4 L 530.2,120.9 L 461.6,120.9 L 457.8,91.4 L 453.9,120.9 L 385.3,120.9 L 381.5,91.4 L 377.6,120.9 L 309.1,120.9 L 305.2,91.4 L 301.3,120.9 L 232.8,120.9 L 228.9,91.4 L 225.0,120.9 L 156.5,120.9 L 152.6,91.4 L 148.7,120.9 L 80.2,120.9 L 76.3,91.4 L 72.4,120.9 L 20.0,120.9 L 0.0,72.4 L -34,72.4 L -34,48.4 L 0,48.4 Z",
+      "outline": "M 0.0,48.4 L 20.0,0.0 L 76.3,0.0 L 76.3,29.4 L 76.3,0.0 L 152.6,0.0 L 152.6,29.4 L 152.6,0.0 L 228.9,0.0 L 228.9,29.4 L 228.9,0.0 L 305.2,0.0 L 305.2,29.4 L 305.2,0.0 L 381.5,0.0 L 381.5,29.4 L 381.5,0.0 L 457.8,0.0 L 457.8,29.4 L 457.8,0.0 L 534.0,0.0 L 534.0,29.4 L 534.0,0.0 L 610.3,0.0 L 610.3,29.4 L 610.3,0.0 L 686.6,0.0 L 686.6,29.4 L 686.6,0.0 L 762.9,0.0 L 762.9,29.4 L 762.9,0.0 L 839.2,0.0 L 839.2,29.4 L 839.2,0.0 L 854.5,0.0 L 915.5,1.3 L 915.5,30.7 L 915.5,1.3 L 991.8,2.9 L 991.8,32.3 L 991.8,2.9 L 1068.1,4.5 L 1068.1,34.0 L 1068.1,4.5 L 1144.4,6.1 L 1144.4,35.6 L 1144.4,6.1 L 1220.7,7.8 L 1220.7,113.1 L 1144.4,114.7 L 1144.4,85.3 L 1144.4,114.7 L 1068.1,116.4 L 1068.1,86.9 L 1068.1,116.4 L 991.8,118.0 L 991.8,88.5 L 991.8,118.0 L 915.5,119.6 L 915.5,90.1 L 915.5,119.6 L 854.5,120.9 L 839.2,120.9 L 839.2,91.4 L 839.2,120.9 L 762.9,120.9 L 762.9,91.4 L 762.9,120.9 L 686.6,120.9 L 686.6,91.4 L 686.6,120.9 L 610.3,120.9 L 610.3,91.4 L 610.3,120.9 L 534.0,120.9 L 534.0,91.4 L 534.0,120.9 L 457.8,120.9 L 457.8,91.4 L 457.8,120.9 L 381.5,120.9 L 381.5,91.4 L 381.5,120.9 L 305.2,120.9 L 305.2,91.4 L 305.2,120.9 L 228.9,120.9 L 228.9,91.4 L 228.9,120.9 L 152.6,120.9 L 152.6,91.4 L 152.6,120.9 L 76.3,120.9 L 76.3,91.4 L 76.3,120.9 L 20.0,120.9 L 0.0,72.4 L -34,72.4 L -34,48.4 L 0,48.4 Z",
       "foldLines": [
         "M 0.0,29.4 L 854.5,29.4 L 1220.7,37.2",
         "M 0.0,91.4 L 854.5,91.4 L 1220.7,83.7",
@@ -7754,8 +7329,8 @@
       "bboxW": 1254.6832788448341,
       "bboxH": 120.88005210459605,
       "firstHole": {
-        "cx": "66.4",
-        "cy": "8.8",
+        "cx": "75.8",
+        "cy": "3.5",
         "r": 2
       },
       "lastHole": {
@@ -7905,7 +7480,7 @@
       "height": 287,
       "fitsA4": false,
       "extraCount": 0,
-      "extraLabel": "CLIP"
+      "extraLabel": ""
     },
     "xsec": {
       "paths": [
@@ -8115,8 +7690,8 @@
         },
         "holeCount": 132,
         "firstHole": {
-          "cx": "173.2",
-          "cy": "-260.5",
+          "cx": "170.5",
+          "cy": "-262.3",
           "r": 2
         },
         "lastHole": {
@@ -8173,7 +7748,7 @@
         "holeCount": 132,
         "firstHole": {
           "cx": "-52.7",
-          "cy": "-303.1",
+          "cy": "-303.9",
           "r": 2
         },
         "lastHole": {
@@ -8266,9 +7841,9 @@
     ],
     "engNotes": [
       {
-        "title": "Why the darts exist",
+        "title": "Why the shingle exists",
         "body": "The blank is a developable cylinder along its length, so bending it round the wheel is free. Folding the skirts down is not: the skirt free edge sits on a smaller radius than the fold line, so it must be shorter. Each dart removes exactly that surplus.",
-        "formula": "take-up = L × drop / R = 1221 × 25 / 269 = 111.5 mm over 16 darts → 7.8 mm each"
+        "formula": "take-up = L × drop / R = 1221 × 25 / 269 = 111.5 mm over 16 darts → 0.0 mm each"
       },
       {
         "title": "Radius chain",
@@ -8296,7 +7871,7 @@
         "formula": "single sheet — no seams"
       },
       {
-        "title": "What a butt strap is",
+        "title": "Rivets go straight through the lap",
         "body": "A rivet cannot pull a V-shaped gap closed the way a zip tie can — it needs two layers to squeeze. The butt strap is a small separate rectangle that sits behind the dart and bridges it: two rivets into the left flap, two into the right. The dart stays open by design; the strap carries the load. Zip ties and clips need no strap because they pull through both sides at once.",
         "formula": "strap 34 × 14 mm · 4 × 3.2 mm holes · one per dart"
       },
@@ -8326,9 +7901,9 @@
         "formula": "setback = (r+t)·tan(α/2) = 0.8 · BA = α(r+0.44t) = 1.1 · net -0.6 mm per fold"
       },
       {
-        "title": "Darts get wider with thickness",
+        "title": "The lap gets wider with thickness",
         "body": "Two folded flaps meeting at a closed dart collide edge-on if the dart is cut to the ideal width — the material has to go somewhere. Adding one thickness to every dart gives the two edges room to sit alongside each other rather than fighting.",
-        "formula": "dart = L·drop/R/n + t = 7.8 mm"
+        "formula": "dart = L·drop/R/n + t = 0.0 mm"
       },
       {
         "title": "Hemmed edge",
@@ -8373,7 +7948,7 @@
         "note": "arc ÷ 16 flaps"
       },
       {
-        "label": "Dart width",
+        "label": "Lap width",
         "value": "7.8 mm",
         "note": "incl. 0.8 mm thickness clearance"
       },
@@ -8385,7 +7960,7 @@
       {
         "label": "Total take-up",
         "value": "111.5 mm",
-        "note": "removed by all darts, one side"
+        "note": "taken up as lap by all darts, one side"
       },
       {
         "label": "Blank area",

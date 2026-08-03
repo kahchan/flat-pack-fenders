@@ -88,11 +88,35 @@ function geo(s) {
   const crownTail = s.crown * (1 - s.taper / 100);
   const knee = (s.taperAt / 100) * L;
   const Wd = s.crown + 2 * skirtFlat;
+  // WP23 §23.2 — the dart is a plain slit now (`notch` always 0); the surplus it used
+  // to remove is left in as `lap` instead, maximised, never capped. `n <= 1` (a
+  // dartless skirt) is a real branch, guarded here rather than left to divide by zero.
   const n = s.flaps;
-  const pitch = L / n;
+  const pitch = n > 0 ? L / n : L;
   const removal = (L * drop) / R;
-  const notch = removal / n + t;
-  return { bsd, tyreRcalc, tyreR, R, cov, th, aNose, L, a, skirt: skirtFlat, skirtTrue: s.skirt, t, rBend, setback, BA, bendComp, hem, proj, drop, crown0: s.crown, crownTail, knee, Wd, yc: Wd / 2, n, pitch, removal, notch };
+  const notch = 0;
+  const lap = n > 1 ? removal / n + t : 0;
+  return { bsd, tyreRcalc, tyreR, R, cov, th, aNose, L, a, skirt: skirtFlat, skirtTrue: s.skirt, t, rBend, setback, BA, bendComp, hem, proj, drop, crown0: s.crown, crownTail, knee, Wd, yc: Wd / 2, n, pitch, removal, notch, lap };
+}
+
+// WP23 §23.3 — mirrors src/fender/geometry.ts's join-fit table exactly.
+const JOIN_LAP_NEEDED = { none: 0, cinch: 3, rivet: 7, zip: 11, slot: 11 };
+function joinFitsRef(g) {
+  return Object.entries(JOIN_LAP_NEEDED).map(([join, needed]) => ({
+    join, needed, fits: Math.max(0, needed - g.lap) <= 1e-9, short: Math.max(0, needed - g.lap)
+  }));
+}
+function flapsForLapRef(g, needed) {
+  if (needed <= g.t) return null;
+  return Math.max(1, Math.floor(g.removal / (needed - g.t)));
+}
+function skirtForLapRef(g, needed) {
+  if (g.n <= 1) return null;
+  const sinA = Math.sin(g.a);
+  if (sinA <= 0) return null;
+  const extra = needed - g.t;
+  if (extra <= 0) return 0;
+  return (extra * g.R * g.n) / (g.L * sinA);
 }
 
 function crownAt(g, x) {
@@ -134,7 +158,12 @@ function blank(s) {
     }
     return pts;
   };
-  const seg = (pts) => pts.map((p) => `${f1(p[0])},${f1(p[1])}`).join(' L ');
+  // WP23 §23.2 — mirrors src/fender/pattern.ts's own dedup exactly (see its comment):
+  // a zero-notch dart can round to the same point as a coincident knee event.
+  const seg = (pts) => {
+    const rounded = pts.map((p) => `${f1(p[0])},${f1(p[1])}`);
+    return rounded.filter((p, i) => i === 0 || p !== rounded[i - 1]).join(' L ');
+  };
   let outline = `M ${seg(edge(true))} L ${seg(edge(false).reverse())}`;
   // DIVERGENCE (PLAN §13.3): with a bevel the reversed bottom edge already ends on the
   // tongue's lower corner, so repeating it would leave a zero-length segment in a CUT
@@ -143,7 +172,11 @@ function blank(s) {
     if (bevelL <= 0) outline += ` L 0,${f1(g.yc + TONGUE_W / 2)}`;
     outline += ` L ${-TONGUE_L},${f1(g.yc + TONGUE_W / 2)} L ${-TONGUE_L},${f1(g.yc - TONGUE_W / 2)} L 0,${f1(g.yc - TONGUE_W / 2)}`;
   }
-  const blankOutline = `${outline} Z`;
+  outline += ' Z';
+  // WP23 §23.3/§23.5 — the punched-tongue release cut (below) appends MORE subpaths to
+  // `outline` after this point, mirroring src/fender/pattern.ts's own single mutable
+  // `outline` exactly (its `blankOutline` used to snapshot the string here, which would
+  // silently drop those later subpaths).
 
   const foldPath = (fold) => {
     const xs = g.knee > 0 && g.knee < g.L ? [0, g.knee, g.L] : [0, g.L];
@@ -163,25 +196,50 @@ function blank(s) {
     scoreLines.push({ d: `M ${xs.map((x) => `${f1(x)},${f1(hemT(x))}`).join(' L ')}` });
     scoreLines.push({ d: `M ${xs.map((x) => `${f1(x)},${f1(hemB(x))}`).join(' L ')}` });
   }
-  const off = g.notch / 2 + 6;
+  // WP23 §23.3/§23.6 — mirrors src/fender/pattern.ts's dart-fastening block exactly.
   for (let i = 1; i < g.n; i++) {
     const xc = i * g.pitch;
     if (s.join === 'none') {
       scoreLines.push({ d: `M ${f1(xc)},${f1(yFreeT(xc))} L ${f1(xc)},${f1(yFreeB(xc))}` });
       continue;
     }
-    for (const dir of [-1, 1]) {
-      const x = xc + dir * off;
-      dangerXs.push(x);
-      const tT = (t) => yFreeT(x) + g.skirt * t;
-      const tB = (t) => yFreeB(x) - g.skirt * t;
-      if (s.join === 'zip') {
-        for (const t of [0.3, 0.78]) holes.push({ cx: f1(x), cy: f1(tT(t)), r: 2 }, { cx: f1(x), cy: f1(tB(t)), r: 2 });
-      } else if (s.join === 'rivet') {
-        for (const t of [0.4, 0.78]) holes.push({ cx: f1(x), cy: f1(tT(t)), r: 1.6 }, { cx: f1(x), cy: f1(tB(t)), r: 1.6 });
-      } else {
-        const h = Math.min(12, g.skirt * 0.5);
-        slots.push({ x: f1(x - 1.5), y: f1(tT(0.28)), w: 3, h: f1(h) }, { x: f1(x - 1.5), y: f1(tB(0.28) - h), w: 3, h: f1(h) });
+    if (s.join === 'cinch') {
+      const off = g.lap / 2 + 6;
+      for (const dir of [-1, 1]) {
+        const x = xc + dir * off;
+        dangerXs.push(x);
+        holes.push({ cx: f1(x), cy: f1(yFreeT(x) + g.skirt * 0.5), r: 2 }, { cx: f1(x), cy: f1(yFreeB(x) - g.skirt * 0.5), r: 2 });
+      }
+      continue;
+    }
+    if (s.join === 'slot') {
+      const tw = 8;
+      const reach = Math.max(2, Math.min(14, g.skirt * 0.45));
+      const d0 = 2;
+      const xTongue = xc - g.lap / 4;
+      const xSlot = xc + g.lap / 4;
+      dangerXs.push(xTongue, xSlot);
+      for (const top of [true, false]) {
+        const free = top ? yFreeT : yFreeB;
+        const dirIn = top ? 1 : -1;
+        const yNear = (x) => free(x) + dirIn * d0;
+        const yFar = (x) => free(x) + dirIn * (d0 + reach);
+        const yA = yNear(xTongue), yB = yFar(xTongue);
+        outline += ` M ${f1(xTongue - tw / 2)},${f1(yA)} L ${f1(xTongue - tw / 2)},${f1(yB)} L ${f1(xTongue + tw / 2)},${f1(yB)} L ${f1(xTongue + tw / 2)},${f1(yA)}`;
+        scoreLines.push({ d: `M ${f1(xTongue - tw / 2)},${f1(yA)} L ${f1(xTongue + tw / 2)},${f1(yA)}` });
+        const sy0 = yNear(xSlot), sy1 = yFar(xSlot);
+        slots.push({ x: f1(xSlot - tw / 2), y: f1(Math.min(sy0, sy1)), w: tw, h: f1(Math.abs(sy1 - sy0)) });
+      }
+      continue;
+    }
+    const depths = s.join === 'zip' ? [3.5, 8.5] : [4.5];
+    const r = s.join === 'zip' ? 2 : 1.6;
+    dangerXs.push(xc - g.lap / 2, xc + g.lap / 2);
+    for (const d of depths) {
+      const t = g.skirt > 0 ? d / g.skirt : 0;
+      for (const dir of [-1, 1]) {
+        const x = xc + dir * t * (g.lap / 2);
+        holes.push({ cx: f1(x), cy: f1(yFreeT(x) + g.skirt * t), r }, { cx: f1(x), cy: f1(yFreeB(x) - g.skirt * t), r });
       }
     }
   }
@@ -229,8 +287,9 @@ function blank(s) {
       const rowN = Math.max(3, Math.floor(g.Wd / 30));
       for (let j = 0; j <= rowN; j++) {
         const y = yFreeT(xm) + 7 + ((yFreeB(xm) - yFreeT(xm) - 14) * j) / rowN;
-        if (s.join === 'slot') slots.push({ x: f1(xm - 1.5), y: f1(y - 6), w: 3, h: 12 });
-        else holes.push({ cx: f1(xm), cy: f1(y), r: s.join === 'rivet' ? 1.6 : 2 });
+        // WP23 §23.3 — panel seams always use holes now; the old `slot` join's clip
+        // (its only reason to cut slots here) is gone with the join it belonged to.
+        holes.push({ cx: f1(xm), cy: f1(y), r: s.join === 'rivet' ? 1.6 : 2 });
       }
       // PLAN FEEDBACK WP15 §15.2 — lapArrows is new, not in the design source: a small
       // drawn arrow at each lap pointing the direction water runs (downstream, from the
@@ -253,7 +312,7 @@ function blank(s) {
   const x0 = (s.tongue ? -TONGUE_L : 0) - 6;
   const viewBox = `${f1(x0 - M)} ${f1(-M)} ${f1(bboxW + M * 2 + 12)} ${f1(bboxH + M * 2)}`;
 
-  return { g, blankOutline, foldLines, scoreLines, holes, slots, seams, lapLines, lapArrows, panelCount, strutFrac, viewBox, bboxW, bboxH, mounts, inset };
+  return { g, blankOutline: outline, foldLines, scoreLines, holes, slots, seams, lapLines, lapArrows, panelCount, strutFrac, viewBox, bboxW, bboxH, mounts, inset };
 }
 
 function parts(s, g) {
@@ -300,16 +359,9 @@ function parts(s, g) {
     partsLabels.push({ x: f1(w + 8), y: f1(py + 10), size: 5, text: `MUDFLAP, ${f0(w)} × ${f0(h)} mm, lap 16 mm under the tail` });
     py += s.mudflap + 16;
   }
-  const extraN = s.join === 'rivet' || s.join === 'slot' ? g.n - 1 : 0;
-  const extraLabel = s.join === 'rivet' ? 'BUTT STRAP' : 'CLIP';
-  for (let i = 0; i < extraN; i++) {
-    const col = i % 6, row = Math.floor(i / 6);
-    const x = 2 + col * 42, y = py + row * 22, w = 34, h = 14;
-    partsOutlines.push({ d: `M ${f1(x)},${f1(y)} h ${w} v ${h} h ${-w} Z` });
-    if (s.join === 'rivet') for (const cx of [8, 26]) for (const cy of [4.5, 9.5]) partsHoles.push({ cx: f1(x + cx), cy: f1(y + cy), r: 1.6 });
-    else partsFolds.push({ d: `M ${f1(x + 6)},${f1(y)} v ${h} M ${f1(x + 28)},${f1(y)} v ${h}` });
-    if (i === 0) partsLabels.push({ x: f1(x), y: f1(y - 3), size: 5, text: `${extraLabel} × ${extraN}, 34 × 14 mm` });
-  }
+  // WP23 §23.3 — no join needs a separate hardware piece any more (see parts.ts).
+  const extraN = 0;
+  const extraLabel = '';
   const partsW = Math.max(s.strutLen + 96, g.crownTail + 150);
   const partsH = py + Math.max(1, Math.ceil(extraN / 6)) * 22 + 10;
   const partsViewBox = `-2 0 ${f1(partsW)} ${f1(partsH)}`;
@@ -562,7 +614,8 @@ function pageCountRef(s, g, rows, cols, lastRowH) {
   const strutH = s.strutEnd === 'strap' ? STRUT_STRAP_PADDLE_W : STRUT_W;
   for (let i = 0; i < s.struts; i++) partRects.push({ id: `strut-${i}`, w: s.strutLen, h: strutH + LABEL_ROW_H });
   if (s.mudflap > 0) partRects.push({ id: 'mudflap', w: g.crownTail, h: s.mudflap + LABEL_ROW_H });
-  const extraN = s.join === 'rivet' || s.join === 'slot' ? g.n - 1 : 0;
+  // WP23 §23.3 — no join needs a separate hardware piece any more.
+  const extraN = 0;
   for (let i = 0; i < extraN; i++) partRects.push({ id: `extra-${i}`, w: 34, h: 14 + LABEL_ROW_H });
 
   const partsPlaced = packRectsRef(partRects, PW, PARTS_PH);
@@ -734,9 +787,10 @@ function buildDxfRef(v, g, pathPolysFn) {
 // lines ~979-984, 986-994, 1092, 1110, 1112-1156)
 function joinNote(join) {
   return {
+    cinch: 'One 4 mm hole per panel, outside the lap. Pull the lap shut with a zip tie spanning across and snip the tail flush.',
     zip: 'Two 4 mm holes at top and bottom of each dart, both sides. Pull the dart closed with a zip tie through each pair and snip the tails flush.',
-    rivet: 'Four 3.2 mm holes per dart plus a butt strap bridging the gap — two rivets per side.',
-    slot: 'Two 3 mm slots per dart. A folded clip threads both slots and holds the dart shut — no hardware.',
+    rivet: 'One 3.2 mm hole per layer, top and bottom of each dart, straight through the lap. Rivet each pair together.',
+    slot: 'A tongue punched from the lap folds through a slot in the panel beneath and lies flat against the inside. No hardware.',
     none: 'No holes at all. Score the marked line across both skirts and run one zip tie right around the girth of the fender in the scored channel. Nothing pierces the crown.'
   }[join];
 }
@@ -771,19 +825,24 @@ function steps(s, g, panelCount, cols, rows) {
 
 function engNotes(s, g, panelCount, inset, mounts) {
   return [
-    { title: 'Why the darts exist', body: 'The blank is a developable cylinder along its length, so bending it round the wheel is free. Folding the skirts down is not: the skirt free edge sits on a smaller radius than the fold line, so it must be shorter. Each dart removes exactly that surplus.', formula: `take-up = L × drop / R = ${f0(g.L)} × ${f0(g.drop)} / ${f0(g.R)} = ${f1(g.removal)} mm over ${g.n} darts → ${f1(g.notch)} mm each` },
+    // WP23 §23.1/§23.2 — title only, renamed to match the port's corrected note
+    // (buildNotes()'s index 0); body/formula stay the historical wording on purpose,
+    // same as every other CORRECTED_INDICES entry — see notes.test.ts.
+    { title: 'Why the shingle exists', body: 'The blank is a developable cylinder along its length, so bending it round the wheel is free. Folding the skirts down is not: the skirt free edge sits on a smaller radius than the fold line, so it must be shorter. Each dart removes exactly that surplus.', formula: `take-up = L × drop / R = ${f0(g.L)} × ${f0(g.drop)} / ${f0(g.R)} = ${f1(g.removal)} mm over ${g.n} darts → ${f1(g.notch)} mm each` },
     { title: 'Radius chain', body: s.measuredR > 0 ? 'You have overridden the estimate with a measured radius, which is the right way round — the BSD approximation is the largest single error in the whole pattern.' : 'Tyre outer radius is approximated as BSD/2 + section width, i.e. a round section as tall as it is wide. Measure and override it.', formula: `R = ${s.measuredR > 0 ? 'measured' : 'BSD/2 + tyre'} + clearance = ${f0(g.tyreR)} + ${s.clear} = ${f0(g.R)} mm` },
     { title: 'Taper is local, not global', body: 'Crown width is held constant until the taper knee, then interpolated linearly to the tail. Because every dart is computed from the local crown width, the pattern edge follows the taper automatically — dart positions do not move, the edge they sit on does. Taper exists so the tail can pass a chainstay bridge or fork crown, not for looks.', formula: `crown ${f0(g.crown0)} mm until ${f0(g.knee)} mm, then → ${f0(g.crownTail)} mm at ${f0(g.L)} mm` },
     { title: 'Asymmetric coverage', body: 'Lead and trail are separate because a front fender wants material ahead of the axle (that is where the spray at your feet comes from) and a rear wants a long tail. Zero lead gives you a rear-only fender that starts at the top of the wheel.', formula: `lead ${s.lead}° + trail ${s.trail}° = ${f0(g.cov)}°` },
     { title: s.side === 'front' ? 'Front mounting' : 'Rear mounting', body: s.side === 'front' ? 'A front fender hangs from one bolt through the fork crown at top dead centre, with the struts running to the blade eyelets. Everything behind that bolt is cantilevered, so the struts sit on the trailing half of the arc where they actually resist flutter. The crown slot runs along the length so the fender can slide fore and aft to centre it.' : 'A rear fender takes two frame bolts — the chainstay bridge low at the front and the seatstay bridge higher up — with the struts running back to the dropouts. Two mounts on different radii is what stops a long rear fender from oscillating. Both are slots, not holes, because no two frames put those bridges the same distance apart.', formula: mounts.map((m) => `${m.label} at ${f0(m.x)} mm`).join(' · ') },
     { title: 'How the panel seam works', body: `Butting two panels edge to edge has nothing to fasten. Instead each panel is cut ${LAP} mm past its seam and laps under the next, so a single row of fasteners passes through both layers in the middle of the lap. Lap direction matters more than fastener choice: forward panel on top, always.`, formula: panelCount > 1 ? `${panelCount} panels · ${LAP} mm lap · fastener row at lap centre` : 'single sheet — no seams' },
-    { title: 'What a butt strap is', body: 'A rivet cannot pull a V-shaped gap closed the way a zip tie can — it needs two layers to squeeze. The butt strap is a small separate rectangle that sits behind the dart and bridges it: two rivets into the left flap, two into the right. The dart stays open by design; the strap carries the load. Zip ties and clips need no strap because they pull through both sides at once.', formula: 'strap 34 × 14 mm · 4 × 3.2 mm holes · one per dart' },
+    // WP23 §23.1/§23.3 — title only; see the comment on index 0 above.
+    { title: 'Rivets go straight through the lap', body: 'A rivet cannot pull a V-shaped gap closed the way a zip tie can — it needs two layers to squeeze. The butt strap is a small separate rectangle that sits behind the dart and bridges it: two rivets into the left flap, two into the right. The dart stays open by design; the strap carries the load. Zip ties and clips need no strap because they pull through both sides at once.', formula: 'strap 34 × 14 mm · 4 × 3.2 mm holes · one per dart' },
     { title: 'Every hole is a crack initiator', body: 'In thin plastic, fatigue cracks start at holes, and the crown is the worst place to put one because that is where water sits. Hence the hole-free option: a scored channel and one zip tie round the girth, nothing pierced. Struts fasten at the skirt edge for the same reason.', formula: `strut pairs at ${f0(inset)} mm inset, 10 mm apart · crown unpierced` },
     { title: 'Sacrificial strut end', body: 'A fender that jams should let go before it stops the wheel. The optional single oversize hole at the frame end is the intended failure point: one fastener in tension, nothing redundant. This is a safety feature, not a tolerance.', formula: s.fuse ? 'single 6.4 mm hole, one fastener' : 'off — both ends fully fastened' },
     { title: 'Nesting', body: 'A tapered blank nests tail-to-nose with a second one, so a front and rear pair costs less than twice one fender in stock width. The ghost outline shows the pair; cut the shared edge once.', formula: s.nest ? `pair stock ≈ ${f0(g.L)} × ${f0(g.Wd * 2 + 10)} mm` : 'off' },
     { title: 'Print geometry', body: `Each tile draws into ${PW} × ${PH} mm inside a 15 mm safe margin, which clears the unprintable edge on essentially every consumer inkjet and laser. Tiles overlap ${OV} mm so the cut line crosses both sheets and can be aligned by eye.`, formula: `A4 landscape 297 × 210 − 2 × 15 mm = ${PW} × ${PH} mm live` },
     { title: 'Bend allowance, properly', body: 'A fold does not consume the length a sharp corner would. The flat pattern needs the two legs measured to the theoretical sharp corner, minus twice the setback, plus the arc length along the neutral axis. Bend radius is taken as equal to thickness (a hand fold over a straight edge, not a press brake) and the k-factor as 0.44, which is the usual figure for soft sheet in air bending. At zero thickness every term collapses to zero and the pattern is the ideal one.', formula: `setback = (r+t)·tan(α/2) = ${f1(g.setback)} · BA = α(r+0.44t) = ${f1(g.BA)} · net ${g.bendComp >= 0 ? '+' : ''}${f1(g.bendComp)} mm per fold` },
-    { title: 'Darts get wider with thickness', body: 'Two folded flaps meeting at a closed dart collide edge-on if the dart is cut to the ideal width — the material has to go somewhere. Adding one thickness to every dart gives the two edges room to sit alongside each other rather than fighting.', formula: `dart = L·drop/R/n + t = ${f1(g.notch)} mm` },
+    // WP23 §23.2 — title only; see the comment on index 0 above.
+    { title: 'The lap gets wider with thickness', body: 'Two folded flaps meeting at a closed dart collide edge-on if the dart is cut to the ideal width — the material has to go somewhere. Adding one thickness to every dart gives the two edges room to sit alongside each other rather than fighting.', formula: `dart = L·drop/R/n + t = ${f1(g.notch)} mm` },
     { title: 'Hemmed edge', body: 'Folding the skirt edge back on itself doubles the material at the most vulnerable line on the fender, removes the cut edge you would otherwise brush your ankle against, and stiffens the whole skirt far more than extra thickness would. Cost is a wider blank and one more fold to make cleanly.', formula: s.hem ? `hem ${f0(g.hem)} mm = 2t + 4 · blank ${f0(g.Wd)} mm wide` : 'off' },
     { title: 'Export', body: 'SVG and DXF both come out at 1 unit = 1 mm with no transform, so they land at true size in Inkscape, LightBurn, Illustrator or any CAM tool. Cut geometry, fold and score lines, and hole centres go on separate layers — a laser wants to score the folds at low power and cut the outline at full, and it cannot guess which is which from the geometry alone.', formula: 'SVG: 1 user unit = 1 mm · DXF: R12 ASCII, LWPOLYLINE + CIRCLE, layers CUT / FOLD / HOLES' },
     { title: 'Still open', body: 'Cross-section as a true arc rather than a crown plus two flat facets — better spray control, much harder pattern. A measured k-factor for real sheet rather than the 0.44 rule of thumb. And strut stiffness: a rolled or channel-section strut would outperform a flat strip by a large margin, but it stops being cuttable with scissors, which is the whole point of this thing.', formula: '' }
@@ -797,9 +856,11 @@ function specs(s, g, finished, panelCount, cols, rows, lastRowH) {
     { label: 'Developed width', value: `${f0(g.Wd)} mm`, note: 'crown + 2 × skirt, at full width' },
     { label: 'Finished width', value: `${f0(finished)} mm`, note: `tail ${f0(g.crownTail + 2 * g.proj)} mm after taper` },
     { label: 'Flap pitch', value: `${f0(g.pitch)} mm`, note: `arc ÷ ${g.n} flaps` },
-    { label: 'Dart width', value: `${f1(g.notch)} mm`, note: s.thick > 0 ? `incl. ${f1(s.thick)} mm thickness clearance` : 'at the free edge, tapering to 0 at the fold' },
+    // WP23 §23.2 — renamed to match src/fender/specs.ts's own correction: the dart is
+    // a plain slit now, so this reports the shingled lap it left behind instead.
+    { label: 'Lap width', value: `${f1(g.lap)} mm`, note: s.thick > 0 ? `incl. ${f1(s.thick)} mm thickness clearance` : 'at the free edge, tapering to 0 at the fold' },
     { label: 'Bend allowance', value: `${g.bendComp >= 0 ? '+' : ''}${f1(g.bendComp)} mm`, note: s.thick > 0 ? `per fold, setback ${f1(g.setback)}, arc ${f1(g.BA)}` : 'zero-thickness model' },
-    { label: 'Total take-up', value: `${f1(g.removal)} mm`, note: 'removed by all darts, one side' },
+    { label: 'Total take-up', value: `${f1(g.removal)} mm`, note: 'taken up as lap by all darts, one side' },
     // WP20 §20.1 — nesting removed outright, so the nested-pair branch goes with it.
     { label: 'Blank area', value: `${f1((g.L * g.Wd) / 1e6)} m²`, note: 'before darts are cut' },
     // WP19 §19.1 — every panel is one PW-wide tile window (only the last is shorter),
@@ -847,7 +908,7 @@ const CASES = {
   'strap-strut-end-cargo': { ...CARGO20, strutEnd: 'strap' }
 };
 
-const GEO_KEYS = ['bsd','tyreRcalc','tyreR','R','cov','th','aNose','L','a','skirt','skirtTrue','t','rBend','setback','BA','bendComp','hem','proj','drop','crown0','crownTail','knee','Wd','yc','n','pitch','removal','notch'];
+const GEO_KEYS = ['bsd','tyreRcalc','tyreR','R','cov','th','aNose','L','a','skirt','skirtTrue','t','rBend','setback','BA','bendComp','hem','proj','drop','crown0','crownTail','knee','Wd','yc','n','pitch','removal','notch','lap'];
 
 // Isometric spins pinned by the fixture: 18 is the source default (spin: 18 at line
 // 480), -45 is an off-default pose so the yaw projection maths is checked, not just the

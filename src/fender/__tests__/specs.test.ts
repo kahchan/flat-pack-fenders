@@ -42,7 +42,7 @@ describe('spec table invariants', () => {
         'Developed width',
         'Finished width',
         'Flap pitch',
-        'Dart width',
+        'Lap width',
         'Bend allowance',
         'Total take-up',
         'Blank area',

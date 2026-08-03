@@ -6,7 +6,13 @@ import type { BlankModel, FacetPath, FenderConfig, Geometry, Hole, IsoModel, Pat
 type Vec2 = [number, number];
 type Vec3 = [number, number, number];
 
-/** Segments along the arc. Facet count is always `NS * 3` — see `pf` for the 3 rows. */
+/**
+ * WP28 §28.1/§28.2 (decision C5): the crown is a genuinely smooth cylinder (a sheet
+ * bent round the wheel), so its segment count is a faithful render, not an exemption —
+ * this is now the ONLY band that uses a fixed segment count. The skirt used to share
+ * it (a flat `NS`-facet sweep regardless of flap count); it now cuts to `g.n` hard
+ * edges instead, see the facet loop below.
+ */
 export const NS = 64;
 
 /**
@@ -17,9 +23,17 @@ export const NS = 64;
 export const SPIN_DEFAULT = 18;
 
 /**
- * The isometric preview: a 64-segment facet mesh over the developed skirt profile,
- * plus rails, wheel ghost, dart seams/fasteners, struts and the mudflap, all projected
- * through the same yaw rotation.
+ * The isometric preview: real cut geometry, not a shaded proxy for it (WP28 §28.2,
+ * decision C5).
+ *
+ * `pf(aa)` returns the four rails at arc angle `aa` — 0–1 and 2–3 are skirt, 1–2 is
+ * crown. The facet loop below splits along that boundary: skirt bands are `g.n` flat,
+ * hard-edged panels (one per section, matching the flat pattern's own darts exactly —
+ * WP23's shingled lap replaced the V-notch with a plain slit, so there is exactly one
+ * hard edge per pitch, not a smoothed one); the crown band stays the old smooth `NS`
+ * sweep. `thick` now renders as a real offset second rail, so the doubled material at
+ * each lap reads as a physical step and the free edges/arc ends show an edge face,
+ * instead of `thick` only ever driving the bend maths invisibly.
  *
  * `spin` (the rotate slider, degrees, default 18, range −80…80) is view state, not a
  * fender parameter — it never touches geometry.ts or FenderConfig — so it is a plain
@@ -61,6 +75,12 @@ export function buildIsometric(
     ];
   };
 
+  // WP28 §28.2 — the sheet's real thickness, offset inward (toward the hub: smaller
+  // radius) along the same [lateral, radial] pair `pf` already uses. Used for the free
+  // edges and the lap step, so "inward" always means the same thing a cross-section of
+  // the actual folded sheet would show.
+  const inward = (v: Vec2): Vec2 => [v[0], v[1] - g.t];
+
   // Lift a cross-section point onto the rolled cylinder at arc angle `aa`.
   const p3 = (v: Vec2, aa: number): Vec3 => {
     const r = g.R + v[1];
@@ -71,8 +91,6 @@ export function buildIsometric(
     const q = p3(v, aa);
     return P(q[0], q[1], q[2]);
   };
-
-  const aAt = (i: number) => g.aNose + (g.th * i) / NS;
 
   // Facet shading ramp. The source interpolates between two literal RGB triples
   // (mix(t) = A + (B-A)*t) and emits `rgb(r,g,b)` per facet — but hard rule #2 forbids
@@ -94,23 +112,84 @@ export function buildIsometric(
     if (p[1] > ext.y1) ext.y1 = p[1];
   };
 
+  const quad = (q: Vec2[]): string => `M ${q.map((p) => `${f1(p[0])},${f1(p[1])}`).join(' L ')} Z`;
+
   // ── Facets ─────────────────────────────────────────────────────────────────
-  // Three quads per segment (outer skirt, crown, outer skirt), NS segments along the arc.
+  // Skirt bands: `g.n` flat, hard-edged panels — a dartless config (`g.n <= 1`, WP23
+  // §23.2's real branch) is exactly one panel spanning the whole arc, not a division by
+  // zero. Crown band: the old smooth `NS`-segment sweep, unchanged — a sheet bent round
+  // the wheel really is a smooth cylinder (§28.2).
+  const nSkirt = Math.max(1, g.n);
+  const aAtSkirt = (i: number) => g.aNose + (g.th * i) / nSkirt;
+  const aAtCrown = (i: number) => g.aNose + (g.th * i) / NS;
+
   const facets: FacetPath[] = [];
+
+  // Top skirt (rails 0-1), bottom skirt (rails 2-3): `g.n` panels each.
+  for (const j of [0, 2] as const) {
+    for (let i = 0; i < nSkirt; i++) {
+      const a0 = aAtSkirt(i);
+      const a1 = aAtSkirt(i + 1);
+      const P0 = pf(a0);
+      const P1 = pf(a1);
+      const q = [pt(P0[j], a0), pt(P0[j + 1], a0), pt(P1[j + 1], a1), pt(P1[j], a1)];
+      q.forEach(note);
+      const u = Math.abs((i / nSkirt) * 2 - 1);
+      const shade = 0.52 - 0.3 * u;
+      facets.push({ d: quad(q), fill: mix(Math.max(0.1, shade)) });
+    }
+  }
+
+  // Crown (rails 1-2): smooth, NS segments.
   for (let i = 0; i < NS; i++) {
-    const a0 = aAt(i);
-    const a1 = aAt(i + 1);
+    const a0 = aAtCrown(i);
+    const a1 = aAtCrown(i + 1);
     const P0 = pf(a0);
     const P1 = pf(a1);
-    for (let j = 0; j < 3; j++) {
-      const q: Vec2[] = [pt(P0[j], a0), pt(P0[j + 1], a0), pt(P1[j + 1], a1), pt(P1[j], a1)];
-      q.forEach(note);
-      const u = Math.abs((i / NS) * 2 - 1);
-      const shade = j === 1 ? 0.88 - 0.52 * u : 0.52 - 0.3 * u;
-      facets.push({
-        d: `M ${q.map((p) => `${f1(p[0])},${f1(p[1])}`).join(' L ')} Z`,
-        fill: mix(Math.max(0.1, shade))
-      });
+    const q = [pt(P0[1], a0), pt(P0[2], a0), pt(P1[2], a1), pt(P1[1], a1)];
+    q.forEach(note);
+    const u = Math.abs((i / NS) * 2 - 1);
+    const shade = 0.88 - 0.52 * u;
+    facets.push({ d: quad(q), fill: mix(Math.max(0.1, shade)) });
+  }
+
+  // WP28 §28.2 — real thickness at the two free edges: a second rail offset `inward`
+  // by `g.t`, so the cut edge reads as a physical step instead of a knife edge. Zero at
+  // `t = 0` (the ideal zero-thickness pattern), so it draws nothing there rather than a
+  // degenerate sliver.
+  if (g.t > 0) {
+    for (const j of [0, 3] as const) {
+      for (let i = 0; i < nSkirt; i++) {
+        const a0 = aAtSkirt(i);
+        const a1 = aAtSkirt(i + 1);
+        const outer0 = pf(a0)[j];
+        const outer1 = pf(a1)[j];
+        const q = [pt(outer0, a0), pt(inward(outer0), a0), pt(inward(outer1), a1), pt(outer1, a1)];
+        q.forEach(note);
+        facets.push({ d: quad(q), fill: mix(0.05) });
+      }
+    }
+  }
+
+  // WP28 §28.2 — the lap step: WP23 §23.2 left the take-up in as a real shingled
+  // overlap (`g.lap`) instead of cutting it away, so at every interior dart the
+  // downstream panel's free edge genuinely sits proud of the one it laps under by one
+  // thickness. Rendered as a small raised riser, `g.lap` mm wide (converted to the arc
+  // angle it subtends) and `g.t` tall, at the downstream panel's leading edge — drawn
+  // AFTER that panel's own facet so it reads as sitting on top of it. Absent when there
+  // is no lap to show (`g.lap <= 0`: dartless, or zero thickness).
+  if (g.lap > 0 && nSkirt > 1) {
+    const dAngle = g.lap / g.R;
+    for (const j of [0, 3] as const) {
+      for (let i = 1; i < nSkirt; i++) {
+        const a0 = aAtSkirt(i);
+        const a1 = a0 + dAngle;
+        const outer0 = pf(a0)[j];
+        const outer1 = pf(a1)[j];
+        const q = [pt(outer0, a0), pt(inward(outer0), a0), pt(inward(outer1), a1), pt(outer1, a1)];
+        q.forEach(note);
+        facets.push({ d: quad(q), fill: mix(0.05) });
+      }
     }
   }
 
@@ -118,7 +197,7 @@ export function buildIsometric(
   const rail = (j: number): string => {
     const p: string[] = [];
     for (let i = 0; i <= NS; i++) {
-      const aa = aAt(i);
+      const aa = aAtCrown(i);
       const q = pt(pf(aa)[j], aa);
       p.push(`${f1(q[0])},${f1(q[1])}`);
     }
@@ -127,7 +206,7 @@ export function buildIsometric(
   const railRev = (j: number): string => {
     const p: string[] = [];
     for (let i = NS; i >= 0; i--) {
-      const aa = aAt(i);
+      const aa = aAtCrown(i);
       const q = pt(pf(aa)[j], aa);
       p.push(`${f1(q[0])},${f1(q[1])}`);
     }
@@ -168,7 +247,7 @@ export function buildIsometric(
     wheel.push({ d: `M ${p.map((q) => `${f1(q[0])},${f1(q[1])}`).join(' L ')} Z` });
   }
 
-  // ── Dart seams and their fasteners ──────────────────────────────────────────
+  // ── Dart seams and their fasteners (WP23 §23.3/§23.6) ───────────────────────
   const seams: Path[] = [];
   const holes: Hole[] = [];
   const slots: Path[] = [];
@@ -183,20 +262,76 @@ export function buildIsometric(
       const A = pt(free, aa);
       const B = pt(fold, aa);
       seams.push({ d: `M ${f1(A[0])},${f1(A[1])} L ${f1(B[0])},${f1(B[1])}` });
+    }
 
-      const ts = s.join === 'zip' ? [0.3, 0.78] : s.join === 'rivet' ? [0.4, 0.78] : [];
-      for (const t of ts) {
-        for (const dir of [-1, 1]) {
-          const q = pt(lerp(free, fold, t), aa + (dir * (g.notch / 2 + 6)) / g.R);
-          holes.push({ cx: f1(q[0]), cy: f1(q[1]), r: s.join === 'rivet' ? 1.6 : 2 });
+    if (s.join === 'none') continue;
+
+    if (s.join === 'cinch') {
+      // Outside the lap band, same clearance the flat pattern uses — see pattern.ts.
+      const off = (g.lap / 2 + 6) / g.R;
+      for (const dir of [-1, 1]) {
+        const ao = aa + dir * off;
+        const pro = pf(ao);
+        for (const side of [0, 3] as const) {
+          const free = pro[side]!;
+          const fold = pro[side === 0 ? 1 : 2]!;
+          const q = pt(lerp(free, fold, 0.5), ao);
+          holes.push({ cx: f1(q[0]), cy: f1(q[1]), r: 2 });
         }
       }
-      if (s.join === 'slot') {
-        for (const dir of [-1, 1]) {
-          const ao = aa + (dir * (g.notch / 2 + 6)) / g.R;
-          const q1 = pt(lerp(free, fold, 0.28), ao);
-          const q2 = pt(lerp(free, fold, 0.62), ao);
-          slots.push({ d: `M ${f1(q1[0])},${f1(q1[1])} L ${f1(q2[0])},${f1(q2[1])}` });
+      continue;
+    }
+
+    if (s.join === 'slot') {
+      // The punched tongue (§23.5): a release-cut outline in the upstream panel and a
+      // receiving slot in the downstream one, drawn as real line geometry — same
+      // absolute reach/width pattern.ts cuts, same "forward panel on top" shingle
+      // direction.
+      const tw = 8;
+      const reach = Math.max(2, Math.min(14, g.skirt * 0.45));
+      const d0 = 2;
+      const aTongue = aa - g.lap / 4 / g.R;
+      const aSlot = aa + g.lap / 4 / g.R;
+      const dw = tw / 2 / g.R;
+      for (const side of [0, 3] as const) {
+        const dirIn = side === 0 ? 1 : -1;
+        const near = (v: Vec2): Vec2 => [v[0], v[1] + dirIn * d0];
+        const far = (v: Vec2): Vec2 => [v[0], v[1] + dirIn * (d0 + reach)];
+
+        const freeT = pf(aTongue)[side]!;
+        const t1 = pt(near(freeT), aTongue - dw);
+        const t2 = pt(far(freeT), aTongue - dw);
+        const t3 = pt(far(freeT), aTongue + dw);
+        const t4 = pt(near(freeT), aTongue + dw);
+        slots.push({
+          d: `M ${f1(t1[0])},${f1(t1[1])} L ${f1(t2[0])},${f1(t2[1])} L ${f1(t3[0])},${f1(t3[1])} L ${f1(t4[0])},${f1(t4[1])} Z`
+        });
+
+        const freeS = pf(aSlot)[side]!;
+        const s1 = pt(near(freeS), aSlot - dw);
+        const s2 = pt(far(freeS), aSlot - dw);
+        const s3 = pt(far(freeS), aSlot + dw);
+        const s4 = pt(near(freeS), aSlot + dw);
+        slots.push({
+          d: `M ${f1(s1[0])},${f1(s1[1])} L ${f1(s2[0])},${f1(s2[1])} L ${f1(s3[0])},${f1(s3[1])} L ${f1(s4[0])},${f1(s4[1])} Z`
+        });
+      }
+      continue;
+    }
+
+    // rivet, zip — through the lap, slanted per §23.6, same depths pattern.ts uses.
+    const depths = s.join === 'zip' ? [3.5, 8.5] : [4.5];
+    const r = s.join === 'zip' ? 2 : 1.6;
+    for (const d of depths) {
+      const t = g.skirt > 0 ? d / g.skirt : 0;
+      for (const dir of [-1, 1]) {
+        const ao = aa + (dir * t * (g.lap / 2)) / g.R;
+        const pro = pf(ao);
+        for (const side of [0, 3] as const) {
+          const free = pro[side]!;
+          const fold = pro[side === 0 ? 1 : 2]!;
+          const q = pt(lerp(free, fold, t), ao);
+          holes.push({ cx: f1(q[0]), cy: f1(q[1]), r });
         }
       }
     }

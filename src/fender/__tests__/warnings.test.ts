@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import golden from './golden.json';
 import { DEFAULTS } from '../defaults';
+import { geo } from '../geometry';
 import { buildWarnings } from '../warnings';
 import { buildParts } from '../parts';
 import { PW } from '../defaults';
@@ -25,37 +26,37 @@ const CASES = Object.entries(golden as unknown as Record<string, Case>);
 
 /**
  * Fixed by source condition order — every case's warnings are a subsequence of this.
- * `tyre-too-wide` and `strut-too-long` (PLAN §13.2, §13.4) are new, not in the design
- * source at all, so they're appended last rather than interleaved — and buildWarnings()
- * pushes them last too, so this order is never violated regardless of which other
- * warnings also fire.
+ * `tyre-too-wide`, `strut-too-long` (PLAN §13.2, §13.4) and `join-lacks-lap` (WP23
+ * §23.4) are new, not in the design source at all, so they're appended last rather
+ * than interleaved — and buildWarnings() pushes them last too, so this order is never
+ * violated regardless of which other warnings also fire.
+ *
+ * `darts-too-wide` (the design source's `notch > 8` check) is gone: WP23 §23.1/§23.2
+ * makes the dart a plain slit always (`notch` is always 0 now), so the condition it
+ * checked can no longer occur — see `join-lacks-lap` for what replaced its job of
+ * flagging a lap the fastener can't use.
  */
 const ID_ORDER = [
   'coverage-exceeds-frame',
   'radius-estimated',
   'tail-narrower-than-tyre',
-  'darts-too-wide',
   'skirt-too-short',
   'single-blank-too-long',
   'sheet-b-too-wide',
   'tyre-too-wide',
-  'strut-too-long'
+  'strut-too-long',
+  'join-lacks-lap'
 ];
 
 /** Ids with no fixture counterpart at all — new checks, not source transcriptions. */
-const NEW_IDS = new Set(['sheet-b-too-wide', 'tyre-too-wide', 'strut-too-long']);
+const NEW_IDS = new Set(['sheet-b-too-wide', 'tyre-too-wide', 'strut-too-long', 'join-lacks-lap']);
 
-// PLAN FEEDBACK WP17 — these four ids' text lost an em-dash each (decision A3), reworded
+// PLAN FEEDBACK WP17 — these three ids' text lost an em-dash each (decision A3), reworded
 // as a colon per the notes.ts scheme (it introduces the reason/consequence, same as
 // notes.test.ts's CORRECTED_INDICES). golden.json keeps the original design wording as
 // the historical record, so these are excluded from the verbatim comparison below rather
 // than regenerated; see the "corrected prose" block for what actually changed.
-const REWORDED_IDS = new Set([
-  'coverage-exceeds-frame',
-  'radius-estimated',
-  'tail-narrower-than-tyre',
-  'darts-too-wide'
-]);
+const REWORDED_IDS = new Set(['coverage-exceeds-frame', 'radius-estimated', 'tail-narrower-than-tyre']);
 
 describe.each(CASES)('buildWarnings(%s)', (_name, c) => {
   const warnings = buildWarnings(c.config);
@@ -220,5 +221,39 @@ describe('warnings invariants', () => {
     expect(w).toBeDefined();
     expect(w!.text).not.toMatch(/-\d+%/);
     expect(w!.text).toMatch(/no taper helps here: widen the crown instead/);
+  });
+
+  // WP23 §23.4 — new: the join family never disables an option, it warns when the
+  // chosen one doesn't fit. Every SHIPPED PRESET already clears `cinch` with headroom
+  // (§23.3's own table, and this is the actual "ships warning-free" invariant —
+  // presets.test.ts covers it directly); golden.json's own fixture CASES are geometry
+  // regressions, not presets, and several deliberately exercise a join that doesn't
+  // fit (e.g. `mtb-26in-slot-thick`), so they are not asserted warning-free here.
+  describe('join-lacks-lap', () => {
+    it('fires once the chosen join needs more lap than this config has', () => {
+      const tight: FenderConfig = { ...DEFAULTS, join: 'zip', flaps: 40 };
+      const ids = buildWarnings(tight).map((w) => w.id);
+      expect(ids).toContain('join-lacks-lap');
+    });
+
+    it("the named remedy actually makes the join fit — the round trip, not just the string", () => {
+      const tight: FenderConfig = { ...DEFAULTS, join: 'zip', flaps: 40 };
+      const w = buildWarnings(tight).find((x) => x.id === 'join-lacks-lap')!;
+      expect(w.text).toMatch(/needs 11 mm of lap/);
+
+      // Both remedies are named after the colon ("40 sections" earlier in the same
+      // sentence is the CURRENT count, not the remedy).
+      const fewerFlapsMatch = w.text.match(/(\d+) sections (?:or|would)/);
+      expect(fewerFlapsMatch).not.toBeNull();
+      const fewerFlaps = Number(fewerFlapsMatch![1]);
+      const fixedByFlaps = geo({ ...tight, flaps: fewerFlaps });
+      expect(fixedByFlaps.lap).toBeGreaterThanOrEqual(11 - 1e-9);
+
+      const deeperSkirtMatch = w.text.match(/a (\d+) mm skirt/);
+      expect(deeperSkirtMatch).not.toBeNull();
+      const deeperSkirt = Number(deeperSkirtMatch![1]);
+      const fixedBySkirt = geo({ ...tight, skirt: deeperSkirt });
+      expect(fixedBySkirt.lap).toBeGreaterThanOrEqual(11 - 1e-9);
+    });
   });
 });
