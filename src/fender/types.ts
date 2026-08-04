@@ -277,6 +277,10 @@ export interface BlankModel {
   panelCount: number;
   /** Arc positions of the struts, as fractions of L. Consumed by the isometric view. */
   strutFrac: number[];
+  /** Frame-mount slot positions, post-nudge (WP33 §9.40) — the actual x each slot in
+   * `slots` was cut at, not the nominal pre-nudge position. `notes.ts` reads this for its
+   * assembly-steps copy instead of recomputing the nominal number itself. */
+  mounts: { x: number; label: string }[];
   viewBox: string;
   /** Bounding box of the drawn area, including the tongue. */
   bboxW: number;

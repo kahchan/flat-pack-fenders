@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import golden from './golden.json';
+import { WHEELS } from '../defaults';
+import { geo } from '../geometry';
 import { buildNotes, buildSteps } from '../notes';
-import type { FenderConfig } from '../types';
+import { buildBlank } from '../pattern';
+import type { FenderConfig, WheelKey } from '../types';
 
 /**
  * golden.json's `steps` and `engNotes` are a verbatim transcription of the design
@@ -206,5 +209,93 @@ describe('assembly step numbering', () => {
     expect(panelOnly.length).toBe(neither.length + 1);
     expect(mudflapOnly.length).toBe(neither.length + 1);
     expect(both.length).toBe(neither.length + 2);
+  });
+});
+
+/**
+ * WP33 §9.40 — `mountPositions()` in notes.ts used to recompute the pre-nudge mount x
+ * itself, mirroring pattern.ts's private maths, so the assembly-steps copy could read up
+ * to 15 mm off the slot `nudgeAway` actually cuts. `buildBlank` now resolves the nudge
+ * once and `notes.ts` reads `blank.mounts` — these tests pin that reading, and the first
+ * one specifically exercises a config where the nudge fires, not just an un-nudged one.
+ */
+describe('WP33 — engineering notes quote the actual, post-nudge mount x', () => {
+  const wheels = Object.keys(WHEELS) as WheelKey[];
+  const base = CASES[0]![1].config;
+
+  // Nominal (pre-nudge) mount x, reproduced here ONLY to detect whether a given config's
+  // nudge fired — never fed back into the app, per the plan's ban on a second copy of the
+  // nudge logic in notes.ts itself.
+  function nominalMountXs(s: FenderConfig, L: number, cov: number): number[] {
+    const xTDC = (s.lead / Math.max(1, cov)) * L;
+    return s.side === 'front' ? [xTDC] : [Math.min(xTDC * 0.4, L - 40), xTDC];
+  }
+
+  it('finds a config where a mount is actually nudged, then matches its slot within 0.05 mm', () => {
+    let found: { cfg: FenderConfig; blank: ReturnType<typeof buildBlank> } | null = null;
+
+    outer: for (const wheel of wheels) {
+      for (const side of ['front', 'rear'] as const) {
+        for (const stock of ['a4', 'single'] as const) {
+          for (let flaps = 8; flaps <= 30; flaps++) {
+            const cfg: FenderConfig = { ...base, wheel, side, stock, flaps };
+            const g = geo(cfg);
+            const b = buildBlank(cfg, g);
+            const nominal = nominalMountXs(cfg, g.L, g.cov);
+            const nudged = b.mounts.some((m, i) => Math.abs(m.x - nominal[i]!) > 0.01);
+            if (nudged) {
+              found = { cfg, blank: b };
+              break outer;
+            }
+          }
+        }
+      }
+    }
+
+    expect(found, 'expected at least one config to trigger nudgeAway on a mount').not.toBeNull();
+    const { cfg, blank } = found!;
+
+    // Confirm the nudge really fired (not a false positive from float noise).
+    const g = geo(cfg);
+    const nominal = nominalMountXs(cfg, g.L, g.cov);
+    const anyNudged = blank.mounts.some((m, i) => Math.abs(m.x - nominal[i]!) > 0.01);
+    expect(anyNudged, 'sanity check: the found config must actually nudge a mount').toBe(true);
+
+    const notes = buildNotes(cfg, g, blank);
+    const mountNote = notes.find((n) => n.title === 'Front mounting' || n.title === 'Rear mounting')!;
+
+    blank.mounts.forEach((m) => {
+      const slot = blank.slots.find((s) => Math.abs(Number(s.x) + 8 - m.x) < 0.06);
+      expect(slot, `no matching slot for mount "${m.label}" at x=${m.x}`).toBeDefined();
+      expect(Number(slot!.x) + 8, `slot x for "${m.label}"`).toBeCloseTo(m.x, 1);
+
+      const quoted = mountNote.formula.match(new RegExp(`${m.label} at (-?[\\d.]+) mm`));
+      expect(quoted, `"${m.label}" not quoted in formula: ${mountNote.formula}`).not.toBeNull();
+      const quotedX = Number(quoted![1]);
+      expect(Math.abs(quotedX - (Number(slot!.x) + 8)), `${m.label} quoted vs slot`).toBeLessThanOrEqual(0.5);
+    });
+  });
+
+  it('pins engineering-notes mount numbers against blank.slots directly, for every golden case', () => {
+    let checked = 0;
+    for (const [name, c] of CASES) {
+      const g = geo(c.config);
+      const blank = buildBlank(c.config, g);
+      const notes = buildNotes(c.config, g, blank);
+      const mountNote = notes.find((n) => n.title === 'Front mounting' || n.title === 'Rear mounting');
+      if (!mountNote) continue;
+
+      blank.mounts.forEach((m) => {
+        const slot = blank.slots.find((s) => Math.abs(Number(s.x) + 8 - m.x) < 0.06);
+        expect(slot, `${name}: no matching slot for "${m.label}"`).toBeDefined();
+
+        const quoted = mountNote.formula.match(new RegExp(`${m.label} at (-?[\\d.]+) mm`));
+        expect(quoted, `${name}: "${m.label}" not quoted in formula: ${mountNote.formula}`).not.toBeNull();
+        const quotedX = Number(quoted![1]);
+        expect(Math.abs(quotedX - (Number(slot!.x) + 8)), `${name} ${m.label}`).toBeLessThanOrEqual(0.5);
+      });
+      checked++;
+    }
+    expect(checked).toBeGreaterThan(0);
   });
 });
