@@ -18,7 +18,7 @@ const STRUT_ENDS: { k: StrutEndKey; label: string; note: string }[] = [
 export function StrutEndSelector({ config, setField }: StrutEndSelectorProps) {
   return (
     <div className="rail-group">
-      <div className="rail-group-label">Strut frame end</div>
+      <div className="rail-cluster-label">Strut frame end</div>
       <div className="option-list">
         {STRUT_ENDS.map((o) => (
           <OptionButton

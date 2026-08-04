@@ -47,7 +47,7 @@ export function ControlRail({ model, setField, applyPreset, reset, showHeader = 
       <WheelSelector config={config} setField={setField} />
 
       <div className="rail-group">
-        <div className="rail-group-label">Fit</div>
+        <div className="rail-cluster-label">Fit</div>
         <SliderGroups items={essentials} config={config} setField={setField} />
       </div>
 
@@ -59,24 +59,24 @@ export function ControlRail({ model, setField, applyPreset, reset, showHeader = 
         <summary className="rail-group-label">Fine tuning</summary>
 
         <div className="rail-group">
-          <div className="rail-group-label">Shape</div>
+          <div className="rail-cluster-label">Shape</div>
           <SliderGroups items={clusterItems('Shape')} config={config} setField={setField} />
         </div>
 
         <div className="rail-group">
-          <div className="rail-group-label">Coverage</div>
+          <div className="rail-cluster-label">Coverage</div>
           <SliderGroups items={clusterItems('Coverage')} config={config} setField={setField} />
         </div>
 
         <div className="rail-group">
-          <div className="rail-group-label">Construction</div>
+          <div className="rail-cluster-label">Construction</div>
           <SliderGroups items={clusterItems('Construction')} config={config} setField={setField} />
           <JoinSelector config={config} setField={setField} />
           <StockSelector config={config} g={g} setField={setField} />
         </div>
 
         <div className="rail-group">
-          <div className="rail-group-label">Struts &amp; mudflap</div>
+          <div className="rail-cluster-label">Struts &amp; mudflap</div>
           <SliderGroups items={clusterItems('Struts & mudflap')} config={config} setField={setField} />
           <StrutEndSelector config={config} setField={setField} />
         </div>

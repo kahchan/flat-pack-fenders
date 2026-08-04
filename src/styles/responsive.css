@@ -46,6 +46,14 @@
     background: linear-gradient(to right, transparent, var(--draw-paper));
     pointer-events: none;
   }
+
+  /* WP25 §25.5: `.section-nav`'s sticky pin (app.css) targets the desk canvas-pane
+     scroll container. Here `.assembled-block` already owns the sticky top slot
+     (both tablet and phone below), so pinning the nav too would stack it underneath;
+     leave it in flow, as before. */
+  .section-nav {
+    position: static;
+  }
 }
 
 /* ── Tablet (760-1099px): overlay drawer ── */

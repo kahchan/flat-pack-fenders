@@ -19,7 +19,7 @@ export function StockSelector({ config, g, setField }: StockSelectorProps) {
 
   return (
     <div className="rail-group">
-      <div className="rail-group-label">Stock</div>
+      <div className="rail-cluster-label">Stock</div>
       <div className="option-list">
         {options.map((o) => (
           <OptionButton
