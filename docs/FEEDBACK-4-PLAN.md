@@ -405,6 +405,41 @@ mirrors the chord map, the prism lift and the new angles.
 
 ---
 
+## WP33 — `notes.ts` mirrors the pre-nudge mount position (§9.40)
+
+Found while implementing WP27 (`docs/FEEDBACK-3-PLAN.md`), not fixed there — flagged as an explicit
+known gap in that package's implementation notes and recorded here properly since it's the same class
+of defect this round exists to catch.
+
+WP27 made frame mounts move (`nudgeAway`, in `pattern.ts`) when a panel seam lands within `SEAM_CLEAR +
+8` mm of one, so the mount slot actually cut into the blank can sit up to 15 mm from its nominal
+position. `notes.ts`'s `mountPositions()` was not updated to match: it already documented itself,
+before this round, as mirroring `pattern.ts`'s private computation rather than reading a model field, and
+it is still a mirror — just of the pre-nudge number now. The assembly-steps copy ("CHAINSTAY BRIDGE at
+NNN mm") can therefore read up to 15 mm off the slot a builder will actually find on the cut sheet.
+
+This is the same bug class as round 4 §9.35 and §9.36 — two representations of one fact, hand-kept in
+sync, that drifted the moment one of them changed and nothing was watching. No existing test golden-pins
+engineering-notes mount numbers against `blank.slots`, so nothing caught it.
+
+**Not fixed here.** Left as its own package because the right fix is a genuine design choice, not a
+one-line patch: either give `mountPositions()` the same input `pattern.ts`'s nudge uses (duplicating the
+nudge logic a second time — exactly what this round exists to avoid), or have `buildBlank` export the
+post-nudge mount x alongside the slot itself and have `notes.ts` read that value instead of recomputing
+it. The latter is consistent with D1/D2's rule that a fact gets declared once and read everywhere else,
+but touches `BlankModel`'s shape, which is why it wasn't folded into WP27 as a side fix.
+
+### Verify
+
+- For a config where a mount is nudged (a seam within `SEAM_CLEAR + 8` mm of the mount's nominal
+  position — reachable by construction, since WP27's own tests already find seam/dart merges by sweep),
+  the mount position quoted in `notes.ts`'s assembly-steps text matches `blank.slots`' actual x within
+  0.05 mm.
+- A golden or snapshot test pins engineering-notes mount numbers against `blank.slots` directly, so this
+  class of drift fails a test the next time either side changes, rather than needing a human to notice.
+
+---
+
 ## Sequencing
 
 WP29 first and alone. WP30's floor is a function of `lap`, and `lap` is about to be produced by a new
