@@ -334,6 +334,94 @@ Page 1 of the round-3 output shows two defects not visible from the code:
   presets, but nothing enforces it.
 - No annotation extends outside its own tile's cropped bounds.
 
+### 27.4 Implementation notes (added after WP27 build)
+
+- **§27.1's re-verification confirmed both defects live, with different numbers than the table** —
+  expected, since round 4's `L`/`lap`/prism geometry landed after this table was written. Re-measured
+  against current code: the origin mismatch is unchanged (still exactly 6 mm, `hole-free-minimal`'s
+  drift is still `+6, +6, +6, +6, +6`), and `placeSeams`'s drift is still real but smaller in places and
+  larger in others — front commuter 700c now drifts `−17, −44, −71, −98` (was `−17, −44, −71, −98` in
+  the original table by coincidence; other presets moved, e.g. rear commuter 700c is now
+  `−30, −68, −68, −75, −75` against the table's `−30, −30, −40, −40, −50`). The mechanism (a shared
+  budget, satisficing search) is unchanged; only the geometry it operates on shifted. Confirmed via a
+  throwaway script comparing `placeSeams`'s output to the pinned-grid nominal before deleting it —
+  see the git history of this session for the numbers, not reproduced here since they were never a
+  target, just evidence the bug is real.
+- **`placeSeams` is gone; `seamGrid` replaces it.** Seam `i` is `tileOriginX(s) + i·(PW − LAP)`, full
+  stop — no search. `tileOriginX` moved into `defaults.ts` so `tiling.ts` and `pattern.ts` both call the
+  same function; the two grids cannot drift apart again because there is only one function that knows
+  the origin. `panelCount` changed shape too, from `totalW ≤ PW ? 1 : 1 + ceil((totalW − PW)/stepX)`
+  (measured from the tongue, not the tile origin) to a `reach = g.L − x0`-based formula that guarantees
+  the LAST panel's real cut extent is `≤ PW` **by construction** — the old formula relied on
+  `placeSeams`'s banked-slack budget to keep that true after seams had drifted; with no drift left to
+  bank against, the count itself has to be tight enough on its own. This moved `panelCount` up by one
+  on a few configs near a `ceil()` boundary (e.g. the `gravel-650b-hem-a4` fixture went from 6 panels
+  to 7) — a real, correct change, not a rounding artefact.
+- **Struts and mounts move; darts merge — both via a shared `nudgeAway` helper and `assembly.ts`'s
+  `mergedDartAt`.** `nudgeAway(x, seamXms, clear, min, max)` pushes a candidate position directly away
+  from every seam fastener column within `clear` mm, clamped to the feature's own legal range (a
+  strut's `span` window, ±15 mm for a mount). `strutFrac` is pushed AFTER nudging, not before — it is
+  what `isometric.ts` and `warnings.ts` place the 3D strut and the mount-distance warning from, so
+  pushing the pre-nudge fraction would have reintroduced exactly the two-sources-of-truth bug WP29
+  fixed, just for struts instead of dart fasteners. `notes.ts`'s `mountPositions()` was NOT updated to
+  match the nudge — it already documented itself as "mirrors the private computation... not as a model
+  field" before this package, and it stayed a mirror; the assembly-steps text can now read a mount
+  position up to ±15 mm off the actual cut slot when a seam happened to nudge it. Not caught by any
+  existing test (nothing golden-pins engineering-notes mount numbers against `blank.slots`). Flagged
+  here as a known, untested gap for whoever next touches `notes.ts` or panel-seam placement.
+- **The merged four-layer corner (`mergedDartAt` in `assembly.ts`) is routed through the assembly
+  layer, per this round's decision 1** — not a flat-only fix. It is scoped narrower than "any dart
+  within reach", though: `none` has no fastener to merge with (a scored channel, not a hole) and
+  `slot`'s punched tongue is a shaped cut a seam's plain hole row can't share, so both keep the seam's
+  own row, unmerged. `rivet`/`zip` merge within `SEAM_MERGE_DIST` (6 mm, matching `SEAM_CLEAR`) of the
+  dart's own centre, since their hole sits exactly there. `cinch` needed a wider reach —
+  `SEAM_MERGE_DIST + lap/2 + 6` — because its two holes sit `off = lap/2 + 6` mm OUTSIDE the dart centre
+  on each panel; the physical argument is that a seam this close puts dart panels `k−1` and `k` on
+  either side of the print splice too, so the SAME tie that closes the dart also spans the splice.
+  Verified reachable, not just theoretically defined: a sweep over every wheel/join/flap combination in
+  `seamGrid.test.ts` finds real merges for `rivet`, `zip`, AND `cinch` (the join every shipped preset
+  actually uses). No shipped preset happens to land one exactly, so the test sweeps rather than
+  hand-picking a case — the same reasoning WP19's fixture-of-real-presets tests already use.
+- **The merged hole radius bump (`FOUR_LAYER_R_BONUS`, +0.4 mm) applies to `cinch` too**, not just
+  `rivet`/`zip` — added late once it became clear `cinch` was the join that actually needed the merge
+  path exercised for real presets (§27's own default join). Consistent with "sized for four
+  thicknesses" applying regardless of which join produced the hole.
+- **§27.3's two rendering defects turned out to share one root cause and one fix**: `tiling.ts`'s
+  `rows`/`lastRowH` were sized off `bboxH` alone, with a bare `+ 12` fudge that the panel-seam
+  annotation (`yFreeB(xm) + 9`, plus its own text height) sat right at the edge of. Replacing `bboxH`
+  with `contentH = max(bboxH, labelMaxY + 3)` and the fudge with a named `TAIL_MARGIN = 20` fixed the
+  clipped label directly; the ruler needed no separate fix once `lastRowH`/`croppedTile`'s `h` reliably
+  left room below content, because its position was always relative to `h`, not to `bboxH`.
+- **One real wrinkle**: `buildPrintLayout` always adds `PRINT_CAPTION_H` (6 mm) on top of `lastRowH`
+  before packing it onto a physical `PH`-tall page, so the true ceiling `lastRowH` can be is
+  `PH − PRINT_CAPTION_H` (174 mm), not `PH` (180 mm) — a pre-existing gap the old, smaller `+ 12` margin
+  never reached, but the new `20` mm one can, on `gravel-650b` and `front-gravel-650b` specifically
+  (their real content, `TAIL_MARGIN` included, wants 178.1 mm against a 174 mm ceiling). Missing this
+  cap reintroduced the exact overflow `printLayout.test.ts`'s "every slot fits the page height it was
+  packed onto" test exists to catch (185.1 mm > 180 mm) the first time this was tried. Fixed by capping
+  `lastRowH` at `PH − PRINT_CAPTION_H`. That cap then leaves those same two presets only ~16 mm of real
+  margin instead of the intended 20, so the ruler's own internal offsets (`h − 10`/`h − 14` originally)
+  were tightened to `h − 5`/`h − 9` to fit inside whatever margin is actually available — verified
+  against every preset, including the two tight ones, in `seamGrid.test.ts`. A future package that
+  grows `contentH` further (more annotation, a wider ruler) should re-check this margin arithmetic
+  rather than assume 20 mm is always free; it isn't, on two shipped presets today.
+- **`isometric.ts` was touched exactly once, incidentally**: `buildAssembly(s, g).features` is shared
+  between `pattern.ts` and `isometric.ts`'s fastener-drawing loop, and adding the merge/four-layer
+  machinery didn't add a new feature `kind` (it reuses `'hole'`, just with a bumped `r` and a `fourLayer`
+  flag isometric.ts ignores), so no change was needed there at all — the preview draws a merged
+  four-layer hole at its real (slightly larger) radius automatically, for free, because it already
+  draws every `'hole'` feature `buildAssembly` produces. The outstanding surface-geometry item from
+  WP29 (`pf()`, the facet loop, rails, outline, wheel, struts, mudflap still computing their own
+  geometry rather than consuming assembly panels) remains untouched and out of scope, as directed.
+- **Tests**: `src/fender/__tests__/seamGrid.test.ts`, new. Covers the Verify list directly — seam
+  position within 0.05 mm of its tile boundary (per preset, across a wheel/lead/trail length sweep, and
+  at a handful of `stepX`-boundary-adjacent lengths), `panelCount === tiling.cols` (per preset and
+  swept), no annotation outside its tile's cropped bounds, and the ruler's topmost extent clearing every
+  label — plus the merge-specific pair described above. `pattern.test.ts`'s own seam/strut/mount
+  clearance test (`seam fastener holes clear every other hole/slot by at least SEAM_CLEAR`) now passes
+  for `rear-700c` too, which needed `nudgeAway`'s ±8 mm padding on top of `SEAM_CLEAR` to clear — it was
+  failing at ~2.7 mm of clearance before struts/mounts were made to yield.
+
 ---
 
 ## WP24 — Numbers you can type, and radius as a real state ➡️ MOVED to FEEDBACK-5-PLAN.md

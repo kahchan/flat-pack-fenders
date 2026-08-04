@@ -40,12 +40,55 @@ export interface DartFeature {
   w?: number;
   /** Depth extent from `depth` toward the fold, mm — tongue and slot. */
   reach?: number;
+  /** WP27 §27.2: set when this dart's fastener also closes a panel seam that landed on
+   * top of it — the "four-layer corner". `pattern.ts` skips drawing that seam's own
+   * fastener row when it sees this, and `r` above is already the bumped radius. */
+  fourLayer?: boolean;
 }
 
 export interface Assembly {
   /** Fold-line mid angle of each panel, indexed 0..n-1. */
   panelMid: number[];
   features: DartFeature[];
+}
+
+/**
+ * WP27 §27.2: how close a panel-seam fastener column has to land to a dart before the
+ * two stop being separately fastenable and have to merge into one "four-layer corner"
+ * instead — "rather than two holes a few mm apart". Matches the `SEAM_CLEAR` buffer
+ * `pattern.ts` already keeps between unrelated fastener columns, so a seam that clears
+ * every dart by this much never needed the merge in the first place.
+ */
+export const SEAM_MERGE_DIST = 6;
+
+/** Extra hole radius at a merged four-layer corner — four thicknesses of material
+ * through one fastener rather than two (round 3 §27.2: "a hole sized for four
+ * thicknesses"). */
+export const FOUR_LAYER_R_BONUS = 0.4;
+
+/**
+ * The dart index a panel-seam fastener column at flat `x` lands on top of, within reach
+ * of that dart's own fastener — or `null` if it clears every dart. `x` should be the
+ * seam's own fastener-row centre (`seamX + LAP/2`, matching `pattern.ts`), not the raw
+ * cut line.
+ *
+ * `rivet`/`zip` put a single through-lap hole exactly at the dart's own centre
+ * (`k·pitch`), so `SEAM_MERGE_DIST` alone is the reach. `cinch` puts ONE hole on each of
+ * the two panels either side of the dart, `lap/2 + 6` mm outside the dart's own centre
+ * (`off`, in the dart loop above) — physically, that tie already spans the dart AND (if
+ * the seam lands here) the print-panel splice at the same place, since a seam this close
+ * puts dart panel `k-1` and `k` on either side of the print seam too, so widening the
+ * reach by that same `off` still finds one merge-able fastener, not a second, unrelated
+ * one further down the sheet. `none` pierces nothing at the dart to merge with, and
+ * `slot`'s tongue/receiving-slot is a shaped cut, not a plain hole a seam's row could
+ * share — those two keep the seam's own fastener row, unmerged, at that location.
+ */
+export function mergedDartAt(s: FenderConfig, g: Geometry, x: number): number | null {
+  if (g.n <= 1 || s.join === 'none' || s.join === 'slot') return null;
+  const k = Math.round(x / g.pitch);
+  if (k < 1 || k > g.n - 1) return null;
+  const reach = SEAM_MERGE_DIST + (s.join === 'cinch' ? g.lap / 2 + 6 : 0);
+  return Math.abs(x - k * g.pitch) <= reach ? k : null;
 }
 
 /** Mid angle of panel `p`'s fold chord — where its facet is tangent to the clearance
@@ -100,7 +143,11 @@ export function tongueReach(g: Geometry): number {
  * seams use — so for dart `k`, panel `k-1` is the outer layer and panel `k` the inner.
  * Anything passing through the lap lists them in that order.
  */
-export function buildAssembly(s: FenderConfig, g: Geometry): Assembly {
+export function buildAssembly(
+  s: FenderConfig,
+  g: Geometry,
+  mergedDarts: ReadonlySet<number> = new Set()
+): Assembly {
   const panelMid: number[] = [];
   for (let p = 0; p < g.n; p++) panelMid.push(panelMidAngle(g, p));
 
@@ -134,6 +181,11 @@ export function buildAssembly(s: FenderConfig, g: Geometry): Assembly {
       const half = g.faceted ? Math.tan(g.dA / 2) : g.dA / 2;
       const back = (sign: number) =>
         g.faceted ? Math.atan(sign * (half - off / rMid)) : sign * (half - off / rMid);
+      // WP27 §27.2: at a merged corner this tie is also what closes the print-panel
+      // seam (see `mergedDartAt`'s doc comment) — a real fourth layer through the same
+      // two holes, so they get the same radius bump `rivet`/`zip` do.
+      const cinchFourLayer = mergedDarts.has(k);
+      const cinchR = 2 + (cinchFourLayer ? FOUR_LAYER_R_BONUS : 0);
       for (const side of sides) {
         features.push(
           {
@@ -143,7 +195,8 @@ export function buildAssembly(s: FenderConfig, g: Geometry): Assembly {
             aa: panelMidAngle(g, k - 1) + back(1),
             depth,
             layers: [k - 1],
-            r: 2
+            r: cinchR,
+            fourLayer: cinchFourLayer
           },
           {
             kind: 'hole',
@@ -152,7 +205,8 @@ export function buildAssembly(s: FenderConfig, g: Geometry): Assembly {
             aa: panelMidAngle(g, k) + back(-1),
             depth,
             layers: [k],
-            r: 2
+            r: cinchR,
+            fourLayer: cinchFourLayer
           }
         );
       }
@@ -183,10 +237,11 @@ export function buildAssembly(s: FenderConfig, g: Geometry): Assembly {
     // rivet, zip — through the lap. One feature per hole; `develop.ts` emits it twice,
     // once per layer, at each panel's own developed position.
     const depths = s.join === 'zip' ? ZIP_DEPTHS : RIVET_DEPTHS;
-    const r = s.join === 'zip' ? 2 : 1.6;
+    const fourLayer = mergedDarts.has(k);
+    const r = (s.join === 'zip' ? 2 : 1.6) + (fourLayer ? FOUR_LAYER_R_BONUS : 0);
     for (const depth of depths) {
       for (const side of sides) {
-        features.push({ kind: 'hole', dart: k, side, aa, depth, layers: [k - 1, k], r });
+        features.push({ kind: 'hole', dart: k, side, aa, depth, layers: [k - 1, k], r, fourLayer });
       }
     }
   }

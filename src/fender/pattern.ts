@@ -1,5 +1,5 @@
-import { LAP, PW, TONGUE_L, TONGUE_W, f0, f1 } from './defaults';
-import { buildAssembly } from './assembly';
+import { LAP, PW, TONGUE_L, TONGUE_W, f0, f1, tileOriginX } from './defaults';
+import { buildAssembly, mergedDartAt } from './assembly';
 import { develop, flatY } from './develop';
 import { crownAt, geo } from './geometry';
 import type { BlankModel, FenderConfig, Geometry, Hole, Label, Path, Slot } from './types';
@@ -13,69 +13,56 @@ interface Event {
 }
 
 /** Edge-to-edge clearance a seam's fastener column should keep from any other feature
- * column (dart fasteners, strut fasteners, mount slots, the mudflap holes) — WP19
- * §19.3/§19.4's "clear window" rule. Matches the 6 mm buffer the dart columns themselves
- * already use off their own centreline (`cinch`'s `off = lap/2 + 6`, below). */
+ * column (dart fasteners, strut fasteners, frame mounts) — WP19 §19.3/§19.4's original
+ * "clear window" rule, kept as the target `nudgeAway` (below) pushes struts and mounts
+ * to clear now that seams no longer move to dodge them (WP27 §27.2, decision C10).
+ * Matches the 6 mm buffer the dart columns themselves already use off their own
+ * centreline (`cinch`'s `off = lap/2 + 6`, below). */
 export const SEAM_CLEAR = 6;
 
 /**
- * WP19 §19.3/§19.4: place each seam left to right, choosing where in its available
- * window it falls to maximise clearance from every dart/strut/mount column, rather than
- * nudging one offending seam at a time (which just relocates the collision onto whoever
- * is now nearest).
+ * WP27 §27.2 (decision C10): a seam is always exactly at its tile boundary now — no
+ * search, no drift. `placeSeams` (round 3, WP19 §19.3/§19.4) let each seam slide up to
+ * 40 mm earlier than its nominal grid position to dodge dart/strut/mount columns, which
+ * silently broke the WP19 B1 invariant it was built next to ("one printed tile IS one
+ * material panel"): a seam that moved was no longer where the page said it was. Deleted
+ * outright rather than patched — the fix is to move whatever CAN move (struts, mounts;
+ * `nudgeAway` below) and merge with whatever can't (a dart; `mergedDartAt` in
+ * `assembly.ts`), not to keep searching for a seam position that dodges everything.
  *
- * Each seam's ceiling is `prevBoundary + stepX` — the nominal, fully-uniform grid
- * position relative to wherever the *actual* previous boundary landed — so panel `i`'s
- * cut extent (this seam, plus its lap, back to the previous boundary) can never exceed
- * `PW` no matter how far earlier seams have drifted: the seam only ever moves earlier
- * than its ceiling, never later, so that invariant holds by construction.
- *
- * The one thing a purely local "never later than ceiling" rule doesn't bound is the
- * LAST panel: moving every seam earlier pushes more of the blank into that final
- * uncapped panel, which can overflow `PW` even though every seam individually obeyed its
- * own ceiling. `budget` is exactly the slack panelCount's own `ceil()` already banked for
- * this — how much smaller than `PW` the last panel is at zero drift — and capping total
- * earliness (summed across every seam) to that budget makes the last panel's extent
- * `extentAtZeroDrift + totalDrift`, which stays `≤ PW` for the same reason the first
- * `panelCount` windows covered the blank in the first place. No seam ever needs
- * relocating after the fact.
+ * `panelCount` is windows of `stepX` covering the blank measured from `tileOriginX` —
+ * the SAME origin `tiling.ts` tiles from, so a seam's own grid and the print grid are
+ * one grid, not two that happen to agree. Sized so the trailing panel's real cut extent
+ * (from the last seam to the tail, no lap on that end) never exceeds `PW`: window `i`
+ * covers `[x0 + i·stepX, x0 + i·stepX + PW]`, and `panelCount` is the smallest count
+ * whose last window's far edge reaches `g.L` — so `g.L − (x0 + (panelCount−1)·stepX) ≤
+ * PW` by construction, not by a banked-slack budget re-checked after the fact.
  */
-function placeSeams(panelCount: number, stepX: number, startX: number, totalW: number, dangerXs: number[]): number[] {
-  const PER_SEAM_SLACK = 40; // mm a single seam may sit short of its own ceiling
-  let budget = PW + (panelCount - 1) * stepX - totalW; // §19.2's own banked slack
-  const seams: number[] = [];
-  let prevBoundary = startX;
+function seamGrid(g: Geometry, x0: number, stepX: number): { panelCount: number; seamXs: number[] } {
+  const reach = g.L - x0;
+  const panelCount = reach <= PW ? 1 : 1 + Math.ceil((reach - PW) / stepX);
+  const seamXs: number[] = [];
+  for (let i = 1; i < panelCount; i++) seamXs.push(x0 + i * stepX);
+  return { panelCount, seamXs };
+}
 
-  for (let i = 1; i < panelCount; i++) {
-    const ceiling = prevBoundary + stepX;
-    const floor = ceiling - Math.min(PER_SEAM_SLACK, budget);
-    // Satisficing, not maximising: the first position (searching from `ceiling`
-    // backwards, so least drift first) that clears every danger column by `TARGET` is
-    // good enough and stops the search there. Grabbing the single clearest spot in the
-    // whole window instead would happily spend the entire budget on a seam that only
-    // needed a few mm of it, starving whichever seam further down the blank actually
-    // needs the room — this is a shared budget, not five independent ones.
-    const TARGET = SEAM_CLEAR + 5; // padding for the two largest hole radii on the sheet
-    let best = ceiling;
-    let bestClearance = -Infinity;
-    for (let x = ceiling; x >= floor; x -= 0.5) {
-      // The fastener row sits at the lap's centre (`xm = x + LAP/2`, matching the
-      // Panel seams block below), not at the cut line itself — clearance has to be
-      // judged from where the holes actually land.
-      const xm = x + LAP / 2;
-      const clearance = dangerXs.reduce((worst, d) => Math.min(worst, Math.abs(xm - d)), Infinity);
-      if (clearance > bestClearance) {
-        bestClearance = clearance;
-        best = x;
-      }
-      if (bestClearance >= TARGET) break;
+/**
+ * WP27 §27.2: with seams pinned, whatever still needs to dodge one has to move itself —
+ * struts (their `span` fraction) and frame mounts (their placement along the crown) both
+ * have real freedom, unlike a seam (now fixed to the page grid) or a dart (evenly spaced
+ * by construction, see `mergedDartAt`). Pushes `x` directly away from any seam column
+ * inside `clear` mm, clamped to `[min, max]` so the nudge never leaves the feature's own
+ * legal range (a strut's span, a mount's reach along the crown).
+ */
+function nudgeAway(x: number, seamXs: number[], clear: number, min: number, max: number): number {
+  for (const xm of seamXs) {
+    const d = x - xm;
+    if (Math.abs(d) < clear) {
+      const dir = d >= 0 ? 1 : -1;
+      x = Math.max(min, Math.min(max, xm + dir * clear));
     }
-    seams.push(best);
-    budget -= ceiling - best;
-    prevBoundary = best;
   }
-
-  return seams;
+  return x;
 }
 
 /**
@@ -176,12 +163,26 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
   const lapArrows: Path[] = [];
   const extraLabels: Label[] = [];
 
-  // WP19 §19.3/§19.4: x-columns a panel seam must stay clear of — dart fastener
-  // columns, strut fastener columns, and frame-mount slots. Collected as we build each
-  // feature, then used once (Panel seams, below) to phase the seam grid away from all of
-  // them at once, since a seam that dodges a dart column but lands on a strut is not
-  // fixed, just moved.
-  const dangerXs: number[] = [];
+  // ── Panel-seam grid (WP27 §27.2, decision C10) ──────────────────────────────
+  // Computed up front, before anything that might need to dodge it, because it no
+  // longer moves: `x0` is the SAME origin `tiling.ts` tiles from, so a seam and the
+  // print-tile boundary it belongs to are one grid now, not two that happened to agree.
+  const x0 = tileOriginX(s);
+  const stepX = PW - LAP;
+  const { panelCount, seamXs } = s.stock === 'a4' ? seamGrid(g, x0, stepX) : { panelCount: 1, seamXs: [] as number[] };
+  // The fastener row sits at the lap's own centre, not the cut line — everything that
+  // has to know where a seam actually clamps down (the merge check, the strut/mount
+  // nudge) works in this, not `seamXs`.
+  const seamXms = seamXs.map((x) => x + LAP / 2);
+  // WP27 §27.2, point 2: darts can't move, so where a seam column lands on one, the
+  // dart's own fastener has to serve both jobs instead of drawing two holes a few mm
+  // apart. Decided once here, up front, so `buildAssembly` can size that hole for four
+  // thicknesses and the seam loop (below) knows to skip its own row there.
+  const mergedDarts = new Set<number>();
+  for (const xm of seamXms) {
+    const k = mergedDartAt(s, g, xm);
+    if (k !== null) mergedDarts.add(k);
+  }
 
   // ── Hem ────────────────────────────────────────────────────────────────────
   if (g.hem > 0) {
@@ -210,7 +211,7 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
   // from round 4 §9.35 — the flat position and the preview position are now the same
   // number seen twice, so they cannot disagree the way they did when each was written
   // out by hand.
-  const flat = develop(g, buildAssembly(s, g));
+  const flat = develop(g, buildAssembly(s, g, mergedDarts));
 
   for (const ff of flat) {
     if (ff.kind === 'score') {
@@ -224,7 +225,6 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
     }
 
     if (ff.kind === 'hole') {
-      dangerXs.push(ff.x);
       holes.push({ cx: f1(ff.x), cy: f1(ff.y), r: ff.r ?? 2 });
       continue;
     }
@@ -239,7 +239,6 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
     const xFar = ff.xFar ?? ff.x;
     const yNear = ff.y;
     const yFar = flatY(g, xFar, ff.depth + reach, ff.side);
-    dangerXs.push(xNear);
 
     if (ff.kind === 'tongueCut') {
       // A separate release-cut subpath, not part of the dart slit — left open at the
@@ -275,10 +274,14 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
         ];
 
   for (const m of mounts) {
-    dangerXs.push(m.x - 8, m.x + 8);
-    slots.push({ x: f1(m.x - 8), y: f1(g.yc - 2.5), w: 16, h: 5 });
+    // WP27 §27.2 — a mount has real freedom along the crown (no two frames put their
+    // bridges the same distance apart anyway, per the comment above), so it is the one
+    // that moves when a seam lands on it, not the other way round. Bounded to ±15 mm of
+    // its intended position so the slot still lands close enough to the real bridge.
+    const mx = nudgeAway(m.x, seamXms, SEAM_CLEAR + 8, m.x - 15, m.x + 15);
+    slots.push({ x: f1(mx - 8), y: f1(g.yc - 2.5), w: 16, h: 5 });
     extraLabels.push({
-      x: f1(m.x),
+      x: f1(mx),
       y: f1(g.yc - 8),
       size: 4.5,
       fill: 'var(--draw-label-dim)',
@@ -299,9 +302,15 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
       s.struts === 1
         ? (span[0] + span[1]) / 2
         : span[0] + ((span[1] - span[0]) * i) / (s.struts - 1);
-    strutFrac.push(fr);
-    const x = g.L * fr;
-    dangerXs.push(x - 5, x + 5);
+    // WP27 §27.2 — a strut has real freedom too: its own `span` fraction, not a fixed
+    // point, so it is the one that yields to a seam rather than the seam searching for
+    // a gap. Bounded to the same `span` window every strut is placed within. Pushed
+    // AFTER nudging — `strutFrac` is what `isometric.ts` and `warnings.ts` place the
+    // strut from, so it has to be where the hole actually ended up, not the pre-nudge
+    // intent, or the preview would draw a strut the flat pattern doesn't agree with
+    // (the exact class of bug WP29 fixed for dart fasteners).
+    const x = nudgeAway(g.L * fr, seamXms, SEAM_CLEAR + 8, g.L * span[0], g.L * span[1]);
+    strutFrac.push(x / g.L);
     holes.push(
       { cx: f1(x - 5), cy: f1(yFreeT(x) + inset), r: 2.5 },
       { cx: f1(x + 5), cy: f1(yFreeT(x) + inset), r: 2.5 }
@@ -313,7 +322,6 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
   }
 
   if (s.mudflap > 0) {
-    dangerXs.push(g.L - 10);
     for (const k of [-0.3, 0, 0.3]) {
       holes.push({ cx: f1(g.L - 10), cy: f1(g.yc + g.crownTail * k), r: 2 });
     }
@@ -331,34 +339,32 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
   // constant. Lap direction matters more than fastener choice: forward panel on top —
   // panel `i` (smaller x, upstream) is the top layer and panel `i + 1` (downstream) goes
   // under it.
-  const stepX = PW - LAP;
-  const totalW = g.L + (s.tongue ? TONGUE_L : 0);
-  let panelCount = 1;
-  if (s.stock === 'a4') {
-    panelCount = totalW <= PW ? 1 : 1 + Math.ceil((totalW - PW) / stepX);
-    const tongueOff = s.tongue ? TONGUE_L : 0;
+  //
+  // WP27 §27.2 (decision C10): `x`/`xm` come straight from `seamXs`/`seamXms`, computed
+  // once at the top of this function — no search, no drift. A seam is always exactly at
+  // its tile boundary.
+  for (let i = 1; i < panelCount; i++) {
+    const x = seamXs[i - 1]!;
+    const xm = seamXms[i - 1]!;
+    seams.push({
+      d: `M ${f1(x)},${f1(yFreeT(x) - 5)} L ${f1(x)},${f1(yFreeB(x) + 5)}`
+    });
+    lapLines.push({
+      d:
+        `M ${f1(x + LAP)},${f1(yFreeT(x + LAP) - 5)}` +
+        ` L ${f1(x + LAP)},${f1(yFreeB(x + LAP) + 5)}`
+    });
 
-    // §19.3/§19.4 — place every seam left to right, dodging dart/strut/mount columns
-    // as it goes (see `placeSeams`'s doc comment for why this is safe against §19.2's
-    // per-panel and last-panel invariants without re-checking them after the fact).
-    const placed = placeSeams(panelCount, stepX, -tongueOff, totalW, dangerXs);
-
-    for (let i = 1; i < panelCount; i++) {
-      const x = placed[i - 1]!;
-      seams.push({
-        d: `M ${f1(x)},${f1(yFreeT(x) - 5)} L ${f1(x)},${f1(yFreeB(x) + 5)}`
-      });
-      lapLines.push({
-        d:
-          `M ${f1(x + LAP)},${f1(yFreeT(x + LAP) - 5)}` +
-          ` L ${f1(x + LAP)},${f1(yFreeB(x + LAP) + 5)}`
-      });
-
-      const xm = x + LAP / 2;
-      // WP23 §23.3 — a plain fastener row through both panel layers, same for every
-      // join: the panel lap is a separate joint from the dart lap, so it never grew a
-      // tongue-and-slot of its own, and the old `slot` join's clip (removed with it,
-      // see parts.ts) was the only reason this used to cut slots here instead of holes.
+    // WP27 §27.2, point 2 — where this seam coincides with a dart, the dart's own
+    // fastener (bumped for four thicknesses in `assembly.ts`) closes the lap and the
+    // dart together, and drilling this row too would put two hole columns a few mm
+    // apart instead of one. Otherwise, a plain fastener row through both panel layers,
+    // same for every join: the panel lap is a separate joint from the dart lap, so it
+    // never grew a tongue-and-slot of its own, and the old `slot` join's clip (removed
+    // with it, see parts.ts) was the only reason this used to cut slots here instead of
+    // holes.
+    const mergedDart = mergedDartAt(s, g, xm);
+    if (mergedDart === null) {
       const rowN = Math.max(3, Math.floor(g.Wd / 30));
       for (let j = 0; j <= rowN; j++) {
         const y = yFreeT(xm) + 7 + ((yFreeB(xm) - yFreeT(xm) - 14) * j) / rowN;
@@ -368,38 +374,41 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
           r: s.join === 'rivet' ? 1.6 : 2
         });
       }
-
-      extraLabels.push({
-        x: f1(xm),
-        y: f1(yFreeT(xm) - 9),
-        size: 4.5,
-        fill: 'var(--draw-seam)',
-        anchor: 'middle',
-        text: `SEAM ${i}: CUT PANEL ${i} TO HERE +${LAP} MM LAP`
-      });
-
-      // WP19 §19.5 — "over/under" used to describe the drawing plane, not the built
-      // part. Restated in built terms: the upstream panel sits on the wheel side once
-      // assembled, so water crossing the joint runs over it rather than into the seam.
-      extraLabels.push({
-        x: f1(xm),
-        y: f1(yFreeB(xm) + 9),
-        size: 4.5,
-        fill: 'var(--draw-seam)',
-        anchor: 'middle',
-        text: `PANEL ${i}: WHEEL SIDE OF THE JOINT, WATER RUNS OVER IT`
-      });
-      const arrowY = g.yc + 8;
-      const arrowHalf = 6;
-      const head = 2.5;
-      const ax0 = xm - arrowHalf;
-      const ax1 = xm + arrowHalf;
-      lapArrows.push({
-        d:
-          `M ${f1(ax0)},${f1(arrowY)} L ${f1(ax1)},${f1(arrowY)}` +
-          ` M ${f1(ax1 - head)},${f1(arrowY - head)} L ${f1(ax1)},${f1(arrowY)} L ${f1(ax1 - head)},${f1(arrowY + head)}`
-      });
     }
+
+    extraLabels.push({
+      x: f1(xm),
+      y: f1(yFreeT(xm) - 9),
+      size: 4.5,
+      fill: 'var(--draw-seam)',
+      anchor: 'middle',
+      text: `SEAM ${i}: CUT PANEL ${i} TO HERE +${LAP} MM LAP`
+    });
+
+    // WP19 §19.5 — "over/under" used to describe the drawing plane, not the built
+    // part. Restated in built terms: the upstream panel sits on the wheel side once
+    // assembled, so water crossing the joint runs over it rather than into the seam.
+    extraLabels.push({
+      x: f1(xm),
+      y: f1(yFreeB(xm) + 9),
+      size: 4.5,
+      fill: 'var(--draw-seam)',
+      anchor: 'middle',
+      text:
+        mergedDart === null
+          ? `PANEL ${i}: WHEEL SIDE OF THE JOINT, WATER RUNS OVER IT`
+          : `PANEL ${i}: FOUR-LAYER CORNER AT DART ${mergedDart} — ITS FASTENER CLOSES THIS SEAM TOO`
+    });
+    const arrowY = g.yc + 8;
+    const arrowHalf = 6;
+    const head = 2.5;
+    const ax0 = xm - arrowHalf;
+    const ax1 = xm + arrowHalf;
+    lapArrows.push({
+      d:
+        `M ${f1(ax0)},${f1(arrowY)} L ${f1(ax1)},${f1(arrowY)}` +
+        ` M ${f1(ax1 - head)},${f1(arrowY - head)} L ${f1(ax1)},${f1(arrowY)} L ${f1(ax1 - head)},${f1(arrowY + head)}`
+    });
   }
 
   // ── Labels ─────────────────────────────────────────────────────────────────
@@ -465,7 +474,6 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
   // ── Frame ──────────────────────────────────────────────────────────────────
   const bboxW = g.L + (s.tongue ? TONGUE_L : 0);
   const bboxH = g.Wd;
-  const x0 = (s.tongue ? -TONGUE_L : 0) - 6;
   const viewBox =
     `${f1(x0 - VIEW_MARGIN)} ${f1(-VIEW_MARGIN)}` +
     ` ${f1(bboxW + VIEW_MARGIN * 2 + 12)} ${f1(bboxH + VIEW_MARGIN * 2)}`;

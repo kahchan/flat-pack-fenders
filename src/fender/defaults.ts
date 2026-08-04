@@ -66,6 +66,17 @@ export const PH = 180;
 export const LAP = 20;
 
 /**
+ * WP27 §27.2: the ONE x-origin the print-tile grid (`tiling.ts`) and the panel-seam
+ * grid (`pattern.ts`) share. Round 3 shipped two independent constants for what was
+ * meant to be the same grid — `tiling.ts`'s tile origin already carried this `-6`, but
+ * `pattern.ts`'s seam grid started 6 mm later, so even a seam that never drifted sat
+ * 6 mm off the page boundary WP19 §19.1 promised it would be on. Both now call this.
+ */
+export function tileOriginX(s: FenderConfig): number {
+  return (s.tongue ? -TONGUE_L : 0) - 6;
+}
+
+/**
  * `stock: 'single'` has no panels — the fender is one piece, however many A4 tiles it
  * takes to print. Those tiles still need a plain registration overlap so taped paper
  * lines up, but there's no fastening lap to make it do double duty, so it keeps its own

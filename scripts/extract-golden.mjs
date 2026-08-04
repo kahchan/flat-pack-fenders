@@ -29,35 +29,46 @@ const BEVEL_L = 20;
 // mirrors src/fender/defaults.ts's LAP exactly.
 const LAP = 20;
 const SEAM_CLEAR = 6;
+const SEAM_MERGE_DIST = 6;
+const FOUR_LAYER_R_BONUS = 0.4;
 
-// WP19 §19.3/§19.4 — mirrors src/fender/pattern.ts's `placeSeams` exactly: place each
-// seam left to right, dodging dart/strut/mount columns, capped so neither an individual
-// panel nor the last panel can ever exceed PW (see that function's doc comment for why).
-function placeSeams(panelCount, stepX, startX, totalW, dangerXs) {
-  const PER_SEAM_SLACK = 40;
-  let budget = PW + (panelCount - 1) * stepX - totalW;
-  const seams = [];
-  let prevBoundary = startX;
-  for (let i = 1; i < panelCount; i++) {
-    const ceiling = prevBoundary + stepX;
-    const floor = ceiling - Math.min(PER_SEAM_SLACK, budget);
-    const TARGET = SEAM_CLEAR + 5;
-    let best = ceiling;
-    let bestClearance = -Infinity;
-    for (let x = ceiling; x >= floor; x -= 0.5) {
-      const xm = x + LAP / 2;
-      const clearance = dangerXs.reduce((worst, d) => Math.min(worst, Math.abs(xm - d)), Infinity);
-      if (clearance > bestClearance) {
-        bestClearance = clearance;
-        best = x;
-      }
-      if (bestClearance >= TARGET) break;
+// WP27 §27.2 — mirrors src/fender/defaults.ts's `tileOriginX` exactly: the ONE origin
+// the print-tile grid and the panel-seam grid share.
+function tileOriginX(s) {
+  return (s.tongue ? -TONGUE_L : 0) - 6;
+}
+
+// WP27 §27.2 — mirrors src/fender/pattern.ts's `seamGrid` exactly: a seam is always
+// exactly at its tile boundary, no search, no drift. `placeSeams` (round 3) is gone.
+function seamGridRef(g, x0, stepX) {
+  const reach = g.L - x0;
+  const panelCount = reach <= PW ? 1 : 1 + Math.ceil((reach - PW) / stepX);
+  const seamXs = [];
+  for (let i = 1; i < panelCount; i++) seamXs.push(x0 + i * stepX);
+  return { panelCount, seamXs };
+}
+
+// WP27 §27.2 — mirrors src/fender/pattern.ts's `nudgeAway` exactly: struts and mounts
+// move to clear a pinned seam column, since the seam and the dart (below) no longer can.
+function nudgeAwayRef(x, seamXms, clear, min, max) {
+  for (const xm of seamXms) {
+    const d = x - xm;
+    if (Math.abs(d) < clear) {
+      const dir = d >= 0 ? 1 : -1;
+      x = Math.max(min, Math.min(max, xm + dir * clear));
     }
-    seams.push(best);
-    budget -= ceiling - best;
-    prevBoundary = best;
   }
-  return seams;
+  return x;
+}
+
+// WP27 §27.2 — mirrors src/fender/assembly.ts's `mergedDartAt` exactly: the dart a seam
+// column lands on top of, or null if it clears every dart by enough to fasten alone.
+function mergedDartAtRef(s, g, x) {
+  if (g.n <= 1 || s.join === 'none' || s.join === 'slot') return null;
+  const k = Math.round(x / g.pitch);
+  if (k < 1 || k > g.n - 1) return null;
+  const reach = SEAM_MERGE_DIST + (s.join === 'cinch' ? g.lap / 2 + 6 : 0);
+  return Math.abs(x - k * g.pitch) <= reach ? k : null;
 }
 // PLAN §14 — same divergence, this time for the on-screen viewBoxes: the design sizes
 // both `xsec()` and `isometric()` viewBoxes from the fender's own extent, which rescales
@@ -203,7 +214,22 @@ function blank(s) {
   ];
 
   const holes = [], slots = [], scoreLines = [], lapLines = [], lapArrows = [];
-  const dangerXs = [];
+
+  // WP27 §27.2 — computed up front, mirroring src/fender/pattern.ts: the seam grid is
+  // pinned now, not searched for, so it has to exist before the dart loop can know which
+  // darts merge with it.
+  const x0 = tileOriginX(s);
+  const stepX = PW - LAP;
+  const seamGridResult = s.stock === 'a4' ? seamGridRef(g, x0, stepX) : { panelCount: 1, seamXs: [] };
+  const panelCount = seamGridResult.panelCount;
+  const seamXs = seamGridResult.seamXs;
+  const seamXms = seamXs.map((x) => x + LAP / 2);
+  const mergedDarts = new Set();
+  for (const xm of seamXms) {
+    const k = mergedDartAtRef(s, g, xm);
+    if (k !== null) mergedDarts.add(k);
+  }
+
   if (g.hem > 0) {
     const hemT = (x) => yFreeT(x) + g.hem, hemB = (x) => yFreeB(x) - g.hem;
     const xs = g.knee > 0 && g.knee < g.L ? [0, g.knee, g.L] : [0, g.L];
@@ -242,11 +268,13 @@ function blank(s) {
       // `off` is a FLAT clearance, converted through the same chord map.
       const half = g.faceted ? Math.tan(g.dA / 2) : g.dA / 2;
       const back = (sign) => (g.faceted ? Math.atan(sign * (half - off / rMid)) : sign * (half - off / rMid));
+      // WP27 §27.2 — a merged four-layer corner bumps the radius, mirroring
+      // src/fender/assembly.ts exactly.
+      const cinchR = 2 + (mergedDarts.has(k) ? FOUR_LAYER_R_BONUS : 0);
       for (const side of [0, 3]) {
         for (const [ao, panel] of [[panelMid(k - 1) + back(1), k - 1], [panelMid(k) + back(-1), k]]) {
           const x = flatXAt(panel, ao, depth);
-          dangerXs.push(x);
-          holes.push({ cx: f1(x), cy: f1(flatYAt(x, depth, side)), r: 2 });
+          holes.push({ cx: f1(x), cy: f1(flatYAt(x, depth, side)), r: cinchR });
         }
       }
       continue;
@@ -261,7 +289,6 @@ function blank(s) {
           const xFar = flatXAt(panel, aa, d0 + reach);
           const yNear = flatYAt(xNear, d0, side);
           const yFar = flatYAt(xFar, d0 + reach, side);
-          dangerXs.push(xNear);
           if (layerIndex === 0) {
             outline += ` M ${f1(xNear - tw / 2)},${f1(yNear)} L ${f1(xFar - tw / 2)},${f1(yFar)} L ${f1(xFar + tw / 2)},${f1(yFar)} L ${f1(xNear + tw / 2)},${f1(yNear)}`;
             scoreLines.push({ d: `M ${f1(xNear - tw / 2)},${f1(yNear)} L ${f1(xNear + tw / 2)},${f1(yNear)}` });
@@ -273,12 +300,13 @@ function blank(s) {
       continue;
     }
     const depths = s.join === 'zip' ? [3.5, 8.5] : [4.5];
-    const r = s.join === 'zip' ? 2 : 1.6;
+    // WP27 §27.2 — a merged four-layer corner bumps the radius, mirroring
+    // src/fender/assembly.ts exactly.
+    const r = (s.join === 'zip' ? 2 : 1.6) + (mergedDarts.has(k) ? FOUR_LAYER_R_BONUS : 0);
     for (const depth of depths) {
       for (const side of [0, 3]) {
         for (const panel of [k - 1, k]) {
           const x = flatXAt(panel, aa, depth);
-          dangerXs.push(x);
           holes.push({ cx: f1(x), cy: f1(flatYAt(x, depth, side)), r });
         }
       }
@@ -286,11 +314,13 @@ function blank(s) {
   }
 
   const xTDC = (s.lead / Math.max(1, g.cov)) * g.L;
-  const mounts = s.side === 'front'
+  const mountsNominal = s.side === 'front'
     ? [{ x: xTDC, label: 'FORK CROWN' }]
     : [{ x: Math.min(xTDC * 0.4, g.L - 40), label: 'CHAINSTAY BRIDGE' }, { x: xTDC, label: 'SEATSTAY BRIDGE' }];
+  // WP27 §27.2 — mounts move to clear a pinned seam column, mirroring
+  // src/fender/pattern.ts's `nudgeAway` exactly.
+  const mounts = mountsNominal.map((m) => ({ ...m, x: nudgeAwayRef(m.x, seamXms, SEAM_CLEAR + 8, m.x - 15, m.x + 15) }));
   mounts.forEach((m) => {
-    dangerXs.push(m.x - 8, m.x + 8);
     slots.push({ x: f1(m.x - 8), y: f1(g.yc - 2.5), w: 16, h: 5 });
   });
 
@@ -299,38 +329,41 @@ function blank(s) {
   const sSpan = s.side === 'front' ? [0.5, 0.95] : [0.5, 0.96];
   for (let i = 0; i < s.struts; i++) {
     const fr = s.struts === 1 ? (sSpan[0] + sSpan[1]) / 2 : sSpan[0] + ((sSpan[1] - sSpan[0]) * i) / (s.struts - 1);
-    strutFrac.push(fr);
-    const x = g.L * fr;
-    dangerXs.push(x - 5, x + 5);
+    // WP27 §27.2 — a strut moves to clear a pinned seam column too, `strutFrac` pushed
+    // AFTER nudging so it stays what `isometric.ts`/`warnings.ts` actually draw from.
+    const x = nudgeAwayRef(g.L * fr, seamXms, SEAM_CLEAR + 8, g.L * sSpan[0], g.L * sSpan[1]);
+    strutFrac.push(x / g.L);
     holes.push({ cx: f1(x - 5), cy: f1(yFreeT(x) + inset), r: 2.5 }, { cx: f1(x + 5), cy: f1(yFreeT(x) + inset), r: 2.5 });
     holes.push({ cx: f1(x - 5), cy: f1(yFreeB(x) - inset), r: 2.5 }, { cx: f1(x + 5), cy: f1(yFreeB(x) - inset), r: 2.5 });
   }
   if (s.mudflap > 0) {
-    dangerXs.push(g.L - 10);
     for (const k of [-0.3, 0, 0.3]) holes.push({ cx: f1(g.L - 10), cy: f1(g.yc + g.crownTail * k), r: 2 });
   }
   if (s.tongue) slots.push({ x: f1(-TONGUE_L + 6), y: f1(g.yc - 2.5), w: 16, h: 5 });
 
   const seams = [];
-  let panelCount = 1;
-  if (s.stock === 'a4') {
-    const stepX = PW - LAP;
-    const totalW = g.L + (s.tongue ? TONGUE_L : 0);
-    panelCount = totalW <= PW ? 1 : 1 + Math.ceil((totalW - PW) / stepX);
-    const tongueOff = s.tongue ? TONGUE_L : 0;
-    const placed = placeSeams(panelCount, stepX, -tongueOff, totalW, dangerXs);
-
+  // WP27 §27.3 — the lowest y any label reaches, mirroring src/fender/tiling.ts's
+  // `labelMaxY`: only the panel-seam "WHEEL SIDE" note (at `yFreeB(xm) + 9`) ever draws
+  // below the outline, so it is the only one tracked here.
+  let labelMaxY = 0;
+  // WP27 §27.2 — `x`/`xm` come straight from `seamXs`/`seamXms`, pinned up front; no
+  // search, no drift, mirroring src/fender/pattern.ts exactly.
+  {
     for (let i = 1; i < panelCount; i++) {
-      const x = placed[i - 1];
+      const x = seamXs[i - 1];
       seams.push({ d: `M ${f1(x)},${f1(yFreeT(x) - 5)} L ${f1(x)},${f1(yFreeB(x) + 5)}` });
       lapLines.push({ d: `M ${f1(x + LAP)},${f1(yFreeT(x + LAP) - 5)} L ${f1(x + LAP)},${f1(yFreeB(x + LAP) + 5)}` });
-      const xm = x + LAP / 2;
-      const rowN = Math.max(3, Math.floor(g.Wd / 30));
-      for (let j = 0; j <= rowN; j++) {
-        const y = yFreeT(xm) + 7 + ((yFreeB(xm) - yFreeT(xm) - 14) * j) / rowN;
-        // WP23 §23.3 — panel seams always use holes now; the old `slot` join's clip
-        // (its only reason to cut slots here) is gone with the join it belonged to.
-        holes.push({ cx: f1(xm), cy: f1(y), r: s.join === 'rivet' ? 1.6 : 2 });
+      const xm = seamXms[i - 1];
+      // WP27 §27.2 — where this seam merges with a dart, that dart's own (already
+      // bumped) fastener closes the seam too, so the row below is skipped.
+      if (mergedDartAtRef(s, g, xm) === null) {
+        const rowN = Math.max(3, Math.floor(g.Wd / 30));
+        for (let j = 0; j <= rowN; j++) {
+          const y = yFreeT(xm) + 7 + ((yFreeB(xm) - yFreeT(xm) - 14) * j) / rowN;
+          // WP23 §23.3 — panel seams always use holes now; the old `slot` join's clip
+          // (its only reason to cut slots here) is gone with the join it belonged to.
+          holes.push({ cx: f1(xm), cy: f1(y), r: s.join === 'rivet' ? 1.6 : 2 });
+        }
       }
       // PLAN FEEDBACK WP15 §15.2 — lapArrows is new, not in the design source: a small
       // drawn arrow at each lap pointing the direction water runs (downstream, from the
@@ -343,6 +376,7 @@ function blank(s) {
       lapArrows.push({
         d: `M ${f1(ax0)},${f1(arrowY)} L ${f1(ax1)},${f1(arrowY)} M ${f1(ax1 - head)},${f1(arrowY - head)} L ${f1(ax1)},${f1(arrowY)} L ${f1(ax1 - head)},${f1(arrowY + head)}`
       });
+      labelMaxY = Math.max(labelMaxY, yFreeB(xm) + 9);
     }
   }
 
@@ -350,10 +384,9 @@ function blank(s) {
   const bboxW = g.L + (s.tongue ? TONGUE_L : 0);
   // WP20 §20.1 — nesting removed outright; bboxH is always g.Wd now.
   const bboxH = g.Wd;
-  const x0 = (s.tongue ? -TONGUE_L : 0) - 6;
   const viewBox = `${f1(x0 - M)} ${f1(-M)} ${f1(bboxW + M * 2 + 12)} ${f1(bboxH + M * 2)}`;
 
-  return { g, blankOutline: outline, foldLines, scoreLines, holes, slots, seams, lapLines, lapArrows, panelCount, strutFrac, viewBox, bboxW, bboxH, mounts, inset };
+  return { g, blankOutline: outline, foldLines, scoreLines, holes, slots, seams, lapLines, lapArrows, panelCount, strutFrac, viewBox, bboxW, bboxH, mounts, inset, labelMaxY };
 }
 
 function parts(s, g) {
@@ -775,16 +808,23 @@ function pageCountRef(s, g, rows, cols, lastRowH) {
   return lastRowStart + combinedPageCount + 1; // full tile rows + combined pages + instructions
 }
 
-function tiling(s, g, bboxW, bboxH) {
+function tiling(s, g, bboxW, bboxH, panelCount, labelMaxY) {
   // WP19 §19.1 — `a4` stock's tile step is now `LAP`, since one tile is one panel;
   // `single` stock keeps the plain registration `OV`. Mirrors src/fender/tiling.ts.
   const overlapX = s.stock === 'a4' ? LAP : OV;
   const stepX = PW - overlapX, stepY = PH - OV;
-  const cols = Math.max(1, Math.ceil((bboxW + 12 - overlapX) / stepX));
+  // WP27 §27.3 — for `a4` stock a tile IS a panel now, so `cols` reads `panelCount`
+  // directly rather than a second `ceil()` that merely happened to agree with it.
+  const cols = s.stock === 'a4' ? panelCount : Math.max(1, Math.ceil((bboxW + 12 - overlapX) / stepX));
   const rowsSource = Math.max(1, Math.ceil((g.Wd + 12 - OV) / stepY));
-  const rowsFixed = Math.max(1, Math.ceil((bboxH + 12 - OV) / stepY));
+  // WP27 §27.3 — `contentH`/`TAIL_MARGIN` replace the bare `bboxH + 12`: the panel-seam
+  // annotation and the calibration ruler both need clear room below the outline, which
+  // the old fixed margin didn't reliably leave. Mirrors src/fender/tiling.ts exactly.
+  const contentH = Math.max(bboxH, labelMaxY + 3);
+  const TAIL_MARGIN = 20;
+  const rowsFixed = Math.max(1, Math.ceil((contentH + TAIL_MARGIN - OV) / stepY));
   const rows = rowsFixed;
-  const x0 = (s.tongue ? -TONGUE_L : 0) - 6;
+  const x0 = tileOriginX(s);
   const tileRects = [], printTiles = [];
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
@@ -795,13 +835,15 @@ function tiling(s, g, bboxW, bboxH) {
         meta: `${WHEELS[s.wheel].label}, ${f0(g.cov)}°, 1:1`,
         viewBox: `${f1(ox)} ${f1(oy)} ${PW} ${PH}`,
         frame: `M ${f1(ox)},${f1(oy)} h ${PW} v ${PH} h ${-PW} Z`,
-        ruler: `M ${f1(ox + 8)},${f1(oy + PH - 10)} h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4`,
+        ruler: `M ${f1(ox + 8)},${f1(oy + PH - 5)} h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4`,
         rulerX: f1(ox + 8),
-        rulerY: f1(oy + PH - 14)
+        rulerY: f1(oy + PH - 9)
       });
     }
   }
-  const lastRowH = Math.max(1, Math.min(PH, bboxH + 12 - (rows - 1) * stepY));
+  // WP27 §27.3 — capped at `PH - PRINT_CAPTION_H`, not `PH`: `buildPrintLayout` always
+  // adds its own caption band on top before packing this onto a page.
+  const lastRowH = Math.max(1, Math.min(PH - PRINT_CAPTION_H, contentH + TAIL_MARGIN - (rows - 1) * stepY));
   return { cols, rows, rowsSource, rowsFixed, tileRects, printTiles, lastRowH };
 }
 
@@ -1094,7 +1136,7 @@ for (const [name, cfg] of Object.entries(CASES)) {
   for (const k of GEO_KEYS) g[k] = r.g[k];
   const p = parts(cfg, r.g);
   const x = xsec(cfg, r.g);
-  const t = tiling(cfg, r.g, r.bboxW, r.bboxH);
+  const t = tiling(cfg, r.g, r.bboxW, r.bboxH, r.panelCount, r.labelMaxY);
   const iso = {};
   for (const spin of ISO_SPINS) {
     iso[spin] = summarizeIso(isometric(cfg, r.g, r.strutFrac, spin));
