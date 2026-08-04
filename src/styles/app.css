@@ -553,10 +553,66 @@
   color: var(--color-fg-muted);
 }
 
+.slider-item__value-group {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+/* WP24 §24.2/§24.3: the number is the control (tap/click edits it in place) so it needs
+   a resting affordance visible without hover, and a ≥44px touch target that does NOT
+   grow the row — padding pushes the hit area out, an equal negative margin pulls its
+   layout footprint back to the original size, so `.slider-item`'s gaps stay put. */
 .slider-item__value {
+  display: inline-block;
   font-family: var(--font-mono);
   font-size: var(--text-mono-sm-size);
   font-weight: 500;
+  color: inherit;
+  background: none;
+  border: none;
+  /* 12px, not 11: the measured box came out 43.5px against the 44px floor §24.3 sets. */
+  padding: 12px 6px;
+  margin: -12px -6px;
+  border-radius: var(--radius-sm);
+  text-decoration: underline dotted var(--color-border-strong);
+  text-underline-offset: 3px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.slider-item__value:hover {
+  text-decoration-color: var(--color-accent);
+}
+
+.slider-item__value:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+.slider-item__value--editing {
+  text-decoration: none;
+  background: var(--color-accent-pale);
+  width: 6ch;
+  text-align: right;
+}
+
+.slider-item__estimate-reset {
+  font-family: var(--font-sans);
+  font-size: var(--text-caption-size);
+  color: var(--color-fg-faint);
+  background: none;
+  border: none;
+  /* Same 44px floor as the value it sits beside — it is just as much a tap target. */
+  padding: 15px 4px;
+  margin: -15px -4px;
+  text-decoration: underline;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.slider-item__estimate-reset:hover {
+  color: var(--color-accent);
 }
 
 .slider-item input[type='range'] {

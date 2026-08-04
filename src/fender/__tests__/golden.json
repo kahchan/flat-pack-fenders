@@ -86,9 +86,9 @@
       "bboxW": 1420.562294044556,
       "bboxH": 105.88005210459605,
       "firstHole": {
-        "cx": "67.6",
-        "cy": "3.5",
-        "r": 2
+        "cx": "67.8",
+        "cy": "6.0",
+        "r": 1.5
       },
       "lastHole": {
         "cx": "1205.0",
@@ -427,9 +427,9 @@
         },
         "holeCount": 84,
         "firstHole": {
-          "cx": "331.7",
-          "cy": "-17.9",
-          "r": 2
+          "cx": "334.7",
+          "cy": "-16.9",
+          "r": 1.5
         },
         "lastHole": {
           "cx": "-355.1",
@@ -484,9 +484,9 @@
         },
         "holeCount": 84,
         "firstHole": {
-          "cx": "-49.4",
-          "cy": "-117.7",
-          "r": 2
+          "cx": "-47.6",
+          "cy": "-118.4",
+          "r": 1.5
         },
         "lastHole": {
           "cx": "43.5",
@@ -793,9 +793,9 @@
       "bboxW": 1262.9320842471284,
       "bboxH": 120.88005210459605,
       "firstHole": {
-        "cx": "73.7",
-        "cy": "3.5",
-        "r": 2
+        "cx": "74.0",
+        "cy": "6.0",
+        "r": 1.5
       },
       "lastHole": {
         "cx": "1218.9",
@@ -1147,9 +1147,9 @@
         },
         "holeCount": 72,
         "firstHole": {
-          "cx": "162.9",
-          "cy": "-265.0",
-          "r": 2
+          "cx": "165.3",
+          "cy": "-266.1",
+          "r": 1.5
         },
         "lastHole": {
           "cx": "71.4",
@@ -1204,9 +1204,9 @@
         },
         "holeCount": 72,
         "firstHole": {
-          "cx": "-56.5",
-          "cy": "-302.7",
-          "r": 2
+          "cx": "-54.7",
+          "cy": "-305.2",
+          "r": 1.5
         },
         "lastHole": {
           "cx": "46.0",
@@ -1519,9 +1519,9 @@
       "bboxW": 1135.6994392631693,
       "bboxH": 105.88005210459605,
       "firstHole": {
-        "cx": "53.7",
-        "cy": "3.5",
-        "r": 2
+        "cx": "53.8",
+        "cy": "6.0",
+        "r": 1.5
       },
       "lastHole": {
         "cx": "1091.7",
@@ -1845,9 +1845,9 @@
         },
         "holeCount": 84,
         "firstHole": {
-          "cx": "247.6",
-          "cy": "-341.8",
-          "r": 2
+          "cx": "250.1",
+          "cy": "-342.8",
+          "r": 1.5
         },
         "lastHole": {
           "cx": "-329.5",
@@ -1902,9 +1902,9 @@
         },
         "holeCount": 84,
         "firstHole": {
-          "cx": "-49.4",
-          "cy": "-411.9",
-          "r": 2
+          "cx": "-47.6",
+          "cy": "-414.5",
+          "r": 1.5
         },
         "lastHole": {
           "cx": "40.8",
@@ -2216,9 +2216,9 @@
       "bboxW": 1673.4449220326578,
       "bboxH": 147.12007815689407,
       "firstHole": {
-        "cx": "72.1",
-        "cy": "3.5",
-        "r": 2
+        "cx": "72.2",
+        "cy": "6.0",
+        "r": 1.5
       },
       "lastHole": {
         "cx": "1452.0",
@@ -2600,9 +2600,9 @@
         },
         "holeCount": 96,
         "firstHole": {
-          "cx": "245.6",
-          "cy": "-339.4",
-          "r": 2
+          "cx": "247.7",
+          "cy": "-340.2",
+          "r": 1.5
         },
         "lastHole": {
           "cx": "90.8",
@@ -2657,9 +2657,9 @@
         },
         "holeCount": 96,
         "firstHole": {
-          "cx": "-64.5",
-          "cy": "-403.5",
-          "r": 2
+          "cx": "-63.0",
+          "cy": "-405.6",
+          "r": 1.5
         },
         "lastHole": {
           "cx": "52.7",
@@ -4466,9 +4466,9 @@
       "bboxW": 1420.562294044556,
       "bboxH": 105.88005210459605,
       "firstHole": {
-        "cx": "67.6",
-        "cy": "3.5",
-        "r": 2
+        "cx": "67.8",
+        "cy": "6.0",
+        "r": 1.5
       },
       "lastHole": {
         "cx": "1205.0",
@@ -4807,9 +4807,9 @@
         },
         "holeCount": 84,
         "firstHole": {
-          "cx": "331.7",
-          "cy": "-17.9",
-          "r": 2
+          "cx": "334.7",
+          "cy": "-16.9",
+          "r": 1.5
         },
         "lastHole": {
           "cx": "-355.1",
@@ -4864,9 +4864,9 @@
         },
         "holeCount": 84,
         "firstHole": {
-          "cx": "-49.4",
-          "cy": "-117.7",
-          "r": 2
+          "cx": "-47.6",
+          "cy": "-118.4",
+          "r": 1.5
         },
         "lastHole": {
           "cx": "43.5",
@@ -5178,8 +5178,8 @@
       "bboxW": 1420.562294044556,
       "bboxH": 105.88005210459605,
       "firstHole": {
-        "cx": "67.6",
-        "cy": "4.5",
+        "cx": "67.8",
+        "cy": "6.4",
         "r": 1.6
       },
       "lastHole": {
@@ -5519,8 +5519,8 @@
         },
         "holeCount": 46,
         "firstHole": {
-          "cx": "332.9",
-          "cy": "-17.5",
+          "cx": "335.1",
+          "cy": "-16.7",
           "r": 1.6
         },
         "lastHole": {
@@ -5576,8 +5576,8 @@
         },
         "holeCount": 46,
         "firstHole": {
-          "cx": "-48.7",
-          "cy": "-118.0",
+          "cx": "-47.3",
+          "cy": "-118.6",
           "r": 1.6
         },
         "lastHole": {
@@ -5885,9 +5885,9 @@
       "bboxW": 1262.9320842471284,
       "bboxH": 120.88005210459605,
       "firstHole": {
-        "cx": "73.7",
-        "cy": "3.5",
-        "r": 2
+        "cx": "74.0",
+        "cy": "6.0",
+        "r": 1.5
       },
       "lastHole": {
         "cx": "1218.9",
@@ -6239,9 +6239,9 @@
         },
         "holeCount": 72,
         "firstHole": {
-          "cx": "162.9",
-          "cy": "-265.0",
-          "r": 2
+          "cx": "165.3",
+          "cy": "-266.1",
+          "r": 1.5
         },
         "lastHole": {
           "cx": "71.4",
@@ -6296,9 +6296,9 @@
         },
         "holeCount": 72,
         "firstHole": {
-          "cx": "-56.5",
-          "cy": "-302.7",
-          "r": 2
+          "cx": "-54.7",
+          "cy": "-305.2",
+          "r": 1.5
         },
         "lastHole": {
           "cx": "46.0",
@@ -6617,9 +6617,9 @@
       "bboxW": 1420.562294044556,
       "bboxH": 105.88005210459605,
       "firstHole": {
-        "cx": "67.6",
-        "cy": "3.5",
-        "r": 2
+        "cx": "67.8",
+        "cy": "6.0",
+        "r": 1.5
       },
       "lastHole": {
         "cx": "1205.0",
@@ -6963,9 +6963,9 @@
         },
         "holeCount": 84,
         "firstHole": {
-          "cx": "331.7",
-          "cy": "-17.9",
-          "r": 2
+          "cx": "334.7",
+          "cy": "-16.9",
+          "r": 1.5
         },
         "lastHole": {
           "cx": "-355.1",
@@ -7020,9 +7020,9 @@
         },
         "holeCount": 84,
         "firstHole": {
-          "cx": "-49.4",
-          "cy": "-117.7",
-          "r": 2
+          "cx": "-47.6",
+          "cy": "-118.4",
+          "r": 1.5
         },
         "lastHole": {
           "cx": "43.5",
@@ -7329,9 +7329,9 @@
       "bboxW": 1262.9320842471284,
       "bboxH": 120.88005210459605,
       "firstHole": {
-        "cx": "73.7",
-        "cy": "3.5",
-        "r": 2
+        "cx": "74.0",
+        "cy": "6.0",
+        "r": 1.5
       },
       "lastHole": {
         "cx": "1218.9",
@@ -7690,9 +7690,9 @@
         },
         "holeCount": 72,
         "firstHole": {
-          "cx": "162.9",
-          "cy": "-265.0",
-          "r": 2
+          "cx": "165.3",
+          "cy": "-266.1",
+          "r": 1.5
         },
         "lastHole": {
           "cx": "71.4",
@@ -7747,9 +7747,9 @@
         },
         "holeCount": 72,
         "firstHole": {
-          "cx": "-56.5",
-          "cy": "-302.7",
-          "r": 2
+          "cx": "-54.7",
+          "cy": "-305.2",
+          "r": 1.5
         },
         "lastHole": {
           "cx": "46.0",
@@ -7980,5 +7980,807 @@
     ],
     "assembledLabel": "Rear, 20\" / 406, 260° (60/200), 96 mm wide, 16 flaps, 3 struts, 90 mm flap",
     "printSpecLine": "20\" / 406, tyre 50 (R 253), crown 62 → 47, skirt 30 @ 55°, clearance 16, 60°/200°, 16 flaps, 3 struts, mudflap 90"
+  },
+  "deep-skirt-zip": {
+    "config": {
+      "side": "rear",
+      "wheel": "700c",
+      "tyre": 35,
+      "measuredR": 0,
+      "clear": 14,
+      "crown": 55,
+      "skirt": 60,
+      "angle": 55,
+      "thick": 0.8,
+      "lead": 120,
+      "trail": 100,
+      "taper": 15,
+      "taperAt": 70,
+      "flaps": 8,
+      "struts": 2,
+      "strutLen": 160,
+      "mudflap": 100,
+      "join": "zip",
+      "stock": "a4",
+      "tongue": true,
+      "fuse": false,
+      "nest": false,
+      "hem": false,
+      "bevel": 20,
+      "strutEnd": "bolt"
+    },
+    "geo": {
+      "bsd": 622,
+      "tyreRcalc": 346,
+      "tyreR": 346,
+      "R": 360,
+      "cov": 220,
+      "th": 3.839724354387525,
+      "aNose": -2.0943951023931953,
+      "L": 1409.4630329992378,
+      "a": 0.9599310885968813,
+      "skirt": 59.440026052298016,
+      "skirtTrue": 60,
+      "t": 0.8,
+      "rBend": 0.8,
+      "setback": 0.832907280882794,
+      "BA": 1.1058406140636072,
+      "bendComp": -0.5599739477019807,
+      "hem": 0,
+      "proj": 34.41458618106276,
+      "drop": 49.14912265733951,
+      "crown0": 55,
+      "crownTail": 46.75,
+      "knee": 986.6241230994664,
+      "Wd": 173.88005210459602,
+      "yc": 86.94002605229801,
+      "n": 8,
+      "pitch": 176.18287912490473,
+      "removal": 192.4274208051814,
+      "notch": 0,
+      "lap": 24.053427600647677
+    },
+    "blank": {
+      "outline": "M 0.0,74.9 L 20.0,0.0 L 176.2,0.0 L 176.2,59.4 L 176.2,0.0 L 352.4,0.0 L 352.4,59.4 L 352.4,0.0 L 528.5,0.0 L 528.5,59.4 L 528.5,0.0 L 704.7,0.0 L 704.7,59.4 L 704.7,0.0 L 880.9,0.0 L 880.9,59.4 L 880.9,0.0 L 986.6,0.0 L 1057.1,0.7 L 1057.1,60.1 L 1057.1,0.7 L 1233.3,2.4 L 1233.3,61.8 L 1233.3,2.4 L 1409.5,4.1 L 1409.5,169.8 L 1233.3,171.5 L 1233.3,112.0 L 1233.3,171.5 L 1057.1,173.2 L 1057.1,113.8 L 1057.1,173.2 L 986.6,173.9 L 880.9,173.9 L 880.9,114.4 L 880.9,173.9 L 704.7,173.9 L 704.7,114.4 L 704.7,173.9 L 528.5,173.9 L 528.5,114.4 L 528.5,173.9 L 352.4,173.9 L 352.4,114.4 L 352.4,173.9 L 176.2,173.9 L 176.2,114.4 L 176.2,173.9 L 20.0,173.9 L 0.0,98.9 L -34,98.9 L -34,74.9 L 0,74.9 Z",
+      "foldLines": [
+        "M 0.0,59.4 L 986.6,59.4 L 1409.5,63.6",
+        "M 0.0,114.4 L 986.6,114.4 L 1409.5,110.3",
+        "M -34,86.9 L 1409.5,86.9"
+      ],
+      "scoreLineCount": 0,
+      "holeCount": 97,
+      "slotCount": 3,
+      "seamCount": 5,
+      "lapCount": 5,
+      "lapArrows": [
+        "M 211.0,94.9 L 223.0,94.9 M 220.5,92.4 L 223.0,94.9 L 220.5,97.4",
+        "M 458.0,94.9 L 470.0,94.9 M 467.5,92.4 L 470.0,94.9 L 467.5,97.4",
+        "M 705.0,94.9 L 717.0,94.9 M 714.5,92.4 L 717.0,94.9 L 714.5,97.4",
+        "M 952.0,94.9 L 964.0,94.9 M 961.5,92.4 L 964.0,94.9 L 961.5,97.4",
+        "M 1199.0,94.9 L 1211.0,94.9 M 1208.5,92.4 L 1211.0,94.9 L 1208.5,97.4"
+      ],
+      "panelCount": 6,
+      "strutFrac": [
+        0.5,
+        0.9599999999999999
+      ],
+      "viewBox": "-62.0 -22.0 1499.5 217.9",
+      "bboxW": 1443.4630329992378,
+      "bboxH": 173.88005210459602,
+      "firstHole": {
+        "cx": "165.4",
+        "cy": "6.0",
+        "r": 1.5
+      },
+      "lastHole": {
+        "cx": "1205.0",
+        "cy": "164.7",
+        "r": 2
+      },
+      "firstSlot": {
+        "x": "299.5",
+        "y": "84.4",
+        "w": 16,
+        "h": 5
+      },
+      "lastSlot": {
+        "x": "-28.0",
+        "y": "84.4",
+        "w": 16,
+        "h": 5
+      }
+    },
+    "parts": {
+      "outlines": [
+        "M 7,12.0 h 146.0 a 7 7 0 0 1 0 14 h -146.0 a 7 7 0 0 1 0 -14 Z",
+        "M 7,35.0 h 146.0 a 7 7 0 0 1 0 14 h -146.0 a 7 7 0 0 1 0 -14 Z",
+        "M 0,72.0 h 46.8 v 84.4 q 0,15.6 -15.6,15.6 h -15.6 q -15.6,0 -15.6,-15.6 Z"
+      ],
+      "folds": [
+        "M 26,12.0 v 14 M 134.0,12.0 v 14",
+        "M 26,35.0 v 14 M 134.0,35.0 v 14",
+        "M 0,88.0 h 46.8"
+      ],
+      "holes": [
+        {
+          "cx": 12,
+          "cy": "19.0",
+          "r": 2.5
+        },
+        {
+          "cx": "80.0",
+          "cy": "19.0",
+          "r": 2
+        },
+        {
+          "cx": "148.0",
+          "cy": "19.0",
+          "r": 2.5
+        },
+        {
+          "cx": "138.0",
+          "cy": "19.0",
+          "r": 2.5
+        },
+        {
+          "cx": 12,
+          "cy": "42.0",
+          "r": 2.5
+        },
+        {
+          "cx": "80.0",
+          "cy": "42.0",
+          "r": 2
+        },
+        {
+          "cx": "148.0",
+          "cy": "42.0",
+          "r": 2.5
+        },
+        {
+          "cx": "138.0",
+          "cy": "42.0",
+          "r": 2.5
+        },
+        {
+          "cx": "9.4",
+          "cy": "80.0",
+          "r": 2
+        },
+        {
+          "cx": "23.4",
+          "cy": "80.0",
+          "r": 2
+        },
+        {
+          "cx": "37.4",
+          "cy": "80.0",
+          "r": 2
+        }
+      ],
+      "slots": [],
+      "labels": [
+        {
+          "x": "168.0",
+          "y": "21.0",
+          "size": 5,
+          "text": "STRUT 1, 160 × 14"
+        },
+        {
+          "x": "168.0",
+          "y": "44.0",
+          "size": 5,
+          "text": "STRUT 2, 160 × 14"
+        },
+        {
+          "x": "54.8",
+          "y": "82.0",
+          "size": 5,
+          "text": "MUDFLAP, 47 × 100 mm, lap 16 mm under the tail"
+        }
+      ],
+      "viewBox": "-2 0 256.0 220.0",
+      "width": 256,
+      "height": 220,
+      "fitsA4": true,
+      "extraCount": 0,
+      "extraLabel": ""
+    },
+    "xsec": {
+      "paths": [
+        {
+          "d": "M -17.5,31.5 a 17.5 17.5 0 1 1 35.0 0 a 17.5 17.5 0 1 1 -35.0 0 Z",
+          "fill": "#EDE8DC",
+          "stroke": "#A8A49C",
+          "sw": 0.9,
+          "dash": "0"
+        },
+        {
+          "d": "M -9.6,41.1 h 19.3 v 14.7 h -19.2 Z",
+          "fill": "#FAF8F3",
+          "stroke": "#8898A8",
+          "sw": 0.9,
+          "dash": "0"
+        },
+        {
+          "d": "M 0,0 v 14.0 m -3,0 h 6 m -3,-14.0 m -3,0 h 6",
+          "fill": "none",
+          "stroke": "#D4614E",
+          "sw": 0.7,
+          "dash": "0"
+        },
+        {
+          "d": "M -61.9,49.1 L -27.5,0 L 27.5,0 L 61.9,49.1",
+          "fill": "none",
+          "stroke": "#1A2232",
+          "sw": 2.4,
+          "dash": "0"
+        },
+        {
+          "d": "M -61.9,77.7 h 123.8 m 0,-4 v 8 m -123.8,-8 v 8",
+          "fill": "none",
+          "stroke": "#8898A8",
+          "sw": 0.7,
+          "dash": "0"
+        }
+      ],
+      "labels": [
+        {
+          "x": 0,
+          "y": "89.7",
+          "size": 7,
+          "fill": "#1A2232",
+          "anchor": "middle",
+          "text": "FINISHED 124 mm"
+        },
+        {
+          "x": 0,
+          "y": -7,
+          "size": 6,
+          "fill": "#8898A8",
+          "anchor": "middle",
+          "text": "CROWN 55"
+        },
+        {
+          "x": "67.9",
+          "y": "57.1",
+          "size": 6,
+          "fill": "#8898A8",
+          "anchor": "start",
+          "text": "SKIRT 59 @ 55°"
+        },
+        {
+          "x": 16,
+          "y": "9.0",
+          "size": 6,
+          "fill": "#D4614E",
+          "anchor": "start",
+          "text": "GAP 14"
+        },
+        {
+          "x": 0,
+          "y": "33.5",
+          "size": 6,
+          "fill": "#8898A8",
+          "anchor": "middle",
+          "text": "TYRE SECTION ⌀35"
+        },
+        {
+          "x": 0,
+          "y": "63.8",
+          "size": 5.5,
+          "fill": "#8898A8",
+          "anchor": "middle",
+          "text": "RIM"
+        }
+      ],
+      "viewBox": "-130.0 -22 260.0 120.0",
+      "finished": 123.82917236212552
+    },
+    "tiling": {
+      "cols": 6,
+      "rows": 2,
+      "rowsSource": 2,
+      "rowsFixed": 2,
+      "rects": [
+        {
+          "x": "-40.0",
+          "y": "-6.0",
+          "w": 267,
+          "h": 180
+        },
+        {
+          "x": "207.0",
+          "y": "-6.0",
+          "w": 267,
+          "h": 180
+        },
+        {
+          "x": "454.0",
+          "y": "-6.0",
+          "w": 267,
+          "h": 180
+        },
+        {
+          "x": "701.0",
+          "y": "-6.0",
+          "w": 267,
+          "h": 180
+        },
+        {
+          "x": "948.0",
+          "y": "-6.0",
+          "w": 267,
+          "h": 180
+        },
+        {
+          "x": "1195.0",
+          "y": "-6.0",
+          "w": 267,
+          "h": 180
+        },
+        {
+          "x": "-40.0",
+          "y": "162.0",
+          "w": 267,
+          "h": 180
+        },
+        {
+          "x": "207.0",
+          "y": "162.0",
+          "w": 267,
+          "h": 180
+        },
+        {
+          "x": "454.0",
+          "y": "162.0",
+          "w": 267,
+          "h": 180
+        },
+        {
+          "x": "701.0",
+          "y": "162.0",
+          "w": 267,
+          "h": 180
+        },
+        {
+          "x": "948.0",
+          "y": "162.0",
+          "w": 267,
+          "h": 180
+        },
+        {
+          "x": "1195.0",
+          "y": "162.0",
+          "w": 267,
+          "h": 180
+        }
+      ],
+      "tiles": [
+        {
+          "label": "Sheet A, tile 1×1 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
+          "viewBox": "-40.0 -6.0 267 180",
+          "frame": "M -40.0,-6.0 h 267 v 180 h -267 Z",
+          "ruler": "M -32.0,169.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
+          "rulerX": "-32.0",
+          "rulerY": "165.0"
+        },
+        {
+          "label": "Sheet A, tile 1×2 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
+          "viewBox": "207.0 -6.0 267 180",
+          "frame": "M 207.0,-6.0 h 267 v 180 h -267 Z",
+          "ruler": "M 215.0,169.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
+          "rulerX": "215.0",
+          "rulerY": "165.0"
+        },
+        {
+          "label": "Sheet A, tile 1×3 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
+          "viewBox": "454.0 -6.0 267 180",
+          "frame": "M 454.0,-6.0 h 267 v 180 h -267 Z",
+          "ruler": "M 462.0,169.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
+          "rulerX": "462.0",
+          "rulerY": "165.0"
+        },
+        {
+          "label": "Sheet A, tile 1×4 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
+          "viewBox": "701.0 -6.0 267 180",
+          "frame": "M 701.0,-6.0 h 267 v 180 h -267 Z",
+          "ruler": "M 709.0,169.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
+          "rulerX": "709.0",
+          "rulerY": "165.0"
+        },
+        {
+          "label": "Sheet A, tile 1×5 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
+          "viewBox": "948.0 -6.0 267 180",
+          "frame": "M 948.0,-6.0 h 267 v 180 h -267 Z",
+          "ruler": "M 956.0,169.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
+          "rulerX": "956.0",
+          "rulerY": "165.0"
+        },
+        {
+          "label": "Sheet A, tile 1×6 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
+          "viewBox": "1195.0 -6.0 267 180",
+          "frame": "M 1195.0,-6.0 h 267 v 180 h -267 Z",
+          "ruler": "M 1203.0,169.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
+          "rulerX": "1203.0",
+          "rulerY": "165.0"
+        },
+        {
+          "label": "Sheet A, tile 2×1 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
+          "viewBox": "-40.0 162.0 267 180",
+          "frame": "M -40.0,162.0 h 267 v 180 h -267 Z",
+          "ruler": "M -32.0,337.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
+          "rulerX": "-32.0",
+          "rulerY": "333.0"
+        },
+        {
+          "label": "Sheet A, tile 2×2 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
+          "viewBox": "207.0 162.0 267 180",
+          "frame": "M 207.0,162.0 h 267 v 180 h -267 Z",
+          "ruler": "M 215.0,337.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
+          "rulerX": "215.0",
+          "rulerY": "333.0"
+        },
+        {
+          "label": "Sheet A, tile 2×3 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
+          "viewBox": "454.0 162.0 267 180",
+          "frame": "M 454.0,162.0 h 267 v 180 h -267 Z",
+          "ruler": "M 462.0,337.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
+          "rulerX": "462.0",
+          "rulerY": "333.0"
+        },
+        {
+          "label": "Sheet A, tile 2×4 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
+          "viewBox": "701.0 162.0 267 180",
+          "frame": "M 701.0,162.0 h 267 v 180 h -267 Z",
+          "ruler": "M 709.0,337.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
+          "rulerX": "709.0",
+          "rulerY": "333.0"
+        },
+        {
+          "label": "Sheet A, tile 2×5 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
+          "viewBox": "948.0 162.0 267 180",
+          "frame": "M 948.0,162.0 h 267 v 180 h -267 Z",
+          "ruler": "M 956.0,337.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
+          "rulerX": "956.0",
+          "rulerY": "333.0"
+        },
+        {
+          "label": "Sheet A, tile 2×6 of 2×6",
+          "meta": "700c / 29″ / 622, 220°, 1:1",
+          "viewBox": "1195.0 162.0 267 180",
+          "frame": "M 1195.0,162.0 h 267 v 180 h -267 Z",
+          "ruler": "M 1203.0,337.0 h 100 m 0,-3 v 6 m -100,-6 v 6 m 50,-4 v 4",
+          "rulerX": "1203.0",
+          "rulerY": "333.0"
+        }
+      ]
+    },
+    "iso": {
+      "18": {
+        "facetCount": 54,
+        "firstFacet": {
+          "d": "M 268.0,32.0 L 335.0,64.9 L 388.8,-120.0 L 314.5,-127.7 Z",
+          "fill": "rgb(74,79,90)"
+        },
+        "lastFacet": {
+          "d": "M -300.0,39.2 L -299.1,39.2 L -300.8,61.1 L -301.7,61.2 Z",
+          "fill": "rgb(37,44,59)"
+        },
+        "edges": [
+          "M 335.0,64.9 L 388.8,-120.0 L 351.2,-281.8 L 230.9,-383.8 L 54.9,-403.0 L -136.9,-335.0 L -300.9,-194.8 L -399.7,-13.8 L -411.3,166.8",
+          "M 365.5,99.6 L 419.3,-85.4 L 381.8,-247.1 L 261.5,-349.1 L 85.5,-368.3 L -106.3,-300.4 L -271.1,-161.0 L -371.8,17.8 L -385.3,196.3",
+          "M 268.0,32.0 L 335.0,64.9 L 365.5,99.6 L 336.9,110.0",
+          "M -376.0,120.3 L -411.3,166.8 L -385.3,196.3 L -311.8,193.2"
+        ],
+        "outline": "M 268.0,32.0 L 314.5,-127.7 L 282.1,-267.4 L 178.2,-355.4 L 26.2,-372.0 L -139.4,-313.3 L -281.0,-192.2 L -366.1,-35.7 L -376.0,120.3 L -311.8,193.2 L -300.0,39.2 L -212.9,-115.1 L -70.6,-235.3 L 95.1,-294.0 L 247.0,-277.4 L 350.9,-189.3 L 383.3,-49.7 L 336.9,110.0 Z",
+        "wheelCount": 2,
+        "wheel": [
+          "M -9.7,-357.0 L -37.9,-347.8 L -66.0,-336.6 L -93.7,-323.6 L -121.0,-308.9 L -147.7,-292.5 L -173.5,-274.6 L -198.5,-255.1 L -222.4,-234.3 L -245.1,-212.3 L -266.5,-189.1 L -286.5,-164.9 L -304.9,-139.9 L -321.7,-114.2 L -336.7,-87.8 L -349.9,-61.1 L -361.2,-34.0 L -370.5,-6.9 L -377.8,20.3 L -383.1,47.2 L -386.2,73.9 L -387.3,100.0 L -386.2,125.6 L -383.1,150.4 L -377.8,174.3 L -370.5,197.1 L -361.2,218.8 L -349.9,239.2 L -336.7,258.2 L -321.7,275.7 L -304.9,291.5 L -286.5,305.7 L -266.5,318.2 L -245.1,328.7 L -222.4,337.4 L -198.5,344.2 L -173.5,348.9 L -147.7,351.6 L -121.0,352.3 L -93.7,351.0 L -66.0,347.7 L -37.9,342.3 L -9.7,335.0 L 18.5,325.7 L 46.5,314.6 L 74.3,301.6 L 101.6,286.9 L 128.2,270.5 L 154.1,252.5 L 179.1,233.1 L 203.0,212.3 L 225.7,190.2 L 247.1,167.1 L 267.0,142.9 L 285.5,117.9 L 302.2,92.1 L 317.2,65.8 L 330.4,39.0 L 341.7,12.0 L 351.1,-15.2 L 358.4,-42.3 L 363.6,-69.3 L 366.8,-95.9 L 367.8,-122.1 L 366.8,-147.6 L 363.6,-172.4 L 358.4,-196.3 L 351.1,-219.1 L 341.7,-240.8 L 330.4,-261.2 L 317.2,-280.2 L 302.2,-297.7 L 285.5,-313.6 L 267.0,-327.8 L 247.1,-340.2 L 225.7,-350.8 L 203.0,-359.5 L 179.1,-366.2 L 154.1,-371.0 L 128.2,-373.7 L 101.6,-374.4 L 74.3,-373.1 L 46.5,-369.7 L 18.5,-364.4 L -9.7,-357.0 Z",
+          "M 9.7,-335.0 L -18.5,-325.7 L -46.5,-314.6 L -74.3,-301.6 L -101.6,-286.9 L -128.2,-270.5 L -154.1,-252.5 L -179.1,-233.1 L -203.0,-212.3 L -225.7,-190.2 L -247.1,-167.1 L -267.0,-142.9 L -285.5,-117.9 L -302.2,-92.1 L -317.2,-65.8 L -330.4,-39.0 L -341.7,-12.0 L -351.1,15.2 L -358.4,42.3 L -363.6,69.3 L -366.8,95.9 L -367.8,122.1 L -366.8,147.6 L -363.6,172.4 L -358.4,196.3 L -351.1,219.1 L -341.7,240.8 L -330.4,261.2 L -317.2,280.2 L -302.2,297.7 L -285.5,313.6 L -267.0,327.8 L -247.1,340.2 L -225.7,350.8 L -203.0,359.5 L -179.1,366.2 L -154.1,371.0 L -128.2,373.7 L -101.6,374.4 L -74.3,373.1 L -46.5,369.7 L -18.5,364.4 L 9.7,357.0 L 37.9,347.8 L 66.0,336.6 L 93.7,323.6 L 121.0,308.9 L 147.7,292.5 L 173.5,274.6 L 198.5,255.1 L 222.4,234.3 L 245.1,212.3 L 266.5,189.1 L 286.5,164.9 L 304.9,139.9 L 321.7,114.2 L 336.7,87.8 L 349.9,61.1 L 361.2,34.0 L 370.5,6.9 L 377.8,-20.3 L 383.1,-47.2 L 386.2,-73.9 L 387.3,-100.0 L 386.2,-125.6 L 383.1,-150.4 L 377.8,-174.3 L 370.5,-197.1 L 361.2,-218.8 L 349.9,-239.2 L 336.7,-258.2 L 321.7,-275.7 L 304.9,-291.5 L 286.5,-305.7 L 266.5,-318.2 L 245.1,-328.7 L 222.4,-337.4 L 198.5,-344.2 L 173.5,-348.9 L 147.7,-351.6 L 121.0,-352.3 L 93.7,-351.0 L 66.0,-347.7 L 37.9,-342.3 L 9.7,-335.0 Z"
+        ],
+        "seamCount": 14,
+        "firstSeam": {
+          "d": "M 314.5,-127.7 L 388.8,-120.0"
+        },
+        "lastSeam": {
+          "d": "M -300.0,39.2 L -371.8,17.8"
+        },
+        "holeCount": 36,
+        "firstHole": {
+          "cx": "322.0",
+          "cy": "-126.9",
+          "r": 1.5
+        },
+        "lastHole": {
+          "cx": "-316.9",
+          "cy": "147.4",
+          "r": 2.5
+        },
+        "slotCount": 0,
+        "firstSlot": null,
+        "lastSlot": null,
+        "strutCount": 4,
+        "firstStrut": {
+          "d": "M 33.7,-373.0 L 18.7,-371.0 L 1.9,-191.4 L 17.0,-193.4 Z"
+        },
+        "lastStrut": {
+          "d": "M -308.1,136.5 L -307.8,150.4 L -147.2,82.3 L -147.5,68.4 Z"
+        },
+        "mudflapCount": 1,
+        "mudflap": {
+          "d": "M -411.3,166.8 L -385.3,196.3 L -366.3,289.2 L -392.3,259.7 Z"
+        },
+        "viewBox": "-426.0 -419.3 860.0 810.0",
+        "aspect": "860.0 / 810.0"
+      },
+      "-45": {
+        "facetCount": 54,
+        "firstFacet": {
+          "d": "M -75.8,-36.0 L -33.7,-41.6 L -33.7,-245.7 L -75.8,-212.1 Z",
+          "fill": "rgb(74,79,90)"
+        },
+        "lastFacet": {
+          "d": "M 72.9,119.6 L 72.9,119.3 L 72.6,141.9 L 72.6,142.2 Z",
+          "fill": "rgb(37,44,59)"
+        },
+        "edges": [
+          "M -33.7,-41.6 L -33.7,-245.7 L -33.7,-394.1 L -33.7,-453.6 L -33.7,-410.5 L -33.7,-274.7 L -32.8,-76.8 L -30.7,138.5 L -28.6,322.4",
+          "M 33.7,-41.6 L 33.7,-245.7 L 33.7,-394.1 L 33.7,-453.6 L 33.7,-410.5 L 33.7,-274.7 L 32.8,-76.8 L 30.7,138.5 L 28.6,322.4",
+          "M -75.8,-36.0 L -33.7,-41.6 L 33.7,-41.6 L 75.8,-36.0",
+          "M -70.8,278.4 L -28.6,322.4 L 28.6,322.4 L 70.8,278.4"
+        ],
+        "outline": "M -75.8,-36.0 L -75.8,-212.1 L -75.8,-340.3 L -75.8,-391.6 L -75.8,-354.5 L -75.8,-237.2 L -75.0,-66.3 L -72.9,119.6 L -70.8,278.4 L 70.8,278.4 L 72.9,119.6 L 75.0,-66.3 L 75.8,-237.2 L 75.8,-354.5 L 75.8,-391.6 L 75.8,-340.3 L 75.8,-212.1 L 75.8,-36.0 Z",
+        "wheelCount": 2,
+        "wheel": [
+          "M -21.4,-346.0 L -21.4,-326.7 L -21.4,-305.7 L -21.4,-282.9 L -21.4,-258.5 L -21.4,-232.7 L -21.4,-205.6 L -21.4,-177.3 L -21.4,-148.1 L -21.4,-118.0 L -21.4,-87.2 L -21.4,-56.0 L -21.4,-24.4 L -21.4,7.2 L -21.4,38.9 L -21.4,70.3 L -21.4,101.3 L -21.4,131.8 L -21.4,161.5 L -21.4,190.4 L -21.4,218.1 L -21.4,244.7 L -21.4,269.8 L -21.4,293.5 L -21.4,315.5 L -21.4,335.8 L -21.4,354.2 L -21.4,370.6 L -21.4,384.9 L -21.4,397.1 L -21.4,407.0 L -21.4,414.7 L -21.4,420.0 L -21.4,423.1 L -21.4,423.7 L -21.4,422.0 L -21.4,417.9 L -21.4,411.5 L -21.4,402.7 L -21.4,391.8 L -21.4,378.6 L -21.4,363.3 L -21.4,346.0 L -21.4,326.7 L -21.4,305.7 L -21.4,282.9 L -21.4,258.5 L -21.4,232.7 L -21.4,205.6 L -21.4,177.3 L -21.4,148.1 L -21.4,118.0 L -21.4,87.2 L -21.4,56.0 L -21.4,24.4 L -21.4,-7.2 L -21.4,-38.9 L -21.4,-70.3 L -21.4,-101.3 L -21.4,-131.8 L -21.4,-161.5 L -21.4,-190.4 L -21.4,-218.1 L -21.4,-244.7 L -21.4,-269.8 L -21.4,-293.5 L -21.4,-315.5 L -21.4,-335.8 L -21.4,-354.2 L -21.4,-370.6 L -21.4,-384.9 L -21.4,-397.1 L -21.4,-407.0 L -21.4,-414.7 L -21.4,-420.0 L -21.4,-423.1 L -21.4,-423.7 L -21.4,-422.0 L -21.4,-417.9 L -21.4,-411.5 L -21.4,-402.7 L -21.4,-391.8 L -21.4,-378.6 L -21.4,-363.3 L -21.4,-346.0 Z",
+          "M 21.4,-346.0 L 21.4,-326.7 L 21.4,-305.7 L 21.4,-282.9 L 21.4,-258.5 L 21.4,-232.7 L 21.4,-205.6 L 21.4,-177.3 L 21.4,-148.1 L 21.4,-118.0 L 21.4,-87.2 L 21.4,-56.0 L 21.4,-24.4 L 21.4,7.2 L 21.4,38.9 L 21.4,70.3 L 21.4,101.3 L 21.4,131.8 L 21.4,161.5 L 21.4,190.4 L 21.4,218.1 L 21.4,244.7 L 21.4,269.8 L 21.4,293.5 L 21.4,315.5 L 21.4,335.8 L 21.4,354.2 L 21.4,370.6 L 21.4,384.9 L 21.4,397.1 L 21.4,407.0 L 21.4,414.7 L 21.4,420.0 L 21.4,423.1 L 21.4,423.7 L 21.4,422.0 L 21.4,417.9 L 21.4,411.5 L 21.4,402.7 L 21.4,391.8 L 21.4,378.6 L 21.4,363.3 L 21.4,346.0 L 21.4,326.7 L 21.4,305.7 L 21.4,282.9 L 21.4,258.5 L 21.4,232.7 L 21.4,205.6 L 21.4,177.3 L 21.4,148.1 L 21.4,118.0 L 21.4,87.2 L 21.4,56.0 L 21.4,24.4 L 21.4,-7.2 L 21.4,-38.9 L 21.4,-70.3 L 21.4,-101.3 L 21.4,-131.8 L 21.4,-161.5 L 21.4,-190.4 L 21.4,-218.1 L 21.4,-244.7 L 21.4,-269.8 L 21.4,-293.5 L 21.4,-315.5 L 21.4,-335.8 L 21.4,-354.2 L 21.4,-370.6 L 21.4,-384.9 L 21.4,-397.1 L 21.4,-407.0 L 21.4,-414.7 L 21.4,-420.0 L 21.4,-423.1 L 21.4,-423.7 L 21.4,-422.0 L 21.4,-417.9 L 21.4,-411.5 L 21.4,-402.7 L 21.4,-391.8 L 21.4,-378.6 L 21.4,-363.3 L 21.4,-346.0 Z"
+        ],
+        "seamCount": 14,
+        "firstSeam": {
+          "d": "M -75.8,-212.1 L -33.7,-245.7"
+        },
+        "lastSeam": {
+          "d": "M 72.9,119.6 L 30.7,138.5"
+        },
+        "holeCount": 36,
+        "firstHole": {
+          "cx": "-71.6",
+          "cy": "-215.5",
+          "r": 1.5
+        },
+        "lastHole": {
+          "cx": "66.4",
+          "cy": "236.0",
+          "r": 2.5
+        },
+        "slotCount": 0,
+        "firstSlot": null,
+        "lastSlot": null,
+        "strutCount": 4,
+        "firstStrut": {
+          "d": "M -75.8,-358.1 L -75.8,-350.8 L -46.8,-175.5 L -46.8,-182.9 Z"
+        },
+        "lastStrut": {
+          "d": "M 71.5,220.2 L 71.5,234.0 L 44.4,118.7 L 44.4,104.9 Z"
+        },
+        "mudflapCount": 1,
+        "mudflap": {
+          "d": "M -28.6,322.4 L 28.6,322.4 L 28.6,408.6 L -28.6,408.6 Z"
+        },
+        "viewBox": "-90.0 -469.9 180.0 910.0",
+        "aspect": "180.0 / 910.0"
+      }
+    },
+    "joinNote": "Two 4 mm holes at top and bottom of each dart, both sides. Pull the dart closed with a zip tie through each pair and snip the tails flush.",
+    "warnings": [
+      {
+        "text": "Tyre radius is estimated at 346 mm from BSD + section width. Measure the real thing and set “Measured tyre radius” — a 5 mm error here shifts every dart."
+      }
+    ],
+    "steps": [
+      {
+        "n": "01",
+        "title": "Check the scale",
+        "body": "Print at 100% with margins set to none. Measure the 100 mm ruler on every sheet before cutting — if it is short, the printer scaled the page and nothing will fit."
+      },
+      {
+        "n": "02",
+        "title": "Tape the tiles",
+        "body": "Trim each tile on the grey dashed frame and overlap the next by 12 mm, matching the cut line where it crosses. 12 tiles for the blank."
+      },
+      {
+        "n": "03",
+        "title": "Cut the blank",
+        "body": "Cut the solid outline including every V dart. Do not cut the blue dashed lines — those are folds and score lines."
+      },
+      {
+        "n": "04",
+        "title": "Score, don’t slice",
+        "body": "Score the fold lines about a third of the way through, on the outside face, with a blunt point or the back of a blade. Cut deeper than half and the fold becomes a hinge that will crack. Warm material folds cleaner than cold."
+      },
+      {
+        "n": "05",
+        "title": "Fold the skirts",
+        "body": "Bend both skirts down to 55° over a straight edge. Work along the fold in stages rather than creasing it all at once."
+      },
+      {
+        "n": "06",
+        "title": "Close the darts",
+        "body": "Two 4 mm holes at top and bottom of each dart, both sides. Pull the dart closed with a zip tie through each pair and snip the tails flush."
+      },
+      {
+        "n": "07",
+        "title": "Lap the panels",
+        "body": "Cut 6 panels. Each panel except the last is cut 20 mm past its seam line — that tail is the lap, and it goes UNDERNEATH the panel in front so water runs across the joint, not into it. Slide the panels together until the fastener row sits in the middle of the lap, then fasten through both layers: one zip tie per hole, across the full width. The lapped joint ends up stiffer than the sheet around it."
+      },
+      {
+        "n": "08",
+        "title": "Bend the struts",
+        "body": "Fold each strut 26 mm from both ends. One end takes the pair of holes at the skirt edge; the other zip-ties, velcros, or bolts to the stay or eyelet."
+      },
+      {
+        "n": "09",
+        "title": "Add the mudflap",
+        "body": "Lap the 47 × 100 mm flap 16 mm under the tail, holes aligned, and fasten through the three crown holes. It is a separate part on purpose — it is the bit that gets destroyed."
+      },
+      {
+        "n": "LAST",
+        "title": "Fit to the bike",
+        "body": "Bolt the chainstay-bridge slot, then the seastay bridge, then set the 2 struts so the gap to the tyre stays even at 14 mm all the way round. Spin the wheel and listen before you ride."
+      }
+    ],
+    "engNotes": [
+      {
+        "title": "Why the shingle exists",
+        "body": "The blank is a developable cylinder along its length, so bending it round the wheel is free. Folding the skirts down is not: the skirt free edge sits on a smaller radius than the fold line, so it must be shorter. Each dart removes exactly that surplus.",
+        "formula": "take-up = L × drop / R = 1409 × 49 / 360 = 192.4 mm over 8 darts → 0.0 mm each"
+      },
+      {
+        "title": "Radius chain",
+        "body": "Tyre outer radius is approximated as BSD/2 + section width, i.e. a round section as tall as it is wide. Measure and override it.",
+        "formula": "R = BSD/2 + tyre + clearance = 346 + 14 = 360 mm"
+      },
+      {
+        "title": "Taper is local, not global",
+        "body": "Crown width is held constant until the taper knee, then interpolated linearly to the tail. Because every dart is computed from the local crown width, the pattern edge follows the taper automatically — dart positions do not move, the edge they sit on does. Taper exists so the tail can pass a chainstay bridge or fork crown, not for looks.",
+        "formula": "crown 55 mm until 987 mm, then → 47 mm at 1409 mm"
+      },
+      {
+        "title": "Asymmetric coverage",
+        "body": "Lead and trail are separate because a front fender wants material ahead of the axle (that is where the spray at your feet comes from) and a rear wants a long tail. Zero lead gives you a rear-only fender that starts at the top of the wheel.",
+        "formula": "lead 120° + trail 100° = 220°"
+      },
+      {
+        "title": "Rear mounting",
+        "body": "A rear fender takes two frame bolts — the chainstay bridge low at the front and the seatstay bridge higher up — with the struts running back to the dropouts. Two mounts on different radii is what stops a long rear fender from oscillating. Both are slots, not holes, because no two frames put those bridges the same distance apart.",
+        "formula": "CHAINSTAY BRIDGE at 308 mm · SEATSTAY BRIDGE at 769 mm"
+      },
+      {
+        "title": "How the panel seam works",
+        "body": "Butting two panels edge to edge has nothing to fasten. Instead each panel is cut 20 mm past its seam and laps under the next, so a single row of fasteners passes through both layers in the middle of the lap. Lap direction matters more than fastener choice: forward panel on top, always.",
+        "formula": "6 panels · 20 mm lap · fastener row at lap centre"
+      },
+      {
+        "title": "Rivets go straight through the lap",
+        "body": "A rivet cannot pull a V-shaped gap closed the way a zip tie can — it needs two layers to squeeze. The butt strap is a small separate rectangle that sits behind the dart and bridges it: two rivets into the left flap, two into the right. The dart stays open by design; the strap carries the load. Zip ties and clips need no strap because they pull through both sides at once.",
+        "formula": "strap 34 × 14 mm · 4 × 3.2 mm holes · one per dart"
+      },
+      {
+        "title": "Every hole is a crack initiator",
+        "body": "In thin plastic, fatigue cracks start at holes, and the crown is the worst place to put one because that is where water sits. Hence the hole-free option: a scored channel and one zip tie round the girth, nothing pierced. Struts fasten at the skirt edge for the same reason.",
+        "formula": "strut pairs at 7 mm inset, 10 mm apart · crown unpierced"
+      },
+      {
+        "title": "Sacrificial strut end",
+        "body": "A fender that jams should let go before it stops the wheel. The optional single oversize hole at the frame end is the intended failure point: one fastener in tension, nothing redundant. This is a safety feature, not a tolerance.",
+        "formula": "off — both ends fully fastened"
+      },
+      {
+        "title": "Nesting",
+        "body": "A tapered blank nests tail-to-nose with a second one, so a front and rear pair costs less than twice one fender in stock width. The ghost outline shows the pair; cut the shared edge once.",
+        "formula": "off"
+      },
+      {
+        "title": "Print geometry",
+        "body": "Each tile draws into 267 × 180 mm inside a 15 mm safe margin, which clears the unprintable edge on essentially every consumer inkjet and laser. Tiles overlap 12 mm so the cut line crosses both sheets and can be aligned by eye.",
+        "formula": "A4 landscape 297 × 210 − 2 × 15 mm = 267 × 180 mm live"
+      },
+      {
+        "title": "Bend allowance, properly",
+        "body": "A fold does not consume the length a sharp corner would. The flat pattern needs the two legs measured to the theoretical sharp corner, minus twice the setback, plus the arc length along the neutral axis. Bend radius is taken as equal to thickness (a hand fold over a straight edge, not a press brake) and the k-factor as 0.44, which is the usual figure for soft sheet in air bending. At zero thickness every term collapses to zero and the pattern is the ideal one.",
+        "formula": "setback = (r+t)·tan(α/2) = 0.8 · BA = α(r+0.44t) = 1.1 · net -0.6 mm per fold"
+      },
+      {
+        "title": "The lap gets wider with thickness",
+        "body": "Two folded flaps meeting at a closed dart collide edge-on if the dart is cut to the ideal width — the material has to go somewhere. Adding one thickness to every dart gives the two edges room to sit alongside each other rather than fighting.",
+        "formula": "dart = L·drop/R/n + t = 0.0 mm"
+      },
+      {
+        "title": "Hemmed edge",
+        "body": "Folding the skirt edge back on itself doubles the material at the most vulnerable line on the fender, removes the cut edge you would otherwise brush your ankle against, and stiffens the whole skirt far more than extra thickness would. Cost is a wider blank and one more fold to make cleanly.",
+        "formula": "off"
+      },
+      {
+        "title": "Export",
+        "body": "SVG and DXF both come out at 1 unit = 1 mm with no transform, so they land at true size in Inkscape, LightBurn, Illustrator or any CAM tool. Cut geometry, fold and score lines, and hole centres go on separate layers — a laser wants to score the folds at low power and cut the outline at full, and it cannot guess which is which from the geometry alone.",
+        "formula": "SVG: 1 user unit = 1 mm · DXF: R12 ASCII, LWPOLYLINE + CIRCLE, layers CUT / FOLD / HOLES"
+      },
+      {
+        "title": "Still open",
+        "body": "Cross-section as a true arc rather than a crown plus two flat facets — better spray control, much harder pattern. A measured k-factor for real sheet rather than the 0.44 rule of thumb. And strut stiffness: a rolled or channel-section strut would outperform a flat strip by a large margin, but it stops being cuttable with scissors, which is the whole point of this thing.",
+        "formula": ""
+      }
+    ],
+    "specs": [
+      {
+        "label": "Fender radius",
+        "value": "360 mm",
+        "note": "estimated tyre radius + clearance"
+      },
+      {
+        "label": "Developed length",
+        "value": "1409 mm",
+        "note": "R × 220° in radians"
+      },
+      {
+        "label": "Developed width",
+        "value": "174 mm",
+        "note": "crown + 2 × skirt, at full width"
+      },
+      {
+        "label": "Finished width",
+        "value": "124 mm",
+        "note": "tail 116 mm after taper"
+      },
+      {
+        "label": "Flap pitch",
+        "value": "176 mm",
+        "note": "arc ÷ 8 flaps"
+      },
+      {
+        "label": "Lap width",
+        "value": "24.1 mm",
+        "note": "incl. 0.8 mm thickness clearance"
+      },
+      {
+        "label": "Bend allowance",
+        "value": "-0.6 mm",
+        "note": "per fold, setback 0.8, arc 1.1"
+      },
+      {
+        "label": "Total take-up",
+        "value": "192.4 mm",
+        "note": "taken up as lap by all darts, one side"
+      },
+      {
+        "label": "Blank area",
+        "value": "0.2 m²",
+        "note": "before darts are cut"
+      },
+      {
+        "label": "Material panels",
+        "value": "× 6",
+        "note": "each up to 267 × 174 mm incl. lap"
+      },
+      {
+        "label": "Sheets to print",
+        "value": "10",
+        "note": "6 × 2 tiles + parts + instructions"
+      }
+    ],
+    "assembledLabel": "Rear, 700c / 29″ / 622, 220° (120/100), 124 mm wide, 8 flaps, 2 struts, 100 mm flap",
+    "printSpecLine": "700c / 29″ / 622, tyre 35 (R 346), crown 55 → 47, skirt 60 @ 55°, clearance 14, 120°/100°, 8 flaps, 2 struts, mudflap 100"
   }
 }

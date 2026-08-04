@@ -1,4 +1,5 @@
 import { D2, WHEELS } from './defaults';
+import { depthFraction, ZIP_INNER_DEPTH, ZIP_LAP_MARGIN, ZIP_R } from './assembly';
 import type { FenderConfig, Geometry, JoinKey } from './types';
 
 /**
@@ -151,13 +152,36 @@ export function geo(s: FenderConfig): Geometry {
  */
 export const JOIN_ORDER: readonly JoinKey[] = ['none', 'cinch', 'rivet', 'zip', 'slot'];
 
-export const JOIN_LAP_NEEDED: Record<JoinKey, number> = {
+/** Lap each join needs, mm. `zip` is not here — WP34 §34.4 derives it per-`Geometry`
+ * in `zipLapNeeded()` below, since a fixed hole depth is a growing fraction of a
+ * shallow skirt. `slot` keeps its own constant: it has no holes to derive from, and
+ * its 11 mm figure was chosen to match zip's old constant only because it costs the
+ * same sections — that reasoning doesn't change just because zip's number now moves. */
+export const JOIN_LAP_NEEDED: Record<Exclude<JoinKey, 'zip'>, number> = {
   none: 0,
   cinch: 3,
   rivet: 7,
-  zip: 11,
   slot: 11
 };
+
+/**
+ * WP34 §34.4: the lap the zip pair needs, derived rather than a constant.
+ *
+ * The inner hole sits at a fixed `ZIP_INNER_DEPTH` below the free edge, so on a
+ * shallow skirt it is a larger FRACTION of the skirt — and `develop.ts` establishes
+ * that the overlap available at a depth `u` of the way down (1 at the free edge, 0 at
+ * the fold) is `u·lap`, not `lap` itself. Requiring `(u·lap)/2 - r ≥ ZIP_LAP_MARGIN` on
+ * each side of the inner hole and solving for `lap` gives the floor below. It rises as
+ * the skirt shallows (15.7 mm at 20 mm, 7.5 mm at 60 mm) rather than sitting at one
+ * value that is only right at one depth (§9.45's shape again). `depthFraction` clamps
+ * to 0 once `ZIP_INNER_DEPTH` exceeds the skirt, so the result saturates at `Infinity`
+ * exactly where the inner hole can no longer be placed at all — `zip` correctly never
+ * reports as fitting there.
+ */
+export function zipLapNeeded(g: Geometry): number {
+  const u = depthFraction(g, ZIP_INNER_DEPTH);
+  return (2 * (ZIP_R + ZIP_LAP_MARGIN)) / u;
+}
 
 export interface JoinFit {
   join: JoinKey;
@@ -175,7 +199,7 @@ export interface JoinFit {
  */
 export function joinFits(g: Geometry): JoinFit[] {
   return JOIN_ORDER.map((join) => {
-    const needed = JOIN_LAP_NEEDED[join];
+    const needed = join === 'zip' ? zipLapNeeded(g) : JOIN_LAP_NEEDED[join];
     const short = Math.max(0, needed - g.lap);
     return { join, needed, fits: short <= 1e-9, short };
   });

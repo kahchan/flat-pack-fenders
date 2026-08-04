@@ -124,9 +124,31 @@ export function depthFraction(g: Geometry, depth: number): number {
 }
 
 /** Hole radius and depths below the free edge, per join. Depths are absolute mm, not
- * fractions, so their spacing does not shrink on a shallow skirt (round 3 §23.6). */
-const ZIP_DEPTHS = [3.5, 8.5];
-const RIVET_DEPTHS = [4.5];
+ * fractions, so their spacing does not shrink on a shallow skirt (round 3 §23.6).
+ *
+ * WP34 §34.1: round 3's 3.5/8.5 mm pair of ⌀4 mm holes left 1.5 mm to the free edge and
+ * 1.0 mm between the holes — both well under ordinary sheet practice (edge ≥ 1.5× hole
+ * ⌀, pitch ≥ 2× hole ⌀) — because §23.6 sized the pair to protect the across-lap
+ * clearance alone and never checked the other two axes. A standard small zip tie is
+ * 2.5 mm wide and ~1 mm thick, so ⌀4 was oversized besides. ⌀3 holes at 6/12 mm give a
+ * 4.5 mm free-edge ligament and 3.0 mm between holes — both exactly at the practice
+ * floor (1.5×3 and 2×3) rather than under it. `ZIP_R`/`ZIP_INNER_DEPTH` are exported so
+ * `geometry.ts` can derive the lap this pair needs from the same numbers, instead of
+ * restating them as a second constant that can drift out of sync (§34.4).
+ */
+const ZIP_OUTER_DEPTH = 6;
+export const ZIP_INNER_DEPTH = 12;
+const ZIP_DEPTHS = [ZIP_OUTER_DEPTH, ZIP_INNER_DEPTH];
+export const ZIP_R = 1.5;
+/** WP34 §34.4: the per-side across-lap ligament `zipLapNeeded()` requires, beyond the
+ * hole's own radius — chosen equal to `ZIP_R` so the two holes together reproduce the
+ * 3.0 mm hole-to-hole floor above when the lap is exactly at the derived minimum. */
+export const ZIP_LAP_MARGIN = 1.5;
+
+/** WP34 §34.5: one ⌀3.2 mm hole at 6.4 mm gives a 4.8 mm free-edge ligament (the same
+ * 1.5×⌀ floor `ZIP_DEPTHS` now meets) against the 2.9 mm the old 4.5 mm depth left. No
+ * inter-hole or across-lap change — a single hole has neither problem. */
+const RIVET_DEPTHS = [6.4];
 
 /** Punched tongue (round 3 §23.5): width along the arc, start depth, and reach. */
 const TONGUE_W_SKIRT = 8;
@@ -238,7 +260,7 @@ export function buildAssembly(
     // once per layer, at each panel's own developed position.
     const depths = s.join === 'zip' ? ZIP_DEPTHS : RIVET_DEPTHS;
     const fourLayer = mergedDarts.has(k);
-    const r = (s.join === 'zip' ? 2 : 1.6) + (fourLayer ? FOUR_LAYER_R_BONUS : 0);
+    const r = (s.join === 'zip' ? ZIP_R : 1.6) + (fourLayer ? FOUR_LAYER_R_BONUS : 0);
     for (const depth of depths) {
       for (const side of sides) {
         features.push({ kind: 'hole', dart: k, side, aa, depth, layers: [k - 1, k], r, fourLayer });

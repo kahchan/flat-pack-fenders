@@ -1,4 +1,4 @@
-import { LAP, PARAM_SPECS, PW, f0, f1 } from '../fender/defaults';
+import { LAP, MEASURED_R_MIN, PARAM_SPECS, PW, f0, f1 } from '../fender/defaults';
 import type { ConfigKey, FenderConfig, Geometry, NumericSpec, PartsModel } from '../fender/types';
 
 /**
@@ -16,6 +16,15 @@ export interface SliderItem {
   min: number;
   max: number;
   step: number;
+  /**
+   * WP24 §24.2/§24.4: the number a slider drag OR an in-place typed edit should start
+   * from and clamp within `[min, max]` — usually `config[key]`, but overridden where the
+   * displayed number isn't the stored one: the angle item shows `g.angleEff` (D4 — the
+   * floor-held value), and the radius item shows the BSD estimate while `measuredR` is
+   * still 0. Committing a typed edit always writes back through `key`, never through
+   * whatever produced this seed, so `config.angle` is never overwritten with `angleEff`.
+   */
+  editValue: number;
 }
 
 export interface SliderGroup {
@@ -30,13 +39,14 @@ function numeric(key: ConfigKey): NumericSpec {
 }
 
 const item = (
+  s: FenderConfig,
   key: ConfigKey,
   label: string,
   display: string,
   hint: string
 ): SliderItem => {
   const { min, max, step } = numeric(key);
-  return { key, label, display, hint, min, max, step };
+  return { key, label, display, hint, min, max, step, editValue: s[key] as number };
 };
 
 /**
@@ -51,25 +61,54 @@ function angleItem(s: FenderConfig, g: Geometry): SliderItem {
   // not overwritten, so deepening the skirt again brings it back.
   const held = Math.abs(g.angleEff - s.angle) > 1e-9;
   const base = item(
+    s,
     'angle',
     'Skirt angle',
     `${f0(g.angleEff)}°`,
     `From the crown plane. Steeper = deeper, narrower, more lap (${f1(g.lap)} mm now)`
   );
+  // WP24 §24.4: the field is edited (and its slider dragged) from the angle actually
+  // built at, never from the possibly-lower stored `s.angle` — otherwise starting an
+  // edit while held at the floor would silently re-commit the floor value over the
+  // user's real setting the moment they touch the field without changing it.
+  const withEditValue = { ...base, editValue: g.angleEff };
   if (g.angleMin === null) {
     return {
-      ...base,
+      ...withEditValue,
       hint: `From the crown plane. At ${g.n} sections no angle leaves a fastenable lap — reduce sections or deepen the skirt`
     };
   }
   const floor = Math.ceil(g.angleMin);
   return {
-    ...base,
-    min: Math.max(base.min, floor),
+    ...withEditValue,
+    min: Math.max(withEditValue.min, floor),
     hint: held
       ? `Held at ${floor}° so there is still a shingle to fasten at ${g.n} sections. Your ${s.angle}° returns if you deepen the skirt`
       : `From the crown plane. Steeper = deeper, narrower, more lap (${f1(g.lap)} mm now). ` +
         `Below ${floor}° there is no shingle to fasten at ${g.n} sections`
+  };
+}
+
+/**
+ * The measured-radius slider, whose `min` is the real-world floor `MEASURED_R_MIN`
+ * rather than `PARAM_SPECS`' wire-format 0 (WP24 §24.1, decision C7). "Estimate" —
+ * `measuredR === 0` — is an explicit state, not a value on the same numeric line: the
+ * slider and any typed edit start from the current BSD estimate instead, so leaving
+ * estimate seeds a real radius rather than jumping to 150.
+ */
+function measuredRItem(s: FenderConfig, g: Geometry): SliderItem {
+  const isEstimate = s.measuredR === 0;
+  const base = item(
+    s,
+    'measuredR',
+    'Measured tyre radius',
+    isEstimate ? 'estimate' : `${s.measuredR} mm`,
+    'Overrides the BSD estimate.'
+  );
+  return {
+    ...base,
+    min: MEASURED_R_MIN,
+    editValue: isEstimate ? Math.round(g.tyreRcalc) : s.measuredR
   };
 }
 
@@ -82,14 +121,9 @@ function angleItem(s: FenderConfig, g: Geometry): SliderItem {
  */
 export function buildEssentialSliders(s: FenderConfig, g: Geometry): SliderItem[] {
   return [
-    item('tyre', 'Tyre width', `${s.tyre} mm`, `Estimated tyre radius ${f0(g.tyreRcalc)} mm`),
-    item(
-      'measuredR',
-      'Measured tyre radius',
-      s.measuredR > 0 ? `${s.measuredR} mm` : 'estimate',
-      'Overrides the BSD estimate. 0 = use the estimate'
-    ),
-    item('clear', 'Clearance from tyre', `${s.clear} mm`, 'Gap between tyre and fender inner face')
+    item(s, 'tyre', 'Tyre width', `${s.tyre} mm`, `Estimated tyre radius ${f0(g.tyreRcalc)} mm`),
+    measuredRItem(s, g),
+    item(s, 'clear', 'Clearance from tyre', `${s.clear} mm`, 'Gap between tyre and fender inner face')
   ];
 }
 
@@ -106,12 +140,14 @@ export function buildFineTuningClusters(
       title: 'Shape',
       items: [
         item(
+          s,
           'crown',
           'Crown width',
           `${s.crown} mm`,
           `Flat panel over the tyre, finished ${f0(finished)} mm`
         ),
         item(
+          s,
           'skirt',
           'Skirt length',
           `${s.skirt} mm`,
@@ -125,12 +161,14 @@ export function buildFineTuningClusters(
         // count: the static floor stands and the lever named is sections, not angle.
         angleItem(s, g),
         item(
+          s,
           'taper',
           'Tail taper',
           `${s.taper}%`,
           `Tail narrows to ${f0(g.crownTail)} mm: clears the frame at the mount`
         ),
         item(
+          s,
           'taperAt',
           'Taper starts at',
           `${s.taperAt}%`,
@@ -141,8 +179,9 @@ export function buildFineTuningClusters(
     {
       title: 'Coverage',
       items: [
-        item('lead', 'Lead (ahead of the axle)', `${s.lead}°`, 'Front fenders want more here'),
+        item(s, 'lead', 'Lead (ahead of the axle)', `${s.lead}°`, 'Front fenders want more here'),
         item(
+          s,
           'trail',
           'Trail (behind the axle)',
           `${s.trail}°`,
@@ -154,12 +193,14 @@ export function buildFineTuningClusters(
       title: 'Construction',
       items: [
         item(
+          s,
           'flaps',
           'Flap count',
           `× ${s.flaps}`,
           `${f0(g.pitch)} mm pitch, ${f1(g.lap)} mm lap. More flaps = smoother curve, less lap to fasten through.`
         ),
         item(
+          s,
           'thick',
           'Material thickness',
           `${f1(s.thick)} mm`,
@@ -171,13 +212,15 @@ export function buildFineTuningClusters(
       title: 'Struts & mudflap',
       items: [
         item(
+          s,
           'struts',
           'Strut count',
           `× ${s.struts}`,
           'Evenly spaced along the arc, fastened at the skirt edge'
         ),
-        item('strutLen', 'Strut length', `${s.strutLen} mm`, 'Flat strip, bend 26 mm from each end'),
+        item(s, 'strutLen', 'Strut length', `${s.strutLen} mm`, 'Flat strip, bend 26 mm from each end'),
         item(
+          s,
           'mudflap',
           'Mudflap length',
           s.mudflap > 0 ? `${s.mudflap} mm` : 'none',
@@ -215,4 +258,30 @@ export function partsSizeLabel(s: FenderConfig, parts: PartsModel): string {
 /** Whether Sheet B prints 1:1 on A4. Source line 1095. */
 export function partsFitNote(parts: PartsModel): string {
   return parts.fitsA4 ? 'fits A4 at full size' : 'wider than A4: cut struts by measurement';
+}
+
+/** Digits after the decimal point in a step, e.g. `0.1` → 1, `5` → 0. Mirrors
+ * `urlCodec.ts`'s own copy — kept separate rather than shared since the two operate on
+ * different shapes (`SliderItem` here, `NumericSpec` there) and the URL codec is a wire
+ * concern this control-layer module otherwise has no reason to import. */
+function stepDecimals(step: number): number {
+  const s = String(step);
+  const dot = s.indexOf('.');
+  return dot === -1 ? 0 : s.length - dot - 1;
+}
+
+/**
+ * Clamp a typed edit to the item's LIVE bounds (`item.min`/`item.max` — already the
+ * derived angle floor or the 150 mm radius floor, not the static `PARAM_SPECS` value —
+ * WP24 §24.4) and snap it to the slider's own step grid, the same grid a drag walks.
+ * Returns `null` for unparsable input so the caller can revert instead of committing.
+ */
+export function clampSliderEdit(item: SliderItem, raw: string): number | null {
+  const n = Number(raw);
+  if (!Number.isFinite(n) || raw.trim() === '') return null;
+  const steps = Math.round((n - item.min) / item.step);
+  const snapped = item.min + steps * item.step;
+  const clamped = Math.min(item.max, Math.max(item.min, snapped));
+  const p = 10 ** stepDecimals(item.step);
+  return Math.round(clamped * p) / p;
 }
