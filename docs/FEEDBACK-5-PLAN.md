@@ -111,8 +111,15 @@ the assembly steps.
 
 ## WP26 — Two front presets
 
-Today: **7 presets, 2 front** (`front-700c`, `front-gravel-650b`), 4 rear, 1 side-agnostic.
-Round 3's decision C9 stands: add two front presets for 4/4 by addition, removing nothing.
+Today: **7 presets, 2 front** (`front-700c`, `front-gravel-650b`), and — corrected during
+implementation — **5 rear, not 4 plus a side-agnostic one**. `hole-free-minimal` sets no `side`
+in its overrides, so it inherits `side: 'rear'` from `DEFAULTS`, and `PresetSelect` groups purely
+on `config.side`: it has been rendering as a fifth Rear entry all along, never "ungrouped" as
+round 3 §C9 assumed. Adding two front presets alone would therefore have produced 4 front / 5 rear.
+
+So this package is **not** a pure data-file change. `PresetSelect` needs a real grouping fix — a
+preset flagged out of both `<optgroup>`s and rendered after them — for "4 and 4" to be reachable
+at all. Decision C9 otherwise stands: add two front presets, remove nothing.
 
 - **Front MTB 26″** — mirrors `mtb-26in` with front coverage and a mudflap.
 - **Front cargo / folder 20″** — mirrors `cargo-20in`, same wheel and stock.
@@ -210,13 +217,49 @@ wheel. Decision C7 stands:
   affordance back to it, and leaving estimate seeds the slider at the current BSD estimate.
 - `measuredR = 0` stays the wire format in config and URL codec — a control-layer change only.
 
-### 24.2 Every slider value becomes click-to-edit (C8)
+### 24.2 The number itself is the control (C8)
 
-`SliderGroups.tsx:22` renders the value as `<span className="slider-item__value mono">`. It becomes
-a text input styled identically until focused, committing **on blur** per house convention; Enter
-commits, Escape reverts.
+`SliderGroups.tsx:22` renders the value as `<span className="slider-item__value mono">`. **Tapping
+or clicking that number puts you straight into editing it, in place** — no pencil icon, no separate
+edit mode, no dialog. The number is the field. It stays visually identical until focused, then reads
+as an input; it commits **on blur** per house convention, Enter commits, Escape reverts.
 
-### 24.3 Two new constraints from WP30 (§9.43)
+Two things follow from "the number is the control":
+
+- **It has to look operable.** A bare `<span>` advertises nothing, which is the same defect §25.2
+  describes for the disclosure. It needs a resting affordance — a hairline underline, a hover/press
+  state, something that says this is a control — not just a cursor change, which is invisible on
+  touch.
+- **Focus should select the whole value**, so tap-and-type replaces rather than appends. Editing a
+  slider value is nearly always "set it to X", not "insert a digit".
+
+### 24.3 Mobile — measured, not assumed
+
+The rail is reused **unmodified** inside the phone bottom sheet and the tablet drawer
+(`responsive.css:9`), so whatever this becomes has to work in a scrollable overlay with an on-screen
+keyboard, not just in the desk rail. Measured at 390 × 844 inside the sheet:
+
+| | today | needed |
+| - | ----- | ------ |
+| value hit area | **48 × 22 px** | ≥ 44 px tall |
+| value font size | 16 px | **must stay ≥ 16 px** |
+
+- **Touch target.** 22 px tall is half the usual 44 px minimum. Expand the hit area with padding or
+  `min-height` on the field *without* changing the number's rendered size — the rail's density is
+  deliberate (5 px element gaps) and the rows must not grow.
+- **Do not shrink the font.** 16 px is not a style choice here: below it, iOS zooms the page on focus
+  and the user is left scrolled somewhere else with no obvious way back. `--text-mono-sm-size` is
+  already 16 px — pin it, and don't let a "compact on mobile" pass quietly drop it.
+- **`inputmode="decimal"`** so the numeric keypad opens rather than the full alphabetic one, plus
+  `enterkeyhint="done"`. These are the difference between usable and not on a phone, and cost a line.
+- **Keyboard occlusion.** In the bottom sheet the keyboard covers the lower half of the screen.
+  Focusing a field near the bottom must scroll it into view, and commit-on-blur has to survive the
+  sheet's own dismiss and drag gestures — tapping away to close the keyboard should commit, not
+  discard, and must not be read as a drag on the sheet.
+- **`estimate` is a word, not a number.** Tapping the measured-radius field when it reads `estimate`
+  should begin editing seeded at the current BSD estimate (§24.1), not at 0 or at empty.
+
+### 24.4 Two constraints from WP30 (§9.43)
 
 The angle slider is no longer an ordinary field, and a naive implementation gets it wrong twice:
 
@@ -233,7 +276,108 @@ The angle slider is no longer an ordinary field, and a naive implementation gets
 - Typing an angle below the current floor clamps to the floor and leaves `config.angle` alone;
   deepening the skirt afterwards restores the typed value.
 - Every other slider round-trips: type, blur, read back the same number.
-- `measuredR` cannot be dragged to a non-physical value, and "estimate" is reachable and legible.
+- `measuredR` cannot be dragged to a non-physical value, and "estimate" is reachable and legible;
+  tapping it while it reads `estimate` starts editing at the BSD estimate.
+- **At 390 × 844, inside the bottom sheet**: every value field's hit area is ≥ 44 px tall, its font
+  size is ≥ 16 px, focusing it does not zoom the page, the numeric keypad opens rather than the
+  alphabetic one, and a field near the bottom scrolls clear of the keyboard. Check the tablet drawer
+  width too — the rail is shared, so a desk-only check proves nothing.
+- Tapping away from a focused field commits, and is not swallowed as a sheet dismiss or drag.
+- The rail's row heights do not grow: the enlarged hit area comes from padding around the number,
+  not from a taller row.
+
+---
+
+## WP34 — The zip stitch holes are too close to tear out
+
+### 34.1 Measured, on a config where the stitch actually fits (§9.44)
+
+`assembly.ts` places the stitch as two ⌀4 mm holes (`r: 2`) at `ZIP_DEPTHS = [3.5, 8.5]` mm in from
+the skirt free edge. On a 60 mm skirt at 8 sections — 24.1 mm of lap, comfortably past the 11 mm the
+join asks for — the three ligaments that decide whether it holds are:
+
+| ligament | actual | ordinary sheet practice |
+| -------- | ------ | ----------------------- |
+| hole edge → skirt free edge | **1.50 mm** | centre ≥ 1.5–2 × hole ⌀, i.e. 6–8 mm |
+| **between the two holes** | **1.00 mm** | centres ≥ 2 × hole ⌀, i.e. 8 mm |
+| across the lap, each side | 8.31–9.32 mm | comfortable |
+
+Two ⌀4 mm holes on 5 mm centres leave **1 mm of material** between them in 0.8 mm sheet. That is not
+a stitch, it is a perforation line: the ligament tears and the pair becomes one ragged slot. The
+outer hole is worse in service — 1.5 mm to the free edge, and a tie under tension pulls in exactly
+that direction.
+
+### 34.2 The lap requirement was guarding the one axis that was safe
+
+Round 3 §23.6 chose 3.5/8.5 mm to keep both holes near the free edge, *where the lap is widest*, and
+`JOIN_LAP_NEEDED.zip = 11` was derived from that same across-lap clearance. The reasoning was sound
+about the lap and silent about edge distance and hole pitch — so the constant protects the dimension
+with 8 mm to spare while the two binding dimensions went unchecked. Same failure shape as §9.35:
+a number derived carefully from one constraint and then trusted for all of them.
+
+### 34.3 The fix
+
+A standard small zip tie is 2.5 mm wide and about 1 mm thick, so ⌀4 is oversized. **⌀3 holes
+(`r: 1.5`) at 6 mm and 12 mm** from the free edge:
+
+| ligament | proposed | today |
+| -------- | -------- | ----- |
+| hole → free edge | 4.5 mm | 1.5 mm |
+| between holes | 3.0 mm | 1.0 mm |
+
+### 34.4 `JOIN_LAP_NEEDED.zip` has to become derived, not a constant (§9.45)
+
+Moving the inner hole to a fixed 12 mm depth makes it a larger *fraction* of a shallow skirt, so the
+lap it needs scales with skirt depth:
+
+| skirt | lap needed at the inner hole | lap available at 8 sections |
+| ----- | ---------------------------- | --------------------------- |
+| 20 mm | 15.7 mm | 8.0 mm ✗ |
+| 26 mm | 11.4 mm | 10.4 mm ✗ |
+| 32 mm | 9.7 mm | 12.8 mm ✓ |
+| 40 mm | 8.6 mm | 16.0 mm ✓ |
+| 60 mm | 7.5 mm | 24.1 mm ✓ |
+
+A single hardcoded `11` is about right at a 26 mm skirt and wrong on both sides of it — too lenient
+below, needlessly strict above. **Derive it**, the way WP30 derives the angle floor:
+`needed = 2·(r + margin) / u`, with `u = (skirt − innerDepth) / skirt`. That keeps one rule instead
+of a constant that is only true at one skirt depth, and it means the join-fit report tells the truth
+for shallow skirts instead of promising a stitch that would tear.
+
+`joinFits()`, `flapsForLap()` and `skirtForLap()` all read `JOIN_LAP_NEEDED`, so this makes the
+table a function of geometry rather than a literal. `none`/`cinch`/`rivet` keep constants.
+
+### 34.5 `rivet` is marginal too, and should be fixed in the same pass
+
+One ⌀3.2 mm hole (`r: 1.6`) at 4.5 mm gives a **2.9 mm** free-edge ligament against a ~4.8 mm rule
+of thumb. No inter-hole problem, since there is only one — but the edge distance wants the same
+treatment rather than being left as the next thing to trip over.
+
+### 34.6 Blast radius
+
+- `assembly.ts` — `ZIP_DEPTHS`, `RIVET_DEPTHS`, the hole radii.
+- `geometry.ts` — `JOIN_LAP_NEEDED` becomes partly derived; `joinFits`/`flapsForLap`/`skirtForLap`
+  take the derived value.
+- `scripts/extract-golden.mjs` — mirrors both.
+- **8 of the 11 golden cases move**: seven carry `join: 'zip'` (`default-700c-rear`,
+  `cargo-20in-single`, `front-700c`, `gravel-650b-hem-a4`, `nested-pair`, `nested-cargo-20in`,
+  `strap-strut-end`, `strap-strut-end-cargo`) and one carries `rivet` (`rivet-join`).
+- **No preset moves.** All nine ship `cinch` or `none`, so preset warning-freeness is unaffected.
+
+Worth noting while here: those seven zip goldens sit at 4.1–5.4 mm of lap, far under what a stitch
+needs, so the fixtures pin stitch hole positions for fenders that cannot take a stitch. Legitimate
+for a fixture, but it means the goldens give no coverage of the geometry this package is about — a
+zip case with a deep skirt and a low section count would be worth adding.
+
+### Verify
+
+- For a sweep of skirt depths and section counts where `zip` reports as fitting, assert all three
+  ligaments clear their minimums — free edge, hole-to-hole, and across-lap on both holes. This is
+  the test whose absence let §9.44 ship.
+- `zip` must NOT report as fitting on a skirt shallow enough that the inner hole cannot be placed
+  (the 20 mm and 26 mm rows above).
+- Same ligament assertions for `rivet`.
+- The WP29 layer-coincidence test still passes at the new depths.
 
 ---
 
@@ -244,7 +388,11 @@ pinning first means writing the collision handling twice. WP26 next: small, and 
 preset list looks like before any UI work is checked against it. WP25 and WP24 are independent of
 both and of each other, but WP25 §25.3 should land before WP24 touches the same slider rows.
 
-1. **WP27** — seam column into the assembly, then pin the seam to the page grid
-2. **WP26** — two front presets
-3. **WP25** — rail and canvas layout defects
+1. ~~**WP27** — seam column into the assembly, then pin the seam to the page grid~~ ✅ DONE (`458ee38`)
+2. ~~**WP26** — two front presets~~ ✅ DONE
+3. ~~**WP25** — rail and canvas layout defects~~ ✅ DONE
 4. **WP24** — editable numbers + radius state
+5. **WP34** — zip/rivet hole spacing, and a derived `JOIN_LAP_NEEDED.zip`
+
+WP34 last of the two remaining: it moves cut geometry and 8 of 11 goldens, and WP24 is confined to
+the control rail, so running WP24 first keeps the golden churn in one package.

@@ -152,6 +152,18 @@
   gap: 6px;
   margin: 32px 0 18px;
   border-bottom: 1px solid var(--color-border);
+  /* WP25 §25.5: pinned to the canvas scroll container so returning to the jump nav
+   * never means scrolling back up. Same §25.1 lesson — it must own its background.
+   *
+   * And the same §25.1 MECHANISM: a sticky offset resolves against the scroll
+   * container's PADDING box, and `.canvas-pane` carries `padding-top: var(--space-8)`
+   * just as the rail does. Plain `top: 0` pinned this 40 px down the pane, leaving a
+   * band above it for content to scroll through — the exact defect §25.1 describes,
+   * on the other pane. Cancel the padding rather than re-deriving the offset. */
+  position: sticky;
+  top: calc(var(--space-8) * -1);
+  z-index: 4;
+  background: var(--color-bg);
 }
 
 .section-nav__btn {
@@ -333,13 +345,22 @@
   margin: 0 0 10px;
 }
 
-/* WP22 B4: shared header (rail's sticky top / phone sheet's peek). */
+/* WP22 B4: shared header (rail's sticky top / phone sheet's peek). WP25 §25.1: a sticky
+   child's `top: 0` is measured against the scrolling ancestor's padding box, so with the
+   rail's own padding-top the header was sticking 40px down at every scroll position —
+   the rail's own padding-top, unstyled, showing scrolled content through the gap above
+   the title. `top` cancels that offset. The rail's flex `gap` below the header is
+   likewise unstyled space outside the header's own box; padding-bottom/margin-bottom of
+   the same 26px cancel each other in the flex gap calculation, so the sticky background
+   reaches the divider without moving it. */
 .control-header--rail {
   position: sticky;
-  top: 0;
+  top: calc(var(--space-8) * -1);
   background: var(--color-bg-alt);
   padding-top: var(--space-8);
+  padding-bottom: 26px;
   margin-top: calc(var(--space-8) * -1);
+  margin-bottom: -26px;
   z-index: 1;
 }
 
@@ -358,19 +379,56 @@
   cursor: pointer;
 }
 
+/* WP25 §25.3: the disclosure is a CONTROL; the cluster headings inside it are labels.
+   They used to share one class and one look, so every section heading read as another
+   accordion. Splitting the class was necessary but not sufficient — `.rail-cluster-label`
+   was a byte-for-byte copy of `.rail-group-label`, so nothing actually looked different.
+   The summary now borrows the same raised/bordered language as `.preset-select`, which is
+   how this rail already spells "you can operate this", and the clusters stay quiet. */
 .fine-tuning > summary {
   cursor: pointer;
   list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--color-fg);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
 }
 
 .fine-tuning > summary::-webkit-details-marker {
   display: none;
 }
 
+/* WP25 §25.2: the only affordance that the disclosure holds content — keyed off `open`
+   so it works without JS state. */
+.fine-tuning > summary::after {
+  content: '+';
+  font-family: var(--font-mono);
+}
+
+.fine-tuning[open] > summary::after {
+  content: '\2212';
+}
+
 .rail-divider {
   height: 1px;
   background: var(--color-border);
   flex-shrink: 0;
+}
+
+/* WP25 §25.3: the five clusters inside `.fine-tuning` were reading as five more
+   accordions because they shared `.rail-group-label` with the real `<summary>`. The
+   clusters themselves also had no separation from each other — `.rail-group`'s own 8px
+   gap is intra-group (label to its sliders), not inter-group — so give the open
+   disclosure real spacing between clusters, generous enough for the angle slider's
+   two-line hint (the longest in the rail). */
+.fine-tuning[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
 }
 
 .rail-group {
@@ -380,6 +438,13 @@
 }
 
 .rail-group-label {
+  font-size: var(--text-label-size);
+  letter-spacing: var(--text-label-track);
+  text-transform: uppercase;
+  color: var(--color-fg-faint);
+}
+
+.rail-cluster-label {
   font-size: var(--text-label-size);
   letter-spacing: var(--text-label-track);
   text-transform: uppercase;
@@ -506,8 +571,13 @@
   line-height: 1.4;
 }
 
+/* WP25 §25.4: the three `lg` export buttons overflow the 392px rail as a single row —
+   checked against the real rail width, not the button labels on paper. Wrapping keeps
+   them full `lg` size (matching Print/Reset) rather than shrinking text that still won't
+   fit at `md`. */
 .action-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 

@@ -27,7 +27,7 @@ export function JoinSelector({ config, setField }: JoinSelectorProps) {
 
   return (
     <div className="rail-group">
-      <div className="rail-group-label">Flap join</div>
+      <div className="rail-cluster-label">Flap join</div>
       <div className="option-list">
         {JOINS.map((o) => {
           const fit = fits.find((f) => f.join === o.k)!;

@@ -273,6 +273,12 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
           { x: xTDC, label: 'SEATSTAY BRIDGE' }
         ];
 
+  // WP33 §9.40 — the post-nudge x is the only place this fact should exist. `notes.ts`
+  // used to recompute the pre-nudge `mounts` x itself (mirroring the maths above) so its
+  // assembly-steps copy could drift up to 15 mm from the slot actually cut. Recording the
+  // resolved x here, on the model, means notes.ts reads the same number the slot used.
+  const mountPositions: { x: number; label: string }[] = [];
+
   for (const m of mounts) {
     // WP27 §27.2 — a mount has real freedom along the crown (no two frames put their
     // bridges the same distance apart anyway, per the comment above), so it is the one
@@ -288,6 +294,7 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
       anchor: 'middle',
       text: m.label
     });
+    mountPositions.push({ x: mx, label: m.label });
   }
 
   // ── Struts ─────────────────────────────────────────────────────────────────
@@ -490,6 +497,7 @@ export function buildBlank(s: FenderConfig, g: Geometry = geo(s)): BlankModel {
     labels,
     panelCount,
     strutFrac,
+    mounts: mountPositions,
     viewBox,
     bboxW,
     bboxH

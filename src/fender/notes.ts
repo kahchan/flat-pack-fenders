@@ -42,23 +42,6 @@ function joinNote(join: JoinKey): string {
 }
 
 /**
- * Mount positions along the arc. Mirrors the private `mounts` computation in
- * `pattern.ts` (source lines ~731–738) — not part of `BlankModel`, since it exists only
- * to place frame-mount slots and labels, not as a model field. Recomputed here rather
- * than exposed on the frozen `types.ts` contract; if `pattern.ts` ever changes this
- * formula, the fixture test in `notes.test.ts` will catch the drift.
- */
-function mountPositions(s: FenderConfig, g: Geometry): { x: number; label: string }[] {
-  const xTDC = (s.lead / Math.max(1, g.cov)) * g.L;
-  return s.side === 'front'
-    ? [{ x: xTDC, label: 'FORK CROWN' }]
-    : [
-        { x: Math.min(xTDC * 0.4, g.L - 40), label: 'CHAINSTAY BRIDGE' },
-        { x: xTDC, label: 'SEATSTAY BRIDGE' }
-      ];
-}
-
-/**
  * The eight-to-ten step assembly sequence. Step numbers renumber depending on whether
  * the blank is panelled (`blank.panelCount > 1`) and whether a mudflap exists
  * (`s.mudflap > 0`) — preserved exactly from source lines ~1126–1137.
@@ -165,9 +148,12 @@ export function buildNotes(
   g: Geometry = geo(s),
   blank: BlankModel = buildBlank(s, g)
 ): EngNote[] {
-  const mounts = mountPositions(s, g);
-  // Mirrors pattern.ts's local `inset` (source line ~740) — see mountPositions() above
-  // for why this is recomputed rather than read off a model.
+  // WP33 §9.40 — the actual, post-nudge slot x, read off the model instead of
+  // recomputed here (which used to mirror pattern.ts's pre-nudge maths and could drift
+  // up to 15 mm from the slot `nudgeAway` actually cut).
+  const mounts = blank.mounts;
+  // Mirrors pattern.ts's local `inset` (source line ~740) — no model field for this one
+  // since it only feeds a comment on strut placement, not a fact that appears elsewhere.
   const inset = Math.max(5, Math.min(7, g.skirt * 0.22));
   const panelCount = blank.panelCount;
 

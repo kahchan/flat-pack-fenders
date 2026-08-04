@@ -28,7 +28,7 @@ export function OptionToggles({ config, setField }: OptionTogglesProps) {
 
   return (
     <div className="rail-group">
-      <div className="rail-group-label">Options</div>
+      <div className="rail-cluster-label">Options</div>
       <div className="option-list">
         {toggles.map((o) => {
           const on = config[o.k];
