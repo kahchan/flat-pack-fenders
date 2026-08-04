@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { LAP, PW, WHEELS, tileOriginX } from '../defaults';
-import { buildAssembly, mergedDartAt } from '../assembly';
+import { ZIP_R, buildAssembly, mergedDartAt } from '../assembly';
 import { geo } from '../geometry';
 import { buildBlank } from '../pattern';
 import { buildTiling, croppedTile } from '../tiling';
@@ -214,7 +214,7 @@ describe('WP27 §27.2 — the merged four-layer corner', () => {
           checked++;
 
           const asm = buildAssembly(cfg, g, mergedDarts);
-          const baseR = join === 'zip' ? 2 : join === 'rivet' ? 1.6 : 2;
+          const baseR = join === 'zip' ? ZIP_R : join === 'rivet' ? 1.6 : 2;
           for (const f of asm.features) {
             if (mergedDarts.has(f.dart) && f.kind === 'hole') {
               expect(f.fourLayer, `${wheel} ${join} flaps=${flaps} dart ${f.dart}`).toBe(true);

@@ -123,12 +123,23 @@ function geo(s) {
   return { bsd, tyreRcalc, tyreR, R, cov, th, aNose, L, a, skirt: skirtFlat, skirtTrue: s.skirt, t, rBend, setback, BA, bendComp, hem, proj, drop, crown0: s.crown, crownTail, knee, Wd, yc: Wd / 2, n, pitch, removal, notch, lap, angleMin, angleEff, dA, faceted };
 }
 
-// WP23 §23.3 — mirrors src/fender/geometry.ts's join-fit table exactly.
-const JOIN_LAP_NEEDED = { none: 0, cinch: 3, rivet: 7, zip: 11, slot: 11 };
+// WP23 §23.3 / WP34 §34.4 — mirrors src/fender/geometry.ts's join-fit table exactly.
+// `zip` is derived, not a constant: ZIP_INNER_DEPTH is a growing fraction of a shallow
+// skirt, so the lap it needs scales with skirt depth.
+const JOIN_LAP_NEEDED = { none: 0, cinch: 3, rivet: 7, slot: 11 };
+const ZIP_INNER_DEPTH = 12;
+const ZIP_R = 1.5;
+const ZIP_LAP_MARGIN = 1.5;
+function zipLapNeededRef(g) {
+  const u = g.skirt <= 0 ? 0 : Math.max(0, Math.min(1, (g.skirt - ZIP_INNER_DEPTH) / g.skirt));
+  return (2 * (ZIP_R + ZIP_LAP_MARGIN)) / u;
+}
+const JOIN_ORDER = ['none', 'cinch', 'rivet', 'zip', 'slot'];
 function joinFitsRef(g) {
-  return Object.entries(JOIN_LAP_NEEDED).map(([join, needed]) => ({
-    join, needed, fits: Math.max(0, needed - g.lap) <= 1e-9, short: Math.max(0, needed - g.lap)
-  }));
+  return JOIN_ORDER.map((join) => {
+    const needed = join === 'zip' ? zipLapNeededRef(g) : JOIN_LAP_NEEDED[join];
+    return { join, needed, fits: Math.max(0, needed - g.lap) <= 1e-9, short: Math.max(0, needed - g.lap) };
+  });
 }
 // WP29 — `lap(n) = removal/n`, so the `- g.t` the round-3 form carried is gone with it.
 function flapsForLapRef(g, needed) {
@@ -299,10 +310,11 @@ function blank(s) {
       }
       continue;
     }
-    const depths = s.join === 'zip' ? [3.5, 8.5] : [4.5];
+    // WP34 §34.1/§34.5 — mirrors src/fender/assembly.ts's ZIP_DEPTHS/RIVET_DEPTHS.
+    const depths = s.join === 'zip' ? [6, ZIP_INNER_DEPTH] : [6.4];
     // WP27 §27.2 — a merged four-layer corner bumps the radius, mirroring
     // src/fender/assembly.ts exactly.
-    const r = (s.join === 'zip' ? 2 : 1.6) + (mergedDarts.has(k) ? FOUR_LAYER_R_BONUS : 0);
+    const r = (s.join === 'zip' ? ZIP_R : 1.6) + (mergedDarts.has(k) ? FOUR_LAYER_R_BONUS : 0);
     for (const depth of depths) {
       for (const side of [0, 3]) {
         for (const panel of [k - 1, k]) {
@@ -627,8 +639,9 @@ function isometric(s, g, strutFrac, spin) {
       }
       continue;
     }
-    const depths = s.join === 'zip' ? [3.5, 8.5] : [4.5];
-    const r = s.join === 'zip' ? 2 : 1.6;
+    // WP34 §34.1/§34.5 — mirrors src/fender/assembly.ts's ZIP_DEPTHS/RIVET_DEPTHS.
+    const depths = s.join === 'zip' ? [6, ZIP_INNER_DEPTH] : [6.4];
+    const r = s.join === 'zip' ? ZIP_R : 1.6;
     for (const depth of depths) {
       for (const side of [0, 3]) {
         const q = point3(k - 1, aa, depth, side);
@@ -1088,7 +1101,11 @@ const CASES = {
   // with multiple struts (CARGO20 has 3), so the fixture pins a case where the taller
   // paddle footprint actually changes packing.
   'strap-strut-end': { ...DEFAULTS, strutEnd: 'strap' },
-  'strap-strut-end-cargo': { ...CARGO20, strutEnd: 'strap' }
+  'strap-strut-end-cargo': { ...CARGO20, strutEnd: 'strap' },
+  // WP34 — every other zip fixture sits at 4.1-5.4 mm of lap, far under what a stitch
+  // needs, so none of them exercise the geometry this package is about. A deep skirt at
+  // a low section count is where zip actually fits (§34.1's own measured example).
+  'deep-skirt-zip': { ...DEFAULTS, skirt: 60, flaps: 8 }
 };
 
 const GEO_KEYS = ['bsd','tyreRcalc','tyreR','R','cov','th','aNose','L','a','skirt','skirtTrue','t','rBend','setback','BA','bendComp','hem','proj','drop','crown0','crownTail','knee','Wd','yc','n','pitch','removal','notch','lap'];

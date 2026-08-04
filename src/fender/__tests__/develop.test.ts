@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { buildAssembly, depthFraction, panelMidAngle } from '../assembly';
+import { ZIP_INNER_DEPTH, buildAssembly, depthFraction, panelMidAngle } from '../assembly';
 import { assembledAngle, develop, developFeature, flatX, point3, refold } from '../develop';
 import { DEFAULTS } from '../defaults';
 import { geo } from '../geometry';
@@ -53,20 +53,21 @@ describe('WP29 §29.3 — the assembled model is the source of truth', () => {
   });
 
   // The regression. Round 3 used `d / skirt`; the overlap triangle needs
-  // `(skirt - d) / skirt`. At 8.5 mm below the free edge on a 59.4 mm skirt the old
-  // formula separated the layers by 3.49 mm where 20.90 mm of lap is available.
+  // `(skirt - d) / skirt`. WP34 moved the zip pair's inner hole to `ZIP_INNER_DEPTH`
+  // (12 mm) — still deep enough below the free edge that the old, backwards formula
+  // would separate the layers by a fraction of what is really available.
   test('§9.35: the lap slant runs from the free edge, not toward it', () => {
     const s = cfg({ join: 'zip' });
     const g = geo(s);
-    const deep = buildAssembly(s, g).features.find((f) => f.depth === 8.5);
+    const deep = buildAssembly(s, g).features.find((f) => f.depth === ZIP_INNER_DEPTH);
     expect(deep).toBeDefined();
 
     const [a, b] = developFeature(g, deep!);
     const separation = Math.abs(b!.x - a!.x);
-    const wrong = (8.5 / g.skirt) * g.lap;
+    const wrong = (ZIP_INNER_DEPTH / g.skirt) * g.lap;
 
-    expect(separation).toBeCloseTo(((g.skirt - 8.5) / g.skirt) * g.lap, 6);
-    expect(separation).toBeGreaterThan(wrong * 4);
+    expect(separation).toBeCloseTo(((g.skirt - ZIP_INNER_DEPTH) / g.skirt) * g.lap, 6);
+    expect(separation).toBeGreaterThan(wrong * 3);
   });
 
   test('flatX and assembledAngle invert each other', () => {
