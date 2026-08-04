@@ -8,8 +8,8 @@ import { decodeConfig, encodeConfig } from '../urlCodec';
 import type { FenderConfig, Geometry } from '../../fender/types';
 
 describe('PRESETS', () => {
-  it('has seven presets with unique ids', () => {
-    expect(PRESETS).toHaveLength(7);
+  it('has nine presets with unique ids', () => {
+    expect(PRESETS).toHaveLength(9);
     expect(new Set(PRESETS.map((p) => p.id)).size).toBe(PRESETS.length);
   });
 
@@ -39,6 +39,23 @@ describe('PRESETS', () => {
       expect(decodeConfig(encoded)).toEqual(preset.config);
     }
   );
+
+  // WP26: `PresetSelect`'s Front/Rear `<optgroup>`s must read 4 and 4, with
+  // `hole-free-minimal` excluded from both — it is a construction profile, not a wheel
+  // profile (FEEDBACK-3-PLAN.md:492), so it carries `ungrouped: true` rather than a side.
+  it('groups into 4 front, 4 rear, with hole-free-minimal ungrouped', () => {
+    const front = PRESETS.filter((p) => !p.ungrouped && p.config.side === 'front');
+    const rear = PRESETS.filter((p) => !p.ungrouped && p.config.side === 'rear');
+    const ungrouped = PRESETS.filter((p) => p.ungrouped);
+    expect(front.map((p) => p.id)).toEqual([
+      'front-700c',
+      'front-gravel-650b',
+      'front-mtb-26in',
+      'front-cargo-20in'
+    ]);
+    expect(rear.map((p) => p.id)).toEqual(['rear-700c', 'gravel-650b', 'mtb-26in', 'cargo-20in']);
+    expect(ungrouped.map((p) => p.id)).toEqual(['hole-free-minimal']);
+  });
 
   // WP18: every preset must ship warning-free bar the one deliberate exception. Written
   // as a loop over PRESETS rather than one assertion per id, so it keeps working as

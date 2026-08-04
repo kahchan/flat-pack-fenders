@@ -2,9 +2,10 @@ import { COVERAGE, DEFAULTS } from '../fender/defaults';
 import type { FenderConfig } from '../fender/types';
 
 /**
- * PLAN §5's presets, each a `Partial<FenderConfig>` merged over `DEFAULTS`. Seven as of
- * WP18: the original six plus `front-gravel-650b`, added so the Front group in
- * `PresetStrip` is not a single card against Rear's five (PLAN FEEDBACK WP18).
+ * PLAN §5's presets, each a `Partial<FenderConfig>` merged over `DEFAULTS`. Nine as of
+ * WP26: the original seven (six plus `front-gravel-650b`, added so the Front group in
+ * `PresetStrip` was not a single card against Rear's five, PLAN FEEDBACK WP18) plus
+ * `front-mtb-26in` and `front-cargo-20in`, which even up Front/Rear to 4/4.
  */
 export interface Preset {
   id: string;
@@ -12,6 +13,14 @@ export interface Preset {
   /** Short mono spec line for the preset card. */
   spec: string;
   config: FenderConfig;
+  /**
+   * WP26: `config.side` always resolves to a concrete value (it's a required field, so
+   * `hole-free-minimal` inherits `DEFAULTS.side === 'rear'`), which is not the same as
+   * belonging to the Rear wheel group — it's a construction profile, not a wheel profile
+   * (FEEDBACK-3-PLAN.md:492). `PresetSelect` keeps anything flagged here out of both
+   * Front/Rear `<optgroup>`s so those read the wheel-preset counts, not the raw side field.
+   */
+  ungrouped?: boolean;
 }
 
 const preset = (
@@ -146,15 +155,74 @@ export const PRESETS: Preset[] = [
     }
   ),
 
+  // WP26 — front-side sibling of `mtb-26in`: same wheel/tyre/crown/flap count, retargeted
+  // to front coverage with a mudflap (front presets carry one; rear MTB doesn't). Join is
+  // left unset so it inherits `DEFAULTS`' `cinch` — 3.6 mm of lap here, which is the only
+  // join that fits below `rivet`'s 7 mm floor.
   preset(
-    'hole-free-minimal',
-    'Hole-free minimal',
-    'No rivets or zip-ties, 1 strut, slotted tongue mount',
+    'front-mtb-26in',
+    'Front MTB 26″',
+    'Front, 26in, 55 mm tyre, 78 mm crown, 18 flaps',
     {
-      join: 'none',
-      struts: 1,
-      tongue: true,
-      mudflap: 0
+      side: 'front',
+      wheel: '26in',
+      tyre: 55,
+      clear: 20,
+      crown: 78,
+      flaps: 18,
+      lead: COVERAGE.front.lead,
+      trail: COVERAGE.front.trail,
+      mudflap: 60
     }
-  )
+  ),
+
+  // WP26 — front-side sibling of `cargo-20in`: same wheel and stock, retargeted to front
+  // coverage. `cargo-20in` carries `join: 'cinch'` (not the `zip` its own comment predates);
+  // this preset leaves `join` unset so it inherits that same `cinch` from `DEFAULTS` rather
+  // than risking a stale re-specification. 4.7 mm of lap here — `cinch` fits, `zip`/`slot`
+  // (11 mm) would not.
+  preset(
+    'front-cargo-20in',
+    'Front cargo / folder 20″',
+    'Front, 20in, 50 mm tyre, 3 struts, A4 panels',
+    {
+      side: 'front',
+      wheel: '20in',
+      tyre: 50,
+      measuredR: 0,
+      clear: 16,
+      crown: 62,
+      skirt: 30,
+      angle: 55,
+      thick: 0.8,
+      lead: COVERAGE.front.lead,
+      trail: COVERAGE.front.trail,
+      taper: 5,
+      taperAt: 70,
+      flaps: 16,
+      struts: 3,
+      strutLen: 200,
+      mudflap: 90,
+      stock: 'a4',
+      tongue: true,
+      fuse: false,
+      nest: false,
+      hem: false
+    }
+  ),
+
+  {
+    ...preset(
+      'hole-free-minimal',
+      'Hole-free minimal',
+      'No rivets or zip-ties, 1 strut, slotted tongue mount',
+      {
+        join: 'none',
+        struts: 1,
+        tongue: true,
+        mudflap: 0
+      }
+    ),
+    ungrouped: true
+  }
 ];

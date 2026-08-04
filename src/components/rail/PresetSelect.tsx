@@ -36,7 +36,7 @@ export function PresetSelect({ config, onApply, className }: PresetSelectProps) 
         </option>
       )}
       {GROUPS.map((g) => {
-        const presets = PRESETS.filter((p) => p.config.side === g.side);
+        const presets = PRESETS.filter((p) => !p.ungrouped && p.config.side === g.side);
         if (presets.length === 0) return null;
         return (
           <optgroup key={g.side} label={g.label}>
@@ -48,6 +48,11 @@ export function PresetSelect({ config, onApply, className }: PresetSelectProps) 
           </optgroup>
         );
       })}
+      {PRESETS.filter((p) => p.ungrouped).map((preset) => (
+        <option key={preset.id} value={preset.id}>
+          {preset.name}
+        </option>
+      ))}
     </select>
   );
 }
