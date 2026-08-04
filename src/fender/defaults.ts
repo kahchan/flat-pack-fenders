@@ -182,6 +182,16 @@ export const DEFAULTS: FenderConfig = {
 };
 
 /**
+ * WP24 §24.1 (decision C7): the measured-radius CONTROL's real floor — under the 203 mm
+ * bare rim radius of the smallest supported wheel, so an unusually low 20″ measurement
+ * stays reachable, but a two-digit radius (a valid `measuredR` per `PARAM_SPECS` below,
+ * yet no wheel anyone fits) does not. `PARAM_SPECS.measuredR.min` stays 0 — that's the
+ * wire format's "use the BSD estimate" sentinel, a schema concern the URL codec and
+ * config clamp still need — this is only the slider/typed-edit control's own bound.
+ */
+export const MEASURED_R_MIN = 150;
+
+/**
  * Bounds for every parameter. Drives the sliders AND clamps decoded URL hashes —
  * a hash is untrusted input and must never be able to produce NaN geometry.
  */
