@@ -15,9 +15,9 @@
 
 /* ── Faces (self-hosted; see public/fonts/NOTICE.md) ── */
 @font-face {
-  font-family: 'Hanken Grotesk';
-  src: url('/fonts/HankenGrotesk-latin.woff2') format('woff2');
-  font-weight: 100 900;
+  font-family: 'Newsreader';
+  src: url('/fonts/Newsreader-latin.woff2') format('woff2');
+  font-weight: 300 400;
   font-style: normal;
   font-display: swap;
   unicode-range:
@@ -25,20 +25,19 @@
     U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: 'Hanken Grotesk';
-  src: url('/fonts/HankenGrotesk-latin-ext.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
+  font-family: 'Newsreader';
+  src: url('/fonts/Newsreader-Italic-latin.woff2') format('woff2');
+  font-weight: 300 400;
+  font-style: italic;
   font-display: swap;
   unicode-range:
-    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
-    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
-    U+A720-A7FF;
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: 'JetBrains Mono';
-  src: url('/fonts/JetBrainsMono-latin.woff2') format('woff2');
-  font-weight: 400 700;
+  font-family: 'Archivo';
+  src: url('/fonts/Archivo-latin.woff2') format('woff2');
+  font-weight: 400 600;
   font-style: normal;
   font-display: swap;
   unicode-range:
@@ -46,15 +45,24 @@
     U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: 'JetBrains Mono';
-  src: url('/fonts/JetBrainsMono-latin-ext.woff2') format('woff2');
-  font-weight: 400 700;
+  font-family: 'Ojuju';
+  src: url('/fonts/Ojuju-latin.woff2') format('woff2');
+  font-weight: 300 700;
   font-style: normal;
   font-display: swap;
   unicode-range:
-    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
-    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
-    U+A720-A7FF;
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('/fonts/GeistMono-latin.woff2') format('woff2');
+  font-weight: 400 500;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 :root {
@@ -121,8 +129,10 @@
   color-scheme: light;
 
   /* ── Families ── */
-  --font-sans: 'Hanken Grotesk', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Newsreader', 'Iowan Old Style', Georgia, serif;
+  --font-sans: 'Archivo', system-ui, sans-serif;
+  --font-eyebrow: 'Ojuju', 'Archivo', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
 
   /* ── Weights ── */
   --fw-light: 300;
