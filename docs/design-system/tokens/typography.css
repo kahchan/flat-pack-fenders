@@ -1,0 +1,23 @@
+:root{
+  /* Scale — a paper-derived ratio, not a 4px grid. */
+  --text-2xs:10px;--text-xs:11.5px;--text-sm:13px;--text-base:15px;--text-md:17px;
+  --text-lg:21px;--text-xl:27px;--text-2xl:34px;--text-3xl:44px;--text-4xl:58px;--text-5xl:76px;
+
+  --leading-tight:1.06;--leading-snug:1.22;--leading-body:1.5;--leading-loose:1.65;
+
+  --tracking-display:-0.02em;--tracking-body:0;--tracking-label:0.14em;--tracking-eyebrow:0.24em;--tracking-lockup:0.16em;--tracking-mono:0.01em;
+
+  --weight-light:300;--weight-regular:400;--weight-medium:500;--weight-semibold:600;--weight-bold:700;
+
+  /* Composite roles */
+  --type-display:var(--weight-light) var(--text-4xl)/var(--leading-tight) var(--font-display);
+  --type-title:var(--weight-regular) var(--text-2xl)/var(--leading-snug) var(--font-display);
+  --type-subtitle:italic var(--weight-regular) var(--text-lg)/var(--leading-snug) var(--font-display);
+  --type-body:var(--weight-regular) var(--text-base)/var(--leading-body) var(--font-sans);
+  --type-body-serif:var(--weight-regular) var(--text-md)/var(--leading-loose) var(--font-display);
+  --type-ui:var(--weight-medium) var(--text-sm)/1.3 var(--font-sans);
+  --type-eyebrow:var(--weight-semibold) var(--text-2xs)/1.2 var(--font-eyebrow);
+  --type-label:var(--weight-medium) var(--text-xs)/1.2 var(--font-mono);
+  --type-data:var(--weight-regular) var(--text-sm)/1.4 var(--font-mono);
+  --type-figure:var(--weight-light) var(--text-3xl)/1 var(--font-mono);
+}

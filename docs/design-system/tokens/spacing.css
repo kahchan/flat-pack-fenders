@@ -1,0 +1,18 @@
+:root{
+  /* Spacing — millimetric, drafting-derived (1.5mm ≈ 5px base step) */
+  --sp-1:3px;--sp-2:5px;--sp-3:8px;--sp-4:11px;--sp-5:15px;--sp-6:20px;--sp-7:27px;--sp-8:36px;--sp-9:48px;--sp-10:64px;--sp-11:84px;--sp-12:112px;
+
+  /* Grid — sheet layout */
+  --grid-cols:12; /* @kind other */--grid-gutter:var(--sp-6);--grid-margin:var(--sp-8);
+  --measure-text:64ch;--measure-narrow:42ch;
+  --container-sm:640px;--container-md:920px;--container-lg:1200px;--container-xl:1440px;
+
+  /* Radii — nearly square. Paper does not have big round corners. */
+  --radius-none:0;--radius-xs:1px;--radius-sm:2px;--radius-md:3px;--radius-pill:999px;
+
+  /* Hairlines */
+  --hair:1px;--hair-2:1.5px;--rule-w:2px;
+
+  /* Fixed chrome */
+  --nav-h:56px;--tabbar-h:64px;--touch-min:44px;
+}

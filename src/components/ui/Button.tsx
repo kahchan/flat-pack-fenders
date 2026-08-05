@@ -14,9 +14,9 @@ interface ButtonProps {
 }
 
 const SIZES: Record<Size, CSSProperties> = {
-  sm: { padding: '6px 14px', fontSize: 'var(--text-caption-size)', lineHeight: 1 },
-  md: { padding: '10px 22px', fontSize: 'var(--text-body-sm-size)', lineHeight: 1 },
-  lg: { padding: '14px 30px', fontSize: 'var(--text-body-md-size)', lineHeight: 1 }
+  sm: { padding: '6px 14px', fontSize: 'var(--text-xs)', lineHeight: 1 },
+  md: { padding: '10px 22px', fontSize: 'var(--text-base)', lineHeight: 1 },
+  lg: { padding: '14px 30px', fontSize: 'var(--text-base)', lineHeight: 1 }
 };
 
 export function Button({
@@ -34,20 +34,20 @@ export function Button({
 
   const variants: Record<Variant, CSSProperties> = {
     primary: {
-      background: lit ? 'var(--color-brand-mid)' : 'var(--color-brand)',
-      color: 'var(--color-bg)',
+      background: lit ? 'var(--accent-hover)' : 'var(--accent)',
+      color: 'var(--text-inverse)',
       borderColor: 'transparent',
       boxShadow: lit ? 'var(--shadow-2)' : 'var(--shadow-1)'
     },
     secondary: {
-      background: lit ? 'var(--color-bg-alt)' : 'transparent',
-      color: 'var(--color-fg)',
-      borderColor: lit ? 'var(--color-border-strong)' : 'var(--color-border)',
+      background: lit ? 'var(--surface-sunken)' : 'transparent',
+      color: 'var(--text-strong)',
+      borderColor: lit ? 'var(--rule-solid)' : 'var(--border-default)',
       boxShadow: 'none'
     },
     ghost: {
-      background: lit ? 'var(--color-bg-alt)' : 'transparent',
-      color: lit ? 'var(--color-fg)' : 'var(--color-fg-muted)',
+      background: lit ? 'var(--surface-sunken)' : 'transparent',
+      color: lit ? 'var(--text-strong)' : 'var(--text-muted)',
       borderColor: 'transparent',
       boxShadow: 'none'
     }
@@ -66,11 +66,11 @@ export function Button({
     border: '1.5px solid transparent',
     borderRadius: 'var(--radius-sm)',
     transition: [
-      'background var(--dur-fast) ease',
-      'color var(--dur-fast) ease',
-      'border-color var(--dur-fast) ease',
-      'box-shadow var(--dur-fast) ease',
-      'transform var(--dur-instant) ease'
+      'background var(--dur-base) var(--ease-plot)',
+      'color var(--dur-base) var(--ease-plot)',
+      'border-color var(--dur-base) var(--ease-plot)',
+      'box-shadow var(--dur-base) var(--ease-plot)',
+      'transform var(--dur-fast) var(--ease-plot)'
     ].join(', '),
     userSelect: 'none',
     flexShrink: 0,

@@ -8,8 +8,8 @@ interface PrintInstructionsPageProps {
 /**
  * Assembly instructions print page, steps in two columns — the page someone reads
  * while building the thing, so it uses the same label treatment, rule and type tokens
- * as the rest of the app (`--text-label-*`, `--color-*`) rather than its own one-off
- * styling (PLAN FEEDBACK WP15 §15.4). Design source lines 425-433.
+ * as the rest of the app (`--text-xs` + `--tracking-label`, `--text-strong`/`--text-muted`)
+ * rather than its own one-off styling (PLAN FEEDBACK WP15 §15.4). Design source lines 425-433.
  */
 export function PrintInstructionsPage({ printSpecLine, steps }: PrintInstructionsPageProps) {
   return (

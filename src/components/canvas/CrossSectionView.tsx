@@ -11,11 +11,11 @@ export function CrossSectionView({ xsec }: CrossSectionViewProps) {
     <section>
       <h2
         style={{
-          fontSize: 'var(--text-label-size)',
-          letterSpacing: 'var(--text-label-track)',
+          fontSize: 'var(--text-xs)',
+          letterSpacing: 'var(--tracking-label)',
           textTransform: 'uppercase',
           margin: '0 0 14px',
-          fontWeight: 'var(--text-label-weight)'
+          fontWeight: 'var(--weight-semibold)'
         }}
       >
         Cross-section

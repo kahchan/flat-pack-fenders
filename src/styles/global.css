@@ -13,8 +13,8 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: var(--color-bg);
-  color: var(--color-fg);
+  background: var(--surface-page);
+  color: var(--text-strong);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
@@ -24,15 +24,15 @@ body {
 }
 
 a {
-  color: var(--color-brand-mid);
+  color: var(--text-link);
   text-decoration: none;
 }
 a:hover {
-  color: var(--color-accent);
+  color: var(--text-link-hover);
 }
 
 input[type='range'] {
-  accent-color: var(--color-brand);
+  accent-color: var(--accent);
 }
 
 /* Numbers are read as measurements — never let them reflow width while dragging. */
@@ -97,14 +97,14 @@ input[type='range'] {
 
 /* Assembly instructions (PLAN FEEDBACK WP15 §15.4) — same label treatment, rule and
    colour tokens as the screen app (rail-kicker/rail-divider/assembly-steps), not a
-   one-off. `--color-*` throughout: this page is chrome (UI copy), not drawing
+   one-off. Screen tokens throughout: this page is chrome (UI copy), not drawing
    geometry, so it reads no `--draw-*` tokens. */
 .print-page--instructions {
   padding: 15mm 18mm;
   page-break-after: auto;
   break-after: auto;
   font-family: var(--font-sans);
-  color: var(--color-fg);
+  color: var(--text-strong);
 }
 
 .print-page__label,
@@ -153,11 +153,11 @@ input[type='range'] {
 }
 
 .print-instructions-kicker {
-  font-size: var(--text-label-size);
-  letter-spacing: var(--text-label-track);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  font-weight: var(--text-label-weight);
-  color: var(--color-fg-faint);
+  font-weight: var(--weight-semibold);
+  color: var(--text-faint);
   margin-bottom: 6pt;
 }
 
@@ -165,18 +165,18 @@ input[type='range'] {
   font-size: 20pt;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: var(--color-fg);
+  color: var(--text-strong);
 }
 
 .print-instructions-rule {
   height: 1px;
-  background: var(--color-border);
+  background: var(--border-default);
   margin: 10pt 0 8pt;
 }
 
 .print-instructions-spec {
   font-size: 8pt;
-  color: var(--color-fg-muted);
+  color: var(--text-muted);
 }
 
 .print-instructions-list {
@@ -187,7 +187,7 @@ input[type='range'] {
   column-gap: 20pt;
   font-size: 9.5pt;
   line-height: 1.55;
-  color: var(--color-fg-muted);
+  color: var(--text-muted);
 }
 
 .print-instructions-list li {
@@ -199,12 +199,12 @@ input[type='range'] {
 
 .print-instructions-list__n {
   font-size: 8pt;
-  color: var(--color-accent);
+  color: var(--accent);
   flex-shrink: 0;
   padding-top: 1pt;
 }
 
 .print-instructions-list b {
-  color: var(--color-fg);
+  color: var(--text-strong);
   font-weight: 600;
 }

@@ -58,32 +58,65 @@
 }
 
 :root {
-  /* ── Surfaces ── */
-  --color-bg: #f5f0e8;
-  --color-bg-alt: #ede8dc;
-  --color-surface: #faf8f3;
-  --color-surface-raised: #ffffff;
+  /* ── Paper — the substrate. Warm, printed, never pure white. ── */
+  --paper-000: #fffdf8;
+  --paper-100: #f7f4ec;
+  --paper-200: #efebe0;
+  --paper-300: #e4dfd1;
 
-  /* ── Text ── */
-  --color-fg: #1a2232;
-  --color-fg-muted: #4a5a6e;
-  --color-fg-faint: #8898a8;
+  /* ── Ink — text and structure. Cool near-black, never pure black. ── */
+  --ink-900: #101418;
+  --ink-700: #2a3138;
+  --ink-500: #545c64;
+  --ink-400: #7c848c;
+  --ink-300: #9aa1a8;
+  --ink-200: #c7cbcf;
 
-  /* ── Brand — cobalt / ultramarine ── */
-  --color-brand: #1040a8;
-  --color-brand-mid: #1855cc;
-  --color-brand-pale: #cdd9ff;
+  /* ── Blueprint — the primary. Cyanotype blue, used for structure and action. ── */
+  --blueprint-700: #173359;
+  --blueprint-600: #1e4478;
+  --blueprint-500: #2e5c9a;
+  --blueprint-400: #5c86bc;
+  --blueprint-200: #b9cce4;
+  --blueprint-100: #dce6f2;
 
-  /* ── Accent — one warm intrusion, never stacked ── */
-  --color-accent: #d4614e;
-  --color-accent-soft: #e8a48c;
-  --color-accent-pale: #fae4de;
+  /* ── Signal — maximum contrast against the substrate. ── */
+  --signal-600: #05080b;
+  --signal-500: var(--ink-900);
+  --signal-300: var(--ink-500);
+  --signal-100: var(--paper-300);
 
-  /* ── Chrome ── */
-  --color-border: #d6d2c8;
-  --color-border-strong: #a8a49c;
-  --color-overlay: rgba(26, 34, 50, 0.45);
-  --color-grid-hairline: rgba(26, 34, 50, 0.08);
+  /* ── Status ── */
+  --warn-600: #95690e;
+  --warn-500: #c08a16;
+  --warn-100: #f6ebd2;
+
+  /* ── Rules — hairlines are the brand's geometry. Notebook blue, never grey. ── */
+  --rule-hair: #cbddf3;
+  --rule-solid: #9cbbda;
+
+  /* ── Blur / transparency — sparingly, only for sheet overlays ── */
+  --scrim: rgba(16, 20, 24, 0.42);
+
+  /* ── Semantic aliases ── */
+  --surface-page: var(--paper-100);
+  --surface-card: var(--paper-000);
+  --surface-sunken: var(--paper-200);
+  --surface-inverse: var(--ink-900);
+  --text-strong: var(--ink-900);
+  --text-muted: var(--ink-500);
+  --text-faint: var(--ink-400);
+  --text-inverse: var(--paper-000);
+  --text-link: var(--blueprint-600);
+  --text-link-hover: var(--signal-500);
+  --accent: var(--blueprint-600);
+  --accent-hover: var(--blueprint-700);
+  --accent-quiet: var(--blueprint-100);
+  --measure: var(--signal-500);
+  --measure-quiet: var(--signal-100);
+  --border-default: var(--rule-hair);
+  --border-strong: var(--ink-900);
+  --focus-ring: var(--signal-500);
 
   color-scheme: light;
 
@@ -98,23 +131,24 @@
   --fw-semibold: 600;
   --fw-bold: 700;
 
-  /* ── Type scale — 4px grid (PLAN FEEDBACK WP16 §16.1). Was scattered across 11-15px
-     literals inline in app.css/responsive.css; every one now routes through one of
-     these instead. body-sm/body-md/mono-sm land on the same 16px step and
-     body-lg/heading-sm both land on 20px — the table that set these values gives
-     them identical targets, not a mistake here. ── */
-  --text-heading-xl-size: 36px;
-  --text-heading-lg-size: 32px;
-  --text-heading-md-size: 24px;
-  --text-heading-sm-size: 20px;
-  --text-body-lg-size: 20px;
-  --text-body-md-size: 16px;
-  --text-body-sm-size: 16px;
-  --text-mono-sm-size: 16px;
-  --text-caption-size: 12px;
-  --text-label-size: 12px;
-  --text-label-weight: 600;
-  --text-label-track: 0.07em;
+  /* ── Type scale — the system's paper-derived ratio, not a 4px grid (WP35 §35.2b). ── */
+  --text-2xs: 10px;
+  --text-xs: 11.5px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-md: 17px;
+  --text-lg: 21px;
+  --text-xl: 27px;
+  --text-2xl: 34px;
+  --text-3xl: 44px;
+  --text-4xl: 58px;
+  --text-5xl: 76px;
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --tracking-label: 0.14em;
 
   /* ── Spacing — 4px base ── */
   --space-1: 4px;
@@ -130,10 +164,8 @@
   --space-11: 80px;
   --space-12: 96px;
 
-  /* ── Radius ── */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 16px;
+  /* ── Radius — the system's, nearly square (WP35 §35.2b). ── */
+  --radius-sm: 2px;
   --radius-pill: 999px;
 
   /* ── Shadows — tinted cool blue, never grey ── */
@@ -141,15 +173,10 @@
   --shadow-2: 0 4px 16px rgba(22, 38, 74, 0.09), 0 2px 6px rgba(22, 38, 74, 0.05);
   --shadow-nav: 8px 0 40px rgba(22, 38, 74, 0.22), 3px 0 12px rgba(22, 38, 74, 0.12);
 
-  /* ── Motion ── */
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
-  --ease-in: cubic-bezier(0.55, 0, 0.78, 0);
-  --dur-instant: 80ms;
-  --dur-fast: 200ms;
-  --dur-base: 500ms;
-  --dur-reveal: 550ms;
-  --dur-slide: 600ms;
-  --dur-slow: 700ms;
-  --dur-lazy: 900ms;
+  /* ── Motion — mechanical, plotted (WP35 §35.2b). ── */
+  --ease-plot: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 420ms;
+  --dur-plot: 900ms;
 }

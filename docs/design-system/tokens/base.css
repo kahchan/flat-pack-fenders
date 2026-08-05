@@ -1,0 +1,18 @@
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--surface-page);color:var(--text-body);font:var(--type-body);-webkit-font-smoothing:antialiased;text-wrap:pretty}
+h1,h2,h3,h4{margin:0;color:var(--text-strong);font-family:var(--font-display);font-weight:var(--weight-regular);letter-spacing:var(--tracking-display);line-height:var(--leading-snug)}
+h1{font-size:var(--text-3xl);font-weight:var(--weight-light)}h2{font-size:var(--text-2xl)}h3{font-size:var(--text-lg)}h4{font-size:var(--text-md)}
+p{margin:0 0 var(--sp-5)}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid var(--blueprint-200);transition:color var(--dur-fast) var(--ease-plot),border-color var(--dur-fast) var(--ease-plot)}
+a:hover{color:var(--text-link-hover);border-bottom-color:var(--signal-300)}
+code,kbd,samp{font-family:var(--font-mono);font-size:.92em}
+hr{border:0;border-top:var(--hair) solid var(--rule-hair);margin:var(--sp-7) 0}
+::selection{background:var(--signal-100)}
+:focus-visible{outline:var(--hair-2) solid var(--focus-ring);outline-offset:2px}
+small{font-size:var(--text-xs)}
+/* Brand utility classes (opt-in, mirrored in components) */
+.as-eyebrow{font:var(--type-eyebrow);font-variant-numeric:tabular-nums;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--text-muted)}
+.as-label{font:var(--type-label);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-annotation)}
+.as-data{font:var(--type-data);font-variant-numeric:tabular-nums}
+.as-graph{background-image:var(--pattern-graph);background-size:var(--pattern-tile)}
+.as-dotgrid{background-image:var(--pattern-dot);background-size:var(--pattern-tile)}

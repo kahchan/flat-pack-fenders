@@ -1,0 +1,32 @@
+:root{
+  /* Shadows: near-absent. Depth comes from rules and offset, not blur. */
+  --shadow-none:none;
+  --shadow-print:1px 1px 0 var(--rule-hair);           /* registration offset */
+  --shadow-raise:2px 2px 0 var(--ink-900);              /* pressed-plate edge */
+  --shadow-soft:0 1px 2px rgba(16,20,24,.06);           /* only for overlays */
+  --shadow-overlay:0 8px 28px rgba(16,20,24,.14);
+  --inset-hair:inset 0 0 0 1px var(--border-default);
+  --inset-focus:inset 0 0 0 1px var(--focus-ring);
+
+  /* Motion — mechanical, plotted. No bounce, no spring. */
+  --ease-plot:cubic-bezier(.2,.6,.2,1); /* @kind other */
+  --ease-linear:linear; /* @kind other */
+  --ease-step:steps(6,end); /* @kind other */
+  --dur-fast:120ms; /* @kind other */
+  --dur-base:200ms; /* @kind other */
+  --dur-slow:420ms; /* @kind other */
+  --dur-plot:900ms; /* @kind other */
+
+  /* Blur / transparency — sparingly, only for sheet overlays */
+  --scrim:rgba(16,20,24,.42);
+  --veil:rgba(255,253,248,.82);
+  --blur-sheet:blur(6px); /* @kind other */
+
+  /* Geometry: the suggestion of a drawing, with no visible lines needed */
+  --graph-size:20px;
+  --pattern-tile:var(--graph-size) var(--graph-size); /* @kind spacing */
+  --pattern-line:var(--rule-hair); /* grid lines share the hairline value: light blueprint */
+  --pattern-graph:linear-gradient(to right,var(--pattern-line) 1px,transparent 1px),linear-gradient(to bottom,var(--pattern-line) 1px,transparent 1px);
+  --pattern-dot:radial-gradient(var(--pattern-line) 1px,transparent 1px);
+  --pattern-hatch:repeating-linear-gradient(45deg,var(--pattern-line) 0 1px,transparent 1px 6px);
+}

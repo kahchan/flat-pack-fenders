@@ -11,33 +11,33 @@
    ───────────────────────────────────────────── */
 
 :root {
-  /* Paper */
-  --draw-paper: #faf8f3; /* drawing card face */
-  --draw-blank-fill: #ffffff; /* the blank itself, so it reads as stock */
-  --draw-frame: #c8c4bc; /* print tile trim frame */
+  /* Paper — re-pointed at the system's paper/ink tokens, WP35 §35.3. */
+  --draw-paper: var(--surface-card); /* drawing card face */
+  --draw-blank-fill: var(--paper-000); /* the blank itself, so it reads as stock */
+  --draw-frame: var(--rule-hair); /* print tile trim frame — hairline neutral, per E6 */
 
-  /* Line semantics */
+  /* Line semantics — carry meaning a builder relies on. Left alone, per E6/E1. */
   --draw-cut: #1a2232; /* solid — cut this */
   --draw-fold: #1855cc; /* blue dashed — fold / score, never cut */
   --draw-fold-print: #6a7a8e; /* fold on printed sheets — greyer, survives mono printing */
   --draw-seam: #d4614e; /* coral dashed — panel seam / A4 tile edge */
-  --draw-ghost: #a8a49c; /* nested pair outline, wheel ghost */
+  --draw-ghost: var(--rule-hair); /* nested pair outline, wheel ghost — hairline neutral, per E6 */
 
-  /* Annotation */
-  --draw-label: #1a2232;
-  --draw-label-dim: #8898a8;
-  --draw-label-note: #4a5a6e;
+  /* Annotation — re-pointed at ink. */
+  --draw-label: var(--ink-900);
+  --draw-label-dim: var(--ink-400);
+  --draw-label-note: var(--ink-500);
 
-  /* Isometric preview */
+  /* Isometric preview — semantic (coral), left alone. */
   --draw-iso-strut: #e8a48c;
   --draw-iso-strut-edge: #d4614e;
   --draw-iso-mudflap: #c9c2b4;
-  --draw-iso-seam: #f5f0e8;
+  --draw-iso-seam: var(--paper-100);
 
   /* Cross-section */
-  --draw-xsec-tyre: #ede8dc;
-  --draw-xsec-rim: #faf8f3;
-  --draw-xsec-gap: #d4614e;
+  --draw-xsec-tyre: var(--paper-200);
+  --draw-xsec-rim: var(--paper-000);
+  --draw-xsec-gap: #d4614e; /* semantic (coral), left alone */
 
   /* Facet shading endpoints — isometric surface ramp is interpolated between these */
   --draw-facet-dark: 26, 34, 50;

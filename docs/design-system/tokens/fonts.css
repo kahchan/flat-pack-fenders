@@ -1,0 +1,13 @@
+/* Google Fonts substitutions — no source font binaries were provided. See readme.md "Font substitutions". */
+@import url("https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=Archivo:wght@400..700&family=Ojuju:wght@300..700&family=Geist+Mono:wght@400;500&display=swap");
+
+:root {
+  --font-display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
+  /* Ojuju — sans numerals, eyebrows and uppercase micro-type */
+  --font-eyebrow: "Ojuju", "Archivo", sans-serif;
+  --font-numeral: "Ojuju", "Archivo", sans-serif;
+  --font-mono: "Geist Mono", "SF Mono", ui-monospace, monospace;
+  --font-body: var(--font-sans);
+  --font-technical: var(--font-mono);
+}

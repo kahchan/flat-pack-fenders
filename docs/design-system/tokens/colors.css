@@ -1,0 +1,60 @@
+:root{
+  /* Paper — the substrate. Warm, printed, never pure white. */
+  --paper-000:#FFFDF8;--paper-100:#F7F4EC;--paper-200:#EFEBE0;--paper-300:#E4DFD1;
+  /* Ink — text and structure. Cool near-black, never pure black. */
+  --ink-900:#101418;--ink-700:#2A3138;--ink-500:#545C64;--ink-400:#7C848C;--ink-300:#9AA1A8;--ink-200:#C7CBCF;
+  /* Blueprint — the primary. Cyanotype blue, used for structure and action. */
+  --blueprint-700:#173359;--blueprint-600:#1E4478;--blueprint-500:#2E5C9A;--blueprint-400:#5C86BC;--blueprint-200:#B9CCE4;--blueprint-100:#DCE6F2;
+  /* Signal — maximum contrast against the substrate. Reserved for measurement, effort, "now". Ink on paper, paper on blueprint. */
+  --signal-600:#05080B;--signal-500:var(--ink-900);--signal-300:var(--ink-500);--signal-100:var(--paper-300);
+  /* Plot — viridis, sampled at 6 stops. Sequential or categorical, always in this order. */
+  --plot-1:#440154;--plot-2:#414487;--plot-3:#2A788E;--plot-4:#22A884;--plot-5:#7AD151;--plot-6:#FDE725;
+  /* Stroke-safe substitutes: viridis' bright end is fill-only on paper. */
+  --plot-5-line:#4E9B2E;--plot-6-line:#8F8410;
+  /* Status */
+  --ok-600:#256349;--ok-500:#2F7A5B;--ok-100:#DDEBE4;
+  --warn-600:#95690E;--warn-500:#C08A16;--warn-100:#F6EBD2;
+  --err-600:#8E2C20;--err-500:#B33A2B;--err-100:#F5DFDB;
+
+  /* Rules — hairlines are the brand's geometry. Notebook blue, never grey. */
+  --rule-hair:#CBDDF3;--rule-solid:#9CBBDA;--rule-ink:var(--ink-900);--rule-blue:var(--blueprint-200);
+
+  /* Semantic aliases */
+  --surface-page:var(--paper-100);
+  --surface-card:var(--paper-000);
+  --surface-sunken:var(--paper-200);
+  --surface-inverse:var(--ink-900);
+  --surface-blueprint:var(--blueprint-700);
+  --text-body:var(--ink-700);
+  --text-strong:var(--ink-900);
+  --text-muted:var(--ink-500);
+  --text-faint:var(--ink-400);
+  --text-inverse:var(--paper-000);
+  --text-link:var(--blueprint-600);
+  --text-link-hover:var(--signal-500);
+  --text-annotation:var(--ink-400);
+  --accent:var(--blueprint-600);
+  --accent-hover:var(--blueprint-700);
+  --accent-quiet:var(--blueprint-100);
+  --measure:var(--signal-500);
+  --measure-quiet:var(--signal-100);
+  --measure-on:var(--paper-000);
+  --border-default:var(--rule-hair);
+  --plot-scale:linear-gradient(to right,var(--plot-1),var(--plot-2),var(--plot-3),var(--plot-4),var(--plot-5),var(--plot-6)); /* @kind other */
+  --border-strong:var(--ink-900);
+  --focus-ring:var(--signal-500);
+}
+
+/* Blueprint scope — inverted, for hero panels and dark app chrome. */
+.as-blueprint{
+  --surface-page:var(--blueprint-700);--surface-card:#1B3B66;--surface-sunken:#13294A;
+  --text-body:#C6D6E9;--text-strong:var(--paper-000);--text-muted:#8CA5C4;--text-faint:#6E88A9;
+  --border-default:#2F5687;--border-strong:#7FA1C9;--pattern-line:#436EA0;--accent-quiet:#22456F;
+  --text-link:#9CC0EB;--rule-hair:#2F5687;
+  /* Signal inverts with the substrate: paper on blueprint. 600 stays the hover step *deeper* than 500. */
+  --signal-600:var(--paper-200);--signal-500:var(--paper-000);--signal-300:#AFC2D8;--signal-100:#22456F;--measure-on:var(--ink-900);
+  /* Aliases must be re-declared: var() substitutes at the declaring scope. */
+  --measure:var(--paper-000);--measure-quiet:#22456F;--focus-ring:var(--paper-000);--text-link-hover:var(--paper-000);
+  /* Viridis inverts too: the bright end needs no darkening on blueprint, the dark end is unusable as a hairline. */
+  --plot-5-line:var(--plot-5);--plot-6-line:var(--plot-6);--plot-1:#8E6FA8;--plot-2:#7A80C4;
+}

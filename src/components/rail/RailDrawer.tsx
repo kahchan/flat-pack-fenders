@@ -8,7 +8,7 @@ interface RailDrawerProps {
 
 /**
  * Tablet (760-1099px) control rail: an overlay drawer sliding in from the right, PLAN §4
- * — 392px, `transform: translateX`, `--dur-slide` + `--ease-out`, scrim `--color-overlay`.
+ * — 392px, `transform: translateX`, `--dur-slow` + `--ease-plot`, scrim `--scrim`.
  * This is a plain CSS transition (not a drag gesture, per §4), so `prefers-reduced-motion`
  * is already handled by the global transition-duration override in `global.css` — no
  * extra JS needed here.
