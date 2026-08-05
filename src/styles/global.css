@@ -153,6 +153,7 @@ input[type='range'] {
 }
 
 .print-instructions-kicker {
+  font-family: var(--font-eyebrow);
   font-size: var(--text-xs);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
@@ -162,9 +163,10 @@ input[type='range'] {
 }
 
 .print-instructions-title {
+  font-family: var(--font-display);
   font-size: 20pt;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--tracking-display);
   color: var(--text-strong);
 }
 

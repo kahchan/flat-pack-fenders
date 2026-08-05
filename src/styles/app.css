@@ -32,6 +32,7 @@
 }
 
 .section-heading h2 {
+  font-family: var(--font-eyebrow);
   font-size: var(--text-xs);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
@@ -79,6 +80,7 @@
 }
 
 .rotate-row .rotate-label {
+  font-family: var(--font-eyebrow);
   font-size: var(--text-xs);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
@@ -114,6 +116,7 @@
 }
 
 .warning-banner__title {
+  font-family: var(--font-eyebrow);
   font-size: var(--text-xs);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
@@ -338,10 +341,11 @@
 }
 
 .rail-title {
+  font-family: var(--font-display);
   font-size: var(--text-2xl);
   line-height: 1.06;
-  letter-spacing: -0.03em;
-  font-weight: 700;
+  letter-spacing: var(--tracking-display);
+  font-weight: var(--weight-regular);
   margin: 0 0 10px;
 }
 
